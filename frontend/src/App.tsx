@@ -1,8 +1,11 @@
 import React, { createContext, useState } from 'react'
-import './App.scss'
+import './app.scss'
 
 // Models
 import { User } from './models/user'
+
+// Assets
+import background from './assets/images/background.png'
 
 // Components
 import Dashboard from './views/dashboard/dashboard'
@@ -10,11 +13,15 @@ import Login from './views/login/login'
 
 export const UserContext: React.Context<any> = createContext({
     user: null,
-    setUser: (user: User) => {},
 })
 
+const testUser = {
+    id: 1,
+    name: 'Test User',
+}
+
 function App() {
-    const [user, setUser] = useState<User | null>(null)
+    const [user, setUser] = useState<User | null>(testUser)
 
     const PrivateRoutes = (
         <div>
@@ -30,7 +37,11 @@ function App() {
 
     return (
         <UserContext.Provider value={{ user, setUser }}>
-            <div id='app'>{user ? PrivateRoutes : PublicRoutes}</div>
+            <div id='app'>
+                <div className='background-image' style={{ backgroundImage: `url(${background})` }} />
+
+                {user ? PrivateRoutes : PublicRoutes}
+            </div>
         </UserContext.Provider>
     )
 }

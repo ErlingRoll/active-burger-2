@@ -1,0 +1,18 @@
+#stats {
+    max-width: 300px;
+
+    .stat {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+
+        .stat-bar {
+            width: 70%;
+            display: flex;
+            justify-content: center;
+            border-radius: 0.3rem;
+            border: 2px solid rgb(100, 100, 100);
+        }
+    }
+}

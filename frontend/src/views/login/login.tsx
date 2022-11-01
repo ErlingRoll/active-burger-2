@@ -1,15 +1,13 @@
 import React, { useContext } from 'react'
 import './login.scss'
-
-// Contexts
-import { UserContext } from '../../App'
+import { UserContext } from '../../app'
 
 // Components
 import Paper from '../../components/paper/paper'
 
 // Assets
-import pixelBurger from '../../assets/images/pixel_burger.png'
-import activeBurger from '../../assets/images/active_burger.png'
+import loginLogo from '../../assets/images/login_logo.png'
+import Button from '../../components/button/button'
 
 const testUser = {
     id: 1,
@@ -28,8 +26,7 @@ const Login = () => {
     // Render
     return (
         <div id='login'>
-            <div className='background-image' style={{ backgroundImage: `url(${pixelBurger})` }} />
-            <img src={activeBurger} alt='title' className='main-logo' />
+            <img src={loginLogo} alt='title' className='main-logo' />
             <Paper className='login-form'>
                 <h2>Login</h2>
                 <div className='field'>
@@ -40,7 +37,7 @@ const Login = () => {
                     <label>Password</label>
                     <input type='password' />
                 </div>
-                <button onClick={handleLogin}>Login</button>
+                <Button onClick={handleLogin}>Login</Button>
             </Paper>
         </div>
     )
