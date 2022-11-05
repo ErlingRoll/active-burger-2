@@ -7,6 +7,7 @@ import Paper from '../../components/paper/paper'
 import Button from '../../components/button/button'
 import FriendList from './components/friendList/friendList'
 import Stats from './components/stats/stats'
+import Inventory from './components/inventory/inventory'
 
 const Dashboard = () => {
     const { setUser } = useContext(UserContext)
@@ -20,6 +21,7 @@ const Dashboard = () => {
             <Button className='logout-button' onClick={logout}>
                 Logout
             </Button>
+            <Inventory />
             <div className='content'>
                 <Stats />
                 <div />
