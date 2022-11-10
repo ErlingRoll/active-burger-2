@@ -1,6 +1,10 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import './login.scss'
-import { UserContext } from '../../app'
+import { NotificationManager } from 'react-notifications'
+
+// Providers
+import { useNavigate } from 'react-router-dom'
+import { routes, UserContext } from '../../app'
 
 // Components
 import Paper from '../../components/paper/paper'
@@ -8,20 +12,42 @@ import Paper from '../../components/paper/paper'
 // Assets
 import loginLogo from '../../assets/images/login_logo.png'
 import Button from '../../components/button/button'
-
-const testUser = {
-    id: 1,
-    name: 'Test User',
-}
+import { userService } from '../../services/services'
 
 const Login = () => {
-    // Use hooks
-    const { setUser } = useContext(UserContext)
+    // Providers
+    const { user, setUser } = useContext(UserContext)
+    const navigate = useNavigate()
+
+    // State
+    const [username, setUsername] = React.useState('')
+    const [password, setPassword] = React.useState('')
 
     // Functions
-    const handleLogin = (e: any) => {
-        setUser(testUser)
+    const handleLogin = async (e: any) => {
+        const user = await userService.login({ username: username, password: password }).catch(console.error)
+        if (user) setUser(user)
+        navigate('/')
     }
+
+    // Functions
+    const handleRegister = async (e: any) => {
+        const registerRes = await userService.register({ username: username, password: password }).catch((error) => {
+            if (error.response.status === 400) {
+                NotificationManager.error('Username already exists :( Please try another one')
+            }
+        })
+        if (registerRes) {
+            NotificationManager.success('Successful registration!')
+        }
+    }
+
+    // Effects
+    useEffect(() => {
+        if (user) {
+            navigate(routes.dashboard.path)
+        }
+    }, [user])
 
     // Render
     return (
@@ -31,13 +57,20 @@ const Login = () => {
                 <h2>Login</h2>
                 <div className='field'>
                     <label>Username</label>
-                    <input type='text' />
+                    <input type='text' value={username} onChange={(e) => setUsername(e.target.value)} />
                 </div>
                 <div className='field'>
                     <label>Password</label>
-                    <input type='password' />
+                    <input type='password' value={password} onChange={(e) => setPassword(e.target.value)} />
                 </div>
-                <Button onClick={handleLogin}>Login</Button>
+                <div className='buttons'>
+                    <Button className='login-button' onClick={handleLogin}>
+                        Login
+                    </Button>
+                    <Button className='register-button' onClick={handleRegister}>
+                        Register
+                    </Button>
+                </div>
             </Paper>
         </div>
     )
