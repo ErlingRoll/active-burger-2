@@ -13,7 +13,7 @@ const Gamescreen = () => {
     const [renderObjects, setRenderObjects] = useState<{ [key: string]: ExtendedRenderObject }>({
         player: { x: 0, y: 0, color: 'blue', width: 32, height: 32 },
         erling: { x: 3, y: 1, color: 'red', width: 32, height: 32 },
-        ola: { x: -3, y: 2, color: 'green', width: 32, height: 32 },
+        oladust: { x: -3, y: 2, color: 'green', width: 32, height: 32 },
     })
 
     const canvasRef = useRef<HTMLCanvasElement>(null)
