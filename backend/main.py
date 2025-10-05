@@ -1,0 +1,36 @@
+import os
+import asyncio
+import aiohttp.web
+from dotenv import load_dotenv
+
+from src.init_database import create_database_client
+from src.gamestate import Gamestate
+from src.websocket import websocket_handler
+
+
+load_dotenv()
+
+PORT = os.getenv("PORT", 8080)
+
+
+async def main():
+    app = aiohttp.web.Application()
+
+    # Init database
+    app["database"] = create_database_client()
+
+    # Init gamestate
+    gamestate = Gamestate()
+    app["gamestate"] = gamestate
+
+    app.router.add_get('/game', websocket_handler)
+    runner = aiohttp.web.AppRunner(app)
+    await runner.setup()
+    site = aiohttp.web.TCPSite(runner, 'localhost', PORT)
+    await site.start()
+    print(f"Server started on http://localhost:{PORT}")
+    await asyncio.Event().wait()  # Keep the server running indefinitely
+
+
+if __name__ == "__main__":
+    asyncio.run(main())
