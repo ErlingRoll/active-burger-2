@@ -26,6 +26,8 @@ class Gamestate:
         return gamestate
 
     async def addCharacter(self, character: Character):
+        if character.id in self.render_objects:
+            return self.getGamestate()
         self.render_objects[character.id] = character
         await self.publishGamestate()
 

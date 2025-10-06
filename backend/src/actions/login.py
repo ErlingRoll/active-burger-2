@@ -24,14 +24,17 @@ async def login(request: Request, ws: WebSocketResponse, payload: dict):
 
     print(f"login_success: {account.get('discord_id')}")
 
-    character_data = await get_character(request, ws, payload, account)
+    character_data = await get_or_create_character(request, ws, payload, account)
     character = Character(**character_data)
+    gamestate = await gamestate.addCharacter(character)
 
-    if character:
-        await gamestate.addCharacter(character)
+    await ws.send_json({
+        "event": "gamestate_update",
+        "payload": gamestate
+    })
 
 
-async def get_character(request: Request, ws: WebSocketResponse, payload: dict, account: dict):
+async def get_or_create_character(request: Request, ws: WebSocketResponse, payload: dict, account: dict):
     database = request.app["database"]
 
     character = get_character_by_account_id(database, account.get("id"))
