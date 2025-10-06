@@ -1,5 +1,6 @@
-
 export interface RenderObject {
-    x: number;
-    y: number;
+    id: string
+    x: number
+    y: number
+    name: string
 }

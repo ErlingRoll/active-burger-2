@@ -29,6 +29,12 @@ class Gamestate:
         self.render_objects[character.id] = character
         await self.publishGamestate()
 
+    def get_character(self, character_id: str) -> Character | None:
+        obj = self.render_objects.get(character_id)
+        if isinstance(obj, Character):
+            return obj
+        return None
+
     def getGamestate(self):
         return {
             "start_datetime": self.start_datetime.isoformat(),

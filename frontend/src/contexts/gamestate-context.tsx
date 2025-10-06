@@ -1,18 +1,21 @@
-import React, { Dispatch, SetStateAction, createContext, useContext, useEffect } from "react"
+import React, { Dispatch, SetStateAction, createContext, useContext, useEffect, useRef } from "react"
 import { UserContext } from "./user-context"
+import { RenderObject } from "../models/game-models"
+import GameActions from "./game-actions"
 
-export type Gamestate = {}
-
-export type ExtendedGame = Gamestate & any
+export type Gamestate = {
+    render_objects: { [key: string]: RenderObject }
+}
 
 export const gameWebsocketUrl = import.meta.env.VITE_GAME_WS_URL
 
 type GamestateContextType = {
     gameCon: WebSocket | null
     setGameCon: Dispatch<SetStateAction<any>>
-    gamestate: ExtendedGame | null
+    gamestate: Gamestate | null
     setGamestate: Dispatch<SetStateAction<Gamestate | null>>
     logout: () => void
+    gameActions?: GameActions
 }
 
 export const GamestateContext = createContext<GamestateContextType>({
@@ -21,13 +24,23 @@ export const GamestateContext = createContext<GamestateContextType>({
     gamestate: null,
     setGamestate: (game: any) => {},
     logout: () => {},
+    gameActions: null,
 })
 
 export const GameProvider = ({ children }: { children: any }) => {
-    const [gamestate, setGamestate] = React.useState<ExtendedGame | null>(null)
+    const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
     const [gameCon, setGameCon] = React.useState<WebSocket | null>(null)
 
-    const { user, setUser, setCharacter } = useContext(UserContext)
+    const { user, setUser, character, setCharacter } = useContext(UserContext)
+
+    // Store gameactions in a ref so it doesn't get recreated on every render
+    const gameActions = useRef(new GameActions())
+
+    useEffect(() => {
+        gameActions.current.user = user
+        gameActions.current.character = character
+        gameActions.current.gameCon = gameCon
+    }, [user, character, gameCon])
 
     function logout() {
         // Remove user data from localStorage
@@ -53,7 +66,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 break
             case "gamestate_update":
                 setGamestate(payload)
-                console.log(gamestate, gameCon, user)
+                // console.log(gamestate, gameCon, user)
                 break
             default:
                 console.error("Unhandled WebSocket event:", event, payload)
@@ -61,9 +74,9 @@ export const GameProvider = ({ children }: { children: any }) => {
     }
 
     function on_login_success(data: any) {
-        console.log("Login successful:", data)
+        // console.log("Login successful:", data)
         const character = data.character
-        console.log("Setting character:", character)
+        // console.log("Setting character:", character)
         setCharacter(character)
     }
 
@@ -114,6 +127,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 gamestate,
                 setGamestate,
                 logout,
+                gameActions: gameActions.current,
             }}
         >
             {children}

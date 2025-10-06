@@ -3,6 +3,17 @@ from aiohttp.web import Request, WSMsgType, WebSocketResponse
 import asyncio
 
 from .actions.login import login
+from .actions.move import move
+
+
+async def handle_action(request: Request, ws: WebSocketResponse, data: dict, action: str):
+    payload = data.get("payload", {})
+    if action == "login":
+        await login(request, ws, payload)
+    elif action == "move":
+        await move(request, ws, payload)
+    else:
+        await ws.send_str(f"Error: Unknown action '{action}'")
 
 
 async def websocket_handler(request: Request):
@@ -36,13 +47,7 @@ async def websocket_handler(request: Request):
 
                     action = data.get("action")
 
-                    if action == "login":
-                        await login(request, ws, data.get("payload", {}))
-                        # send_task = asyncio.create_task(
-                        #     login(request, ws, data.get("payload", {})))
-                        # await send_task  # Await the login task to ensure it completes
-                    else:
-                        await ws.send_str(f"Error: Unknown action '{action}'")
+                    await handle_action(request, ws, data, action)
 
                 elif msg.type == WSMsgType.CLOSE:
                     print(f"WebSocket closed by client: {request.remote}")
