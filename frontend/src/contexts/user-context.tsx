@@ -1,9 +1,5 @@
-import React, { Dispatch, SetStateAction, createContext } from "react"
-
-export type User = {
-    id: string
-    name: string
-}
+import React, { Dispatch, SetStateAction, createContext, use, useEffect } from "react"
+import { Account } from "../models/account"
 
 export type Character = {
     id: string
@@ -11,24 +7,42 @@ export type Character = {
     account_id: string
 }
 
-export type ExtendedUser = User & any
+export type User = Account & any
 
 type UserContextType = {
-    user: ExtendedUser | null
+    user: User | null
     setUser: Dispatch<SetStateAction<User | null>>
+    account: Account | null
+    setAccount: Dispatch<SetStateAction<Account | null>>
     character: Character | null
     setCharacter: Dispatch<SetStateAction<Character | null>>
+    admin: boolean
 }
 
 export const UserContext = createContext<UserContextType>({
     user: null,
     setUser: (user: any) => {},
+    account: null,
+    setAccount: (account: any) => {},
     character: null,
     setCharacter: (character: any) => {},
+    admin: false,
 })
 
 export const UserProvider = ({ children }: { children: any }) => {
-    const [user, setUser] = React.useState<ExtendedUser | null>(null)
+    const [user, setUser] = React.useState<User | null>(null)
+    const [account, setAccount] = React.useState<Account | null>(null)
     const [character, setCharacter] = React.useState<Character | null>(null)
-    return <UserContext.Provider value={{ user, setUser, character, setCharacter }}>{children}</UserContext.Provider>
+
+    useEffect(() => {
+        console.log("User updated:", user)
+    }, [user])
+
+    return (
+        <UserContext.Provider
+            value={{ user, setUser, account, setAccount, character, setCharacter, admin: account?.admin }}
+        >
+            {children}
+        </UserContext.Provider>
+    )
 }

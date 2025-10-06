@@ -1,3 +1,5 @@
+import { RenderObject } from "../models/game-models"
+
 class GameActions {
     user = null
     character = null
@@ -14,6 +16,15 @@ class GameActions {
         const action = {
             action: "move",
             payload: { character_id: this.character.id, x, y },
+        }
+        this.gameCon.send(JSON.stringify(action))
+    }
+
+    place(obj: Partial<RenderObject>) {
+        if (!this.ready()) return
+        const action = {
+            action: "place_object",
+            payload: obj,
         }
         this.gameCon.send(JSON.stringify(action))
     }

@@ -36,4 +36,10 @@ body {
 
 button {
     cursor: pointer;
+    border-radius: 0.3rem;
+}
+
+button:hover {
+    scale: 1.05;
+    transition: all 0.1s ease-in-out;
 }

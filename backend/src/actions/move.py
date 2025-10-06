@@ -23,6 +23,17 @@ async def move(request: Request, ws: WebSocketResponse, payload: dict):
         await ws.send_str("Error: Character not found.")
         return
 
+    # Get objects at target position
+    pos_key = f"{x}_{y}"
+    pos_objects = gamestate.position_objects()
+    objects_at_pos = pos_objects.get(pos_key, [])
+
+    # Check for collision with solid objects
+    for obj in objects_at_pos:
+        if obj.solid:
+            await ws.send_str("Error: Movement blocked by solid object.")
+            return
+
     character_state.x = x
     character_state.y = y
 

@@ -31,7 +31,7 @@ export const GameProvider = ({ children }: { children: any }) => {
     const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
     const [gameCon, setGameCon] = React.useState<WebSocket | null>(null)
 
-    const { user, setUser, character, setCharacter } = useContext(UserContext)
+    const { user, setUser, setAccount, character, setCharacter } = useContext(UserContext)
 
     // Store gameactions in a ref so it doesn't get recreated on every render
     const gameActions = useRef(new GameActions())
@@ -54,8 +54,9 @@ export const GameProvider = ({ children }: { children: any }) => {
             setGameCon(null)
         }
         setGamestate(null)
-        setUser(null)
         setCharacter(null)
+        setAccount(null)
+        setUser(null)
     }
 
     function on_event(event: string, payload: any) {
@@ -74,9 +75,9 @@ export const GameProvider = ({ children }: { children: any }) => {
     }
 
     function on_login_success(data: any) {
-        // console.log("Login successful:", data)
+        const account = data.account
         const character = data.character
-        // console.log("Setting character:", character)
+        setAccount(account)
         setCharacter(character)
     }
 

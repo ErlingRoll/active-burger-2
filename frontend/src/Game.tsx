@@ -6,14 +6,14 @@ import Login from "./views/login/login"
 import { GamestateContext } from "./contexts/gamestate-context"
 
 function Game() {
-    const { user, character } = useContext(UserContext)
+    const { account, character } = useContext(UserContext)
     const { gameCon, gamestate } = useContext(GamestateContext)
 
     useEffect(() => {
         // console.log("App state:", { user, character, gameCon, gamestate })
-    }, [user, gameCon, gamestate])
+    }, [gameCon, gamestate])
 
-    return <div>{!user || !character || !gameCon || !gamestate ? <Login /> : <Gamescreen />}</div>
+    return <div>{!account || !character || !gameCon || !gamestate ? <Login /> : <Gamescreen />}</div>
 }
 
 export default Game

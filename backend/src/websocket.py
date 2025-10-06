@@ -4,6 +4,7 @@ import asyncio
 
 from .actions.login import login
 from .actions.move import move
+from .actions.place_object import place_object
 
 
 async def handle_action(request: Request, ws: WebSocketResponse, data: dict, action: str):
@@ -12,6 +13,8 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
         await login(request, ws, payload)
     elif action == "move":
         await move(request, ws, payload)
+    elif action == "place_object":
+        await place_object(request, ws, payload)
     else:
         await ws.send_str(f"Error: Unknown action '{action}'")
 
