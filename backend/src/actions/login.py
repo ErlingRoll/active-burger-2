@@ -26,12 +26,7 @@ async def login(request: Request, ws: WebSocketResponse, payload: dict):
 
     character_data = await get_or_create_character(request, ws, payload, account)
     character = Character(**character_data)
-    gamestate = await gamestate.addCharacter(character)
-
-    await ws.send_json({
-        "event": "gamestate_update",
-        "payload": gamestate
-    })
+    await gamestate.addCharacter(character)
 
 
 async def get_or_create_character(request: Request, ws: WebSocketResponse, payload: dict, account: dict):

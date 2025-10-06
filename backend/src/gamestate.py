@@ -27,9 +27,10 @@ class Gamestate:
 
     async def addCharacter(self, character: Character):
         if character.id in self.render_objects:
-            return self.getGamestate()
+            return await self.publishGamestate()
+
         self.render_objects[character.id] = character
-        await self.publishGamestate()
+        return await self.publishGamestate()
 
     def get_character(self, character_id: str) -> Character | None:
         obj = self.render_objects.get(character_id)
@@ -37,9 +38,19 @@ class Gamestate:
             return obj
         return None
 
+    def create_pos_objects(self):
+        pos_objects = {}
+        for obj in self.render_objects.values():
+            pos_key = f"{obj.x}_{obj.y}"
+            if pos_key not in pos_objects:
+                pos_objects[pos_key] = []
+            pos_objects[pos_key].append(obj.to_dict())
+        return pos_objects
+
     def getGamestate(self):
         return {
             "start_datetime": self.start_datetime.isoformat(),
             "server_datetime": datetime.datetime.now().isoformat(),
-            "render_objects": {key: obj.to_dict() for key, obj in self.render_objects.items()}
+            "render_objects": {key: obj.to_dict() for key, obj in self.render_objects.items()},
+            "position_objects": self.create_pos_objects()
         }

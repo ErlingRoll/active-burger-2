@@ -8,6 +8,7 @@ export type User = {
 export type Character = {
     id: string
     name: string
+    account_id: string
 }
 
 export type ExtendedUser = User & any

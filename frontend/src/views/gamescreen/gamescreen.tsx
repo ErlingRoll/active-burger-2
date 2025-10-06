@@ -5,6 +5,7 @@ import { UserContext } from "../../contexts/user-context"
 
 const Gamescreen = () => {
     const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 }) // x and y will be set to center on player
+    const [showGrid, setShowGrid] = useState(false)
 
     const { gamestate, logout, gameActions } = useContext(GamestateContext)
     const { character } = useContext(UserContext)
@@ -22,6 +23,8 @@ const Gamescreen = () => {
         })
     }
 
+    useEffect(() => {}, [])
+
     useEffect(() => {
         // Add player movement
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -29,16 +32,27 @@ const Gamescreen = () => {
             const player = gamestate.render_objects[character.id]
             switch (event.key) {
                 case "ArrowUp":
+                case "w":
+                case "W":
                     gameActions.move({ x: player.x, y: player.y + 1 })
+                    event.preventDefault()
                     break
                 case "ArrowDown":
+                case "s":
+                case "S":
                     gameActions.move({ x: player.x, y: player.y - 1 })
+                    event.preventDefault()
                     break
                 case "ArrowLeft":
+                case "a":
+                case "A":
                     gameActions.move({ x: player.x - 1, y: player.y })
                     break
                 case "ArrowRight":
+                case "d":
+                case "D":
                     gameActions.move({ x: player.x + 1, y: player.y })
+                    event.preventDefault()
                     break
             }
         }
@@ -59,14 +73,14 @@ const Gamescreen = () => {
 
             // Add Name
             const nameTag = document.createElement("p")
-            nameTag.className = "text-[0.6rem] text-gray-800 mb-1"
+            nameTag.className = "text-[0.7rem] text-blue-700 font-bold mb-1"
             nameTag.innerText = obj.name
             div.appendChild(nameTag)
 
             // Add sprite to cell
             const spriteElement = document.createElement("div")
             spriteElement.className = "h-[30px] w-[18px]"
-            spriteElement.style.backgroundColor = "black"
+            spriteElement.style.backgroundColor = "brown"
             div.appendChild(spriteElement)
         })
     }, [gamestate])
@@ -83,19 +97,47 @@ const Gamescreen = () => {
                     const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
                     const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
                     return (
-                        <div key={index} className="relative bg-gray-100 border-[1px] border-gray-400">
-                            <p className="absolute bottom-0 left-0 ml-[1px] text-[0.5rem] text-gray-500">{`${wx}, ${wy}`}</p>
+                        <div key={index} className="relative bg-gray-100 border-[1px] border-gray-100">
+                            {showGrid && (
+                                <p className="absolute bottom-0 left-0 ml-[1px] text-[0.5rem] text-gray-500">{`${wx}, ${wy}`}</p>
+                            )}
                             <div
                                 id={cellName(wx, wy)}
-                                className="h-full flex flex-row items-center justify-around bg-green-200"
-                            ></div>
+                                className="h-full flex flex-row items-center justify-around bg-[#f0d0b1]"
+                            />
                         </div>
                     )
                 })}
             </div>
-            <button className="absolute bottom-0 right-0 m-4 bg-red-500! font-bold!" onClick={logout}>
-                Log out
-            </button>
+
+            <div className="absolute top-0 right-0 m-4 p-2 bg-white/70 rounded flex flex-col items-center">
+                <div className="center-col items-start!">
+                    <p className="font-bold text-lg">{character.name}</p>
+                    <p className="text-sm text-gray-700">User: {character.id}</p>
+                    <p className="text-sm text-gray-700">Account: {character.account_id}</p>
+                    <p className="text-sm text-gray-700">
+                        Pos: ({gamestate.render_objects[character.id].x}, {gamestate.render_objects[character.id].y})
+                    </p>
+                </div>
+            </div>
+
+            <div className="absolute center-col items-end bottom-0 right-0 m-4">
+                <button
+                    className={
+                        `min-w-24 px-4 pt-2 pb-3 rounded text-light font-bold ` +
+                        (showGrid ? "bg-success" : "bg-danger")
+                    }
+                    onClick={() => setShowGrid(!showGrid)}
+                >
+                    {showGrid ? "Grid on" : "Grid off"}
+                </button>
+                <button
+                    className="min-w-24 px-4 pt-2 pb-3 mt-4 rounded text-light bg-danger font-bold"
+                    onClick={logout}
+                >
+                    Logout
+                </button>
+            </div>
         </div>
     )
 }

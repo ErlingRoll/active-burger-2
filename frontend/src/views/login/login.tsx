@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 
 import { exchangeCodeForToken, fetchDiscordUser, initiateDiscordLogin } from "../../services/discord-login"
 
@@ -7,12 +7,20 @@ import loginLogo from "../../assets/images/login_logo.png"
 import loginBackground from "../../assets/images/background.png"
 import { UserContext } from "../../contexts/user-context"
 import { GamestateContext, gameWebsocketUrl } from "../../contexts/gamestate-context"
+import { ThreeDot } from "react-loading-indicators"
 
 const Login = () => {
+    const [loading, setLoading] = useState(false)
+
     const { code } = Object.fromEntries(new URLSearchParams(window.location.search))
 
     const { user, setUser } = useContext(UserContext)
     const { gameCon, setGameCon, gamestate: game, setGamestate: setGame } = useContext(GamestateContext)
+
+    function login() {
+        setLoading(true)
+        initiateDiscordLogin()
+    }
 
     function connect() {
         console.log("Connecting to WebSocket at", gameWebsocketUrl)
@@ -30,19 +38,11 @@ const Login = () => {
         }
     }
 
-    useEffect(() => {
-        let existingUser = localStorage.getItem("discordUser")
-        if (existingUser) {
-            setUser(JSON.parse(existingUser))
-            existingUser = JSON.parse(existingUser || "{}")
-            // console.log("Existing user from localStorage:", existingUser)
-            return
-        }
-
-        if (!code || code.trim() == "") return
-        console.log("Authorization code:", code)
-
-        exchangeCodeForToken(code)
+    async function discordLogin() {
+        const token = await exchangeCodeForToken(code)
+            .catch((error) => {
+                console.error("Error during token exchange:", error)
+            })
             .then((data) => {
                 console.log("Access token data:", data)
 
@@ -50,19 +50,36 @@ const Login = () => {
                 localStorage.setItem("discordAccessToken", data.access_token)
                 localStorage.setItem("discordRefreshToken", data.refresh_token)
 
-                fetchDiscordUser(data.access_token)
-                    .then((userData) => {
-                        console.log("Discord user data:", userData)
-                        localStorage.setItem("discordUser", JSON.stringify(userData))
-                        setUser(userData)
-                    })
-                    .catch((error) => {
-                        console.error("Error fetching user data:", error)
-                    })
+                return data.access_token
             })
             .catch((error) => {
                 console.error("Error during token exchange:", error)
+                window.location.href = "/login"
             })
+
+        fetchDiscordUser(token)
+            .then((userData) => {
+                console.log("Discord user data:", userData)
+                localStorage.setItem("discordUser", JSON.stringify(userData))
+                setUser(userData)
+                window.history.replaceState({}, document.title, "/game")
+            })
+            .catch((error) => {
+                console.error("Error fetching user data:", error)
+                window.location.href = "/login"
+            })
+    }
+
+    useEffect(() => {
+        let existingUser = localStorage.getItem("discordUser")
+        if (existingUser) {
+            setUser(JSON.parse(existingUser))
+            return
+        }
+
+        if (!code || code.trim() == "") return
+
+        discordLogin()
     }, [])
 
     useEffect(() => {
@@ -76,10 +93,20 @@ const Login = () => {
             <img src={loginBackground} alt="background" className="absolute w-screen h-screen object-cover -z-10" />
             <div className="flex flex-col justify-center items-center h-screen gap-12 pb-24">
                 <img src={loginLogo} alt="title" className="main-logo w-[28rem]" />
-                <div className="bg-white/70 w-[28rem] h-24 flex flex-col items-center justify-center rounded-lg">
-                    <button className="w-32 hover:scale-105" onClick={initiateDiscordLogin}>
-                        Log in
-                    </button>
+                <div className="bg-white/70 px-24 py-8 flex flex-col items-center justify-center rounded-lg">
+                    {loading || code || user ? (
+                        <div className="relative flex flex-col justify-center items-center">
+                            <p className="mb-2">Logging in</p>
+                            <ThreeDot color="#ed7d27" size="medium" text="" textColor="" />
+                        </div>
+                    ) : (
+                        <button
+                            className="bg-primary text-light px-4 py-2 rounded text-xl font-bold hover:scale-105"
+                            onClick={login}
+                        >
+                            Login
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
