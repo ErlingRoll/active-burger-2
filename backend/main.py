@@ -1,8 +1,11 @@
 import os
 import asyncio
 import aiohttp.web
+import json
 from dotenv import load_dotenv
+from pyventus.events import AsyncIOEventEmitter, EventEmitter, EventLinker
 
+from src.connection_manager import ConnectionManager
 from src.init_database import create_database_client
 from src.gamestate import Gamestate
 from src.websocket import websocket_handler
@@ -19,8 +22,12 @@ async def main():
     # Init database
     app["database"] = create_database_client()
 
+    # Connection manager
+    connection_manager = ConnectionManager()
+    app["connection_manager"] = connection_manager
+
     # Init gamestate
-    gamestate = Gamestate()
+    gamestate = Gamestate(connection_manager)
     app["gamestate"] = gamestate
 
     app.router.add_get('/game', websocket_handler)

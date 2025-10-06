@@ -1,30 +1,20 @@
 import json
 from aiohttp.web import Request, WSMsgType, WebSocketResponse
 import asyncio
-from pyventus.events import AsyncIOEventEmitter, EventEmitter, EventLinker
 
 from .actions.login import login
 
 
 async def websocket_handler(request: Request):
+    connection_manager = request.app["connection_manager"]
+
     ws = WebSocketResponse()
+
     await ws.prepare(request)
 
+    connection_id = connection_manager.add_connection(ws)
+
     print(f"WebSocket connected: {request.remote}")
-
-    # Add event handler for gamestate update
-    @EventLinker.on("gamestate_update")
-    async def on_gamestate_update(data):
-        if not ws.closed:
-            event = {
-                "event": "gamestate_update",
-                "payload": data
-            }
-            await ws.send_str(json.dumps(event))
-        else:
-            print(f"WebSocket is closed, cannot send data to {request.remote}")
-
-    EventLinker.on("gamestate_update", on_gamestate_update)
 
     # Start a separate task for receiving messages
     async def receive_messages():
@@ -68,10 +58,9 @@ async def websocket_handler(request: Request):
 
     await asyncio.create_task(receive_messages())
 
-    try:
-        EventLinker.remove("gamestate_update", on_gamestate_update)
-    except Exception as e:
-        pass
-
     print(f"WebSocket disconnected: {request.remote}")
+
+    # Clean up event listener
+    connection_manager.remove_connection(connection_id)
+
     return ws

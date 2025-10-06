@@ -28,7 +28,7 @@ async def login(request: Request, ws: WebSocketResponse, payload: dict):
     character = Character(**character_data)
 
     if character:
-        gamestate.addCharacter(character)
+        await gamestate.addCharacter(character)
 
 
 async def get_character(request: Request, ws: WebSocketResponse, payload: dict, account: dict):
