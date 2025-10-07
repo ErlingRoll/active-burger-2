@@ -4,17 +4,23 @@ import asyncio
 
 from .actions.login import login
 from .actions.move import move
-from .actions.place_object import place_object
+from .actions.object import place_object, delete_object
 
 
 async def handle_action(request: Request, ws: WebSocketResponse, data: dict, action: str):
     payload = data.get("payload", {})
+    account = data.get("account", {})
+
+    # print(f"Handling action: {action} with payload: {payload} and account: {account.get('id')}")
+
     if action == "login":
-        await login(request, ws, payload)
+        await login(request, ws, account, payload)
     elif action == "move":
-        await move(request, ws, payload)
+        await move(request, ws, account, payload)
     elif action == "place_object":
-        await place_object(request, ws, payload)
+        await place_object(request, ws, account, payload)
+    elif action == "delete_object":
+        await delete_object(request, ws, account, payload)
     else:
         await ws.send_str(f"Error: Unknown action '{action}'")
 

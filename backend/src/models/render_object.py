@@ -6,6 +6,7 @@ class RenderObject:
     # Characters, Objects, NPCs, etc.
 
     id: str
+    type: str
     created_at: str
     name: str
     name_visible: bool = True
@@ -16,7 +17,8 @@ class RenderObject:
     width: int  # in pixels
     solid: bool = False
 
-    def __init__(self, id, created_at, name, name_visible, x, y, texture, height, width, solid):
+    def __init__(self, id, created_at, name, name_visible, x, y, texture, height, width, solid, type="object"):
+        self.type = type
         self.id = id
         self.created_at = created_at
         self.name = name

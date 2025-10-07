@@ -1,32 +1,53 @@
 import { RenderObject } from "../models/game-models"
 
 class GameActions {
-    user = null
+    account = null
     character = null
     gameCon: WebSocket = null
 
     ready() {
-        const ready = Boolean(this.user && this.character && this.gameCon && this.gameCon.readyState === WebSocket.OPEN)
-        if (!ready) console.error("GameActions not ready")
+        const ready = Boolean(
+            this.account && this.character && this.gameCon && this.gameCon.readyState === WebSocket.OPEN
+        )
+        if (!ready)
+            console.error("GameActions not ready", {
+                account: this.account,
+                character: this.character,
+                gameCon: this.gameCon,
+            })
         return ready
     }
 
-    move({ x, y }: { x: number; y: number }) {
-        if (!this.ready()) return
-        const action = {
-            action: "move",
-            payload: { character_id: this.character.id, x, y },
-        }
+    send(action: any) {
+        action.account = this.account
         this.gameCon.send(JSON.stringify(action))
     }
 
-    place(obj: Partial<RenderObject>) {
+    move({ x, y, direction }: { x: number; y: number; direction: string }) {
+        if (!this.ready()) return
+        const action = {
+            action: "move",
+            payload: { character_id: this.character.id, x, y, direction },
+        }
+        this.send(action)
+    }
+
+    placeObject(obj: Partial<RenderObject>) {
         if (!this.ready()) return
         const action = {
             action: "place_object",
             payload: obj,
         }
-        this.gameCon.send(JSON.stringify(action))
+        this.send(action)
+    }
+
+    deleteObject(obj_id: string) {
+        if (!this.ready()) return
+        const action = {
+            action: "delete_object",
+            payload: { id: obj_id },
+        }
+        this.send(action)
     }
 }
 

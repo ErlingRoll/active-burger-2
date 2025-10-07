@@ -67,6 +67,13 @@ class Gamestate:
         self.objects[obj.id] = obj
         return await self.publishGamestate()
 
+    async def deleteObject(self, object_id: str):
+        if object_id not in self.objects:
+            return await self.publishGamestate()
+
+        del self.objects[object_id]
+        return await self.publishGamestate()
+
     def render_objects(self, dict=False):
         render_objects = {**self.characters, **self.objects}
 

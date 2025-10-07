@@ -28,6 +28,7 @@ class ConnectionManager:
         for connection_id, ws in self.connections.items():
             if not ws.closed:
                 try:
+                    pass
                     asyncio.create_task(ws.send_str(json.dumps(event)))
                 except Exception as e:
                     print(f"Error sending to connection {connection_id}: {e}")
@@ -39,4 +40,3 @@ class ConnectionManager:
             print(f"Removed {len(inactive_connections)} inactive connections. Total connections: {len(self.connections)}")
         else:
             print(f"Broadcasted event to {len(self.connections)} connections.")
-        await asyncio.gather(*[ws.send_str(json.dumps(event)) for ws in self.connections.values() if not ws.closed], return_exceptions=True)

@@ -5,6 +5,7 @@ import GameActions from "./game-actions"
 
 export type Gamestate = {
     render_objects: { [key: string]: RenderObject }
+    position_objects: { [key: string]: RenderObject[] } // Map of "x,y" to array of object IDs
 }
 
 export const gameWebsocketUrl = import.meta.env.VITE_GAME_WS_URL
@@ -31,16 +32,16 @@ export const GameProvider = ({ children }: { children: any }) => {
     const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
     const [gameCon, setGameCon] = React.useState<WebSocket | null>(null)
 
-    const { user, setUser, setAccount, character, setCharacter } = useContext(UserContext)
+    const { user, setUser, account, setAccount, character, setCharacter } = useContext(UserContext)
 
     // Store gameactions in a ref so it doesn't get recreated on every render
     const gameActions = useRef(new GameActions())
 
     useEffect(() => {
-        gameActions.current.user = user
+        gameActions.current.account = account
         gameActions.current.character = character
         gameActions.current.gameCon = gameCon
-    }, [user, character, gameCon])
+    }, [account, character, gameCon])
 
     function logout() {
         // Remove user data from localStorage

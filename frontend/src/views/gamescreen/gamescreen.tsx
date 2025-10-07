@@ -1,9 +1,11 @@
-import { use, useContext, useEffect, useRef, useState } from "react"
-import type { RenderObject } from "../../models/game-models"
+import { useContext, useEffect, useState } from "react"
 import { GamestateContext } from "../../contexts/gamestate-context"
 import { UserContext } from "../../contexts/user-context"
 import { FaTimes } from "react-icons/fa"
 import { stone } from "../../game/objects/stone"
+import { goldOre } from "../../game/objects/gold_ore"
+import { bush } from "../../game/objects/bush"
+import { RenderObject } from "../../models/game-models"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -15,7 +17,7 @@ const Gamescreen = () => {
     const { gamestate, logout, gameActions } = useContext(GamestateContext)
     const { character, admin } = useContext(UserContext)
 
-    const renderDistance = 21 // Number of cells to render around the player
+    const renderDistance = 41 // Number of cells to render around the player
     const cellSize = 64 // Size of each grid cell in world space
 
     const cellName = (x: number, y: number) => `cell-${x},${y}`
@@ -28,7 +30,60 @@ const Gamescreen = () => {
         })
     }
 
-    useEffect(() => {}, [])
+    function clearObject(objectId: string) {
+        const obj = document.getElementById(`object-${objectId}`)
+        if (obj && obj.parentNode) {
+            obj.parentNode.removeChild(obj)
+        }
+    }
+
+    function drawObject(obj: RenderObject) {
+        const cell = document.getElementById(cellName(obj.x, obj.y))
+        if (!cell) return
+
+        clearObject(obj.id)
+
+        // Obj container
+        const div = document.createElement("div")
+        div.id = `object-${obj.id}`
+        div.className = "flex flex-col items-center z-100"
+        cell.appendChild(div)
+
+        // Add Name
+        if (obj.name_visible) {
+            const nameTag = document.createElement("p")
+            nameTag.className = "text-[0.7rem] text-blue-700 font-bold mb-1"
+            nameTag.innerText = obj.name
+            div.appendChild(nameTag)
+        }
+
+        if (obj.texture) {
+            const img = document.createElement("img")
+            img.src = textures[`/src/assets/textures/${obj.texture}.png`] as string
+            img.alt = obj.name
+            img.style.width = obj.width + "px"
+            img.style.height = obj.height + "px"
+            div.appendChild(img)
+            return
+        }
+
+        if (obj.type === "character") {
+            const img = document.createElement("img")
+            img.src = textures["/src/assets/textures/character/among_us.png"] as string
+            if (obj.direction === "left") img.style.transform = "scaleX(-1)"
+            img.alt = obj.name
+            img.style.width = 42 + "px"
+            img.style.height = 42 + "px"
+            div.appendChild(img)
+            return
+        }
+
+        // Add sprite to cell
+        const spriteElement = document.createElement("div")
+        spriteElement.className = "h-[30px] w-[18px]"
+        spriteElement.style.backgroundColor = "brown"
+        div.appendChild(spriteElement)
+    }
 
     useEffect(() => {
         // Add player movement
@@ -39,24 +94,24 @@ const Gamescreen = () => {
                 case "ArrowUp":
                 case "w":
                 case "W":
-                    gameActions.move({ x: player.x, y: player.y + 1 })
+                    gameActions.move({ x: player.x, y: player.y + 1, direction: "up" })
                     event.preventDefault()
                     break
                 case "ArrowDown":
                 case "s":
                 case "S":
-                    gameActions.move({ x: player.x, y: player.y - 1 })
+                    gameActions.move({ x: player.x, y: player.y - 1, direction: "down" })
                     event.preventDefault()
                     break
                 case "ArrowLeft":
                 case "a":
                 case "A":
-                    gameActions.move({ x: player.x - 1, y: player.y })
+                    gameActions.move({ x: player.x - 1, y: player.y, direction: "left" })
                     break
                 case "ArrowRight":
                 case "d":
                 case "D":
-                    gameActions.move({ x: player.x + 1, y: player.y })
+                    gameActions.move({ x: player.x + 1, y: player.y, direction: "right" })
                     event.preventDefault()
                     break
             }
@@ -66,43 +121,12 @@ const Gamescreen = () => {
     }, [gamestate, character, gameActions])
 
     useEffect(() => {
-        clearGrid()
-        Object.entries(gamestate.render_objects).forEach(([key, obj]) => {
-            const cell = document.getElementById(cellName(obj.x, obj.y))
-            if (!cell) return
-
-            // Obj container
-            const div = document.createElement("div")
-            div.className = "flex flex-col items-center"
-            cell.appendChild(div)
-
-            // Add Name
-            if (obj.name_visible) {
-                const nameTag = document.createElement("p")
-                nameTag.className = "text-[0.7rem] text-blue-700 font-bold mb-1"
-                nameTag.innerText = obj.name
-                div.appendChild(nameTag)
-            }
-
-            if (obj.texture) {
-                const img = document.createElement("img")
-                img.src = textures[`/src/assets/textures/${obj.texture}.png`] as string
-                div.appendChild(img)
-                return
-            }
-
-            // Add sprite to cell
-
-            const spriteElement = document.createElement("div")
-            spriteElement.className = "h-[30px] w-[18px]"
-            spriteElement.style.backgroundColor = "brown"
-            div.appendChild(spriteElement)
-        })
+        Object.values(gamestate.render_objects).forEach((obj) => drawObject(obj))
     }, [gamestate])
 
     return (
         <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden">
-            <div id="game-grid" className={`grid grid-cols-[repeat(21,64px)] auto-rows-[64px] gap-0 border`}>
+            <div id="game-grid" className={`grid grid-cols-[repeat(41,64px)] auto-rows-[64px] gap-0 border`}>
                 {/* Grid */}
                 {Array.from({ length: renderDistance * renderDistance }).map((_, index) => {
                     const center = {
@@ -116,7 +140,7 @@ const Gamescreen = () => {
                             {/* Admin cell overlay */}
                             {admin && (
                                 <div
-                                    className="absolute top-0 left-0 w-full h-full hover:border-2 border-orange-500 cursor-pointer"
+                                    className="absolute top-0 left-0 w-full h-full hover:border-2 border-orange-500 cursor-pointer z-200"
                                     onClick={() => setAdminCell({ x: wx, y: wy })}
                                 ></div>
                             )}
@@ -133,7 +157,7 @@ const Gamescreen = () => {
                 })}
             </div>
 
-            <div className="absolute top-0 right-0 m-4 p-2 bg-white/70 rounded flex flex-col items-center">
+            <div className="absolute top-0 right-0 m-4 p-2 bg-white/70 rounded flex flex-col items-center z-200">
                 <div className="center-col items-start!">
                     <p className="font-bold text-lg">{character.name}</p>
                     <p className="text-sm text-gray-700">Character: {character.id}</p>
@@ -146,8 +170,8 @@ const Gamescreen = () => {
             </div>
 
             {adminCell && (
-                <div className="absolute top-0 left-0 w-full center-col">
-                    <div className="relative w-64 bg-white/70 rounded m-4 p-2 pb-4 center-col">
+                <div className="absolute top-0 left-0 w-full center-col pointer-events-none z-200">
+                    <div className="relative w-64 bg-white/70 rounded m-4 p-2 pb-4 center-col pointer-events-auto">
                         <button
                             className="absolute top-2 right-2 bg-danger p-[0.2rem]"
                             onClick={() => setAdminCell(null)}
@@ -155,17 +179,47 @@ const Gamescreen = () => {
                             <FaTimes className="text-light" />
                         </button>
                         <p className="mb-4">{adminCell ? `X: ${adminCell.x} Y: ${adminCell.y}` : "No Admin Cell"}</p>
-                        <button
-                            className="bg-primary text-light font-bold px-4 py-2"
-                            onClick={() => gameActions.place(stone({ x: adminCell.x, y: adminCell.y }))}
-                        >
-                            Add stone
-                        </button>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="self-start center-col">
+                                <p className="font-bold mb-2">Delete objects</p>
+                                {(gamestate.position_objects[adminCell.x + "_" + adminCell.y] || []).map((obj) => (
+                                    <div key={obj.id} className="flex justify-between items-center mb-2">
+                                        <button
+                                            className="px-4 py-2 bg-danger text-light font-bold"
+                                            onClick={() => gameActions.deleteObject(obj.id)}
+                                        >
+                                            {obj.name}
+                                        </button>
+                                    </div>
+                                ))}
+                            </div>
+                            <div className="self-start center-col">
+                                <p className="font-bold mb-2">Place objects</p>
+                                <button
+                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
+                                    onClick={() => gameActions.placeObject(stone({ x: adminCell.x, y: adminCell.y }))}
+                                >
+                                    Stone
+                                </button>
+                                <button
+                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
+                                    onClick={() => gameActions.placeObject(goldOre({ x: adminCell.x, y: adminCell.y }))}
+                                >
+                                    Gold ore
+                                </button>
+                                <button
+                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
+                                    onClick={() => gameActions.placeObject(bush({ x: adminCell.x, y: adminCell.y }))}
+                                >
+                                    Bush
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             )}
 
-            <div className="absolute center-col items-end bottom-0 right-0 m-4">
+            <div className="absolute center-col items-end bottom-0 right-0 m-4 z-200">
                 <button
                     className={
                         `min-w-24 px-4 pt-2 pb-3 rounded text-light font-bold ` +
