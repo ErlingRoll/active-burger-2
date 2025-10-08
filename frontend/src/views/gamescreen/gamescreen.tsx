@@ -6,6 +6,7 @@ import { stone } from "../../game/objects/stone"
 import { goldOre } from "../../game/objects/gold_ore"
 import { bush } from "../../game/objects/bush"
 import { RenderObject } from "../../models/game-models"
+import { CharacterContext } from "../../contexts/character-context"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -15,10 +16,10 @@ const Gamescreen = () => {
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
 
     const { gamestate, logout, gameActions } = useContext(GamestateContext)
-    const { character, admin } = useContext(UserContext)
+    const { admin } = useContext(UserContext)
+    const { character } = useContext(CharacterContext)
 
     const renderDistance = 41 // Number of cells to render around the player
-    const cellSize = 64 // Size of each grid cell in world space
 
     const cellName = (x: number, y: number) => `cell-${x},${y}`
 
@@ -177,7 +178,7 @@ const Gamescreen = () => {
 
             {adminCell && (
                 <div className="absolute top-0 left-0 w-full center-col pointer-events-none z-200">
-                    <div className="relative w-64 bg-white/70 rounded m-4 p-2 pb-4 center-col pointer-events-auto">
+                    <div className="relative bg-white/70 rounded m-4 p-2 pb-4 center-col pointer-events-auto">
                         <button
                             className="absolute top-2 right-2 bg-danger p-[0.2rem]"
                             onClick={() => setAdminCell(null)}
@@ -185,7 +186,7 @@ const Gamescreen = () => {
                             <FaTimes className="text-light" />
                         </button>
                         <p className="mb-4">{adminCell ? `X: ${adminCell.x} Y: ${adminCell.y}` : "No Admin Cell"}</p>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-3 gap-4">
                             <div className="self-start center-col">
                                 <p className="font-bold mb-2">Delete objects</p>
                                 {(gamestate.position_objects[adminCell.x + "_" + adminCell.y] || []).map((obj) => (
@@ -218,6 +219,17 @@ const Gamescreen = () => {
                                     onClick={() => gameActions.placeObject(bush({ x: adminCell.x, y: adminCell.y }))}
                                 >
                                     Bush
+                                </button>
+                            </div>
+                            <div className="self-start center-col">
+                                <p className="font-bold mb-2">Give Object</p>
+                                <button
+                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
+                                    onClick={() =>
+                                        gameActions.giveItem({ item_id: "burger", character_id: character.id })
+                                    }
+                                >
+                                    Burger
                                 </button>
                             </div>
                         </div>

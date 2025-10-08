@@ -1,14 +1,17 @@
 from aiohttp.web import Request, WebSocketResponse
 
+from src.connection_manager import ConnectionManager
+from src.gamestate import Gamestate
 from src.database.account import get_account_by_discord_id, create_account
-from src.database.character import get_character_by_account_id, create_character
+from src.database.character import get_character_by_account_id, create_character, get_character_data_by_id
 from src.models.character import Character
 from src.models.account import Account
 
 
 async def login(request: Request, ws: WebSocketResponse, account: Account, payload: dict):
     database = request.app["database"]
-    gamestate = request.app["gamestate"]
+    gamestate: Gamestate = request.app["gamestate"]
+    connection_manager: ConnectionManager = request.app["connection_manager"]
 
     account = get_account_by_discord_id(database, payload.get("discord_id"))
 
@@ -25,8 +28,22 @@ async def login(request: Request, ws: WebSocketResponse, account: Account, paylo
 
     print(f"login_success: {account.get('discord_id')}")
 
-    character_data = await get_or_create_character(request, ws, payload, account)
-    character = Character(**character_data)
+    # Save account_id in ws session for future reference
+    ws.account_id = account.get("id")
+    connection_manager.update_account_map(account.get("id"), ws)
+
+    character = await get_or_create_character(request, ws, payload, account)
+
+    character_data = get_character_data_by_id(database, character.id)
+
+    await ws.send_json({
+        "event": "login_success",
+        "payload": {
+            "account": account,
+            "character": character_data.model_dump()
+        }
+    })
+
     await gamestate.addCharacter(character)
 
 
@@ -47,14 +64,6 @@ async def get_or_create_character(request: Request, ws: WebSocketResponse, paylo
         await ws.send_str("Error: Failed to create character.")
         return
 
-    print(f"get_character_success: {character.get('id')}")
-
-    await ws.send_json({
-        "event": "login_success",
-        "payload": {
-            "account": account,
-            "character": character
-        }
-    })
+    print(f"get_character_success: {character.id}")
 
     return character

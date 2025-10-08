@@ -23,6 +23,15 @@ class GameActions {
         this.gameCon.send(JSON.stringify(action))
     }
 
+    getCharacter({ character_id }: { character_id: string }) {
+        if (!this.ready()) return
+        const action = {
+            action: "get_character",
+            payload: { character_id },
+        }
+        this.send(action)
+    }
+
     move({ x, y, direction }: { x: number; y: number; direction: string }) {
         if (!this.ready()) return
         const action = {
@@ -32,6 +41,7 @@ class GameActions {
         this.send(action)
     }
 
+    // --- Admin Actions ---
     placeObject(obj: Partial<RenderObject>) {
         if (!this.ready()) return
         const action = {
@@ -46,6 +56,15 @@ class GameActions {
         const action = {
             action: "delete_object",
             payload: { id: obj_id },
+        }
+        this.send(action)
+    }
+
+    giveItem({ item_id, character_id }: { item_id: string; character_id: string }) {
+        if (!this.ready()) return
+        const action = {
+            action: "give_item",
+            payload: { item_id, character_id },
         }
         this.send(action)
     }

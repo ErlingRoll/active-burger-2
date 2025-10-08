@@ -1,3 +1,4 @@
+from typing import Optional
 from pydantic import BaseModel
 
 
@@ -8,16 +9,17 @@ class UseResult(BaseModel):
 
 class Item(BaseModel):
 
-    id: str | None = None
-    item_id: str | None = None
-    created_at: str | None = None
+    id: Optional[str] = None
+    created_at: Optional[str] = None
+    item_id: Optional[str] = None
+    character_id: Optional[str] = None
     name: str
-    description: str | None = None
+    description: Optional[str] = None
     texture: str
-    value: int | None = None
+    value: Optional[int] = None
     type: str = "item"
-    stackable: bool | None = False
-    count: int | None = 1
+    stackable: Optional[bool] = False
+    count: Optional[int] = 1
 
     def use(self) -> UseResult:  # Returns whether the item was used successfully
         return UseResult(success=False, message="This item cannot be used.")

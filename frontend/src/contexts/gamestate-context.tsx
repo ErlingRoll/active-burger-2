@@ -2,6 +2,7 @@ import React, { Dispatch, SetStateAction, createContext, useContext, useEffect, 
 import { UserContext } from "./user-context"
 import { RenderObject } from "../models/game-models"
 import GameActions from "./game-actions"
+import { CharacterContext } from "./character-context"
 
 export type Gamestate = {
     render_objects: { [key: string]: RenderObject }
@@ -32,7 +33,8 @@ export const GameProvider = ({ children }: { children: any }) => {
     const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
     const [gameCon, setGameCon] = React.useState<WebSocket | null>(null)
 
-    const { user, setUser, account, setAccount, character, setCharacter } = useContext(UserContext)
+    const { user, setUser, account, setAccount } = useContext(UserContext)
+    const { character, setCharacter } = useContext(CharacterContext)
 
     // Store gameactions in a ref so it doesn't get recreated on every render
     const gameActions = useRef(new GameActions())

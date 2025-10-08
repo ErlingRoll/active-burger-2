@@ -1,6 +1,4 @@
 import datetime
-import json
-from pyventus.events import AsyncIOEventEmitter, EventEmitter, EventLinker
 from supabase import Client
 
 from src.models.render_object import RenderObject
@@ -34,10 +32,11 @@ class Gamestate:
     def fetch_characters(self):
         data = self.database.table("character").select("*").execute()
         if data and data.data:
-            print(data)
             characters = {char["id"]: Character(**char) for char in data.data}
             return characters
         return {}
+
+    # async def publishCharacter(self, character):
 
     async def publishGamestate(self):
         gamestate = self.getGamestate()
