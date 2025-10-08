@@ -11,7 +11,7 @@ const CharacterInfo = () => {
     const [debug, setDebug] = useState<boolean>(false)
 
     return (
-        <div className="absolute top-0 left-0 m-4 p-2 pt-0 bg-white/70 rounded flex flex-col items-center z-200">
+        <div className="m-4 p-2 pt-0 bg-white/70 rounded flex flex-col items-center">
             <div className="center-col items-start!">
                 <p className="font-bold text-lg">{character.name}</p>
                 <p>

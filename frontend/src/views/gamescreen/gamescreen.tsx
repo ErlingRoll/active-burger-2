@@ -10,6 +10,7 @@ import { CharacterContext } from "../../contexts/character-context"
 import Inventory from "./components/inventory"
 import CharacterInfo from "./components/character-info"
 import Settings from "./components/settings"
+import CellInfo from "./components/cell-info"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -18,6 +19,7 @@ const Gamescreen = () => {
     const [showGrid, setShowGrid] = useState(false)
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
     const [adminMode, setAdminMode] = useState(true)
+    const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
 
     const { gamestate, logout, gameActions } = useContext(GamestateContext)
     const { admin } = useContext(UserContext)
@@ -137,20 +139,20 @@ const Gamescreen = () => {
         return () => window.removeEventListener("keydown", handleKeyDown)
     }, [gamestate, character, gameActions])
 
-    function getSelectedCellPos() {
+    function getSelectedCell() {
         const player = gamestate.render_objects[character.id]
         const x = player.x
         const y = player.y
-        switch (player.direction) {
-            case "up":
-                return { x: x, y: y + 1 }
-            case "down":
-                return { x: x, y: y - 1 }
-            case "left":
-                return { x: x - 1, y: y }
-            case "right":
-                return { x: x + 1, y: y }
+
+        const newPosMap = {
+            up: { x: x, y: y + 1 },
+            down: { x: x, y: y - 1 },
+            left: { x: x - 1, y: y },
+            right: { x: x + 1, y: y },
         }
+
+        const newPos = newPosMap[player.direction]
+        setSelectedCell(newPos)
     }
 
     function clearNeighborHighlights() {
@@ -163,22 +165,29 @@ const Gamescreen = () => {
 
     function colorSelectedCell() {
         clearNeighborHighlights()
-        const selectedPos = getSelectedCellPos()
-        const cell = document.getElementById(cellName(selectedPos.x, selectedPos.y))
+        const cell = document.getElementById(cellName(selectedCell.x, selectedCell.y))
         if (!cell) return
         cell.classList.add("selected-cell", "border-2", "border-orange-400")
     }
 
     useEffect(() => {
+        if (!selectedCell) return
+        colorSelectedCell()
+    }, [selectedCell])
+
+    useEffect(() => {
         clearGrid()
         Object.values(gamestate.render_objects).forEach((obj: any) => drawObject(obj))
-        colorSelectedCell()
+        getSelectedCell()
     }, [gamestate])
 
     return (
         <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden">
             <Inventory />
-            <CharacterInfo />
+            <div className="absolute flex items-start top-0 left-0 z-200">
+                <CharacterInfo />
+                <CellInfo pos={selectedCell} />
+            </div>
             <Settings showGrid={showGrid} setShowGrid={setShowGrid} adminMode={adminMode} setAdminMode={setAdminMode} />
 
             <div id="game-grid" className={`grid grid-cols-[repeat(41,64px)] auto-rows-[64px] gap-0 border`}>
