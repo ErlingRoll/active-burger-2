@@ -3,7 +3,6 @@ import asyncio
 import aiohttp.web
 import json
 from dotenv import load_dotenv
-from pyventus.events import AsyncIOEventEmitter, EventEmitter, EventLinker
 
 from src.connection_manager import ConnectionManager
 from src.init_database import create_database_client
