@@ -1,4 +1,4 @@
-import { RenderObject } from "../models/game-models"
+import { RenderObject } from "../models/object"
 
 class GameActions {
     account = null

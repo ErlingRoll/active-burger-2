@@ -1,4 +1,4 @@
-import { RenderObject } from "../../models/game-models"
+import { RenderObject } from "../../models/object"
 
 export const goldOre = (props: Partial<RenderObject>): Partial<RenderObject> => {
     const defaultObject: Partial<RenderObject> = {

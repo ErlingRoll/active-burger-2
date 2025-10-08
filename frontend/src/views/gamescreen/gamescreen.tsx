@@ -5,8 +5,11 @@ import { FaTimes } from "react-icons/fa"
 import { stone } from "../../game/objects/stone"
 import { goldOre } from "../../game/objects/gold_ore"
 import { bush } from "../../game/objects/bush"
-import { RenderObject } from "../../models/game-models"
+import { RenderObject } from "../../models/object"
 import { CharacterContext } from "../../contexts/character-context"
+import Inventory from "./components/inventory"
+import CharacterInfo from "./components/character-info"
+import Settings from "./components/settings"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -14,6 +17,7 @@ const Gamescreen = () => {
     const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 }) // x and y will be set to center on player
     const [showGrid, setShowGrid] = useState(false)
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
+    const [adminMode, setAdminMode] = useState(false)
 
     const { gamestate, logout, gameActions } = useContext(GamestateContext)
     const { admin } = useContext(UserContext)
@@ -128,6 +132,10 @@ const Gamescreen = () => {
 
     return (
         <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden">
+            <Inventory />
+            <CharacterInfo />
+            <Settings showGrid={showGrid} setShowGrid={setShowGrid} adminMode={adminMode} setAdminMode={setAdminMode} />
+
             <div id="game-grid" className={`grid grid-cols-[repeat(41,64px)] auto-rows-[64px] gap-0 border`}>
                 {/* Grid */}
                 {Array.from({ length: renderDistance * renderDistance }).map((_, index) => {
@@ -140,10 +148,10 @@ const Gamescreen = () => {
                     return (
                         <div key={index} className={`relative bg-gray-100 border-[1px] border-gray-100`}>
                             {/* Admin cell overlay */}
-                            {admin && (
+                            {adminMode && (
                                 <div
                                     className={
-                                        `absolute top-0 left-0 w-full h-full hover:border-2 border-orange-300 cursor-pointer z-200 ` +
+                                        `absolute top-0 left-0 w-full h-full hover:border-2 border-orange-300 cursor-pointer z-110 ` +
                                         (adminCell && adminCell.x === wx && adminCell.y === wy
                                             ? "border-2 border-orange-500"
                                             : "")
@@ -162,18 +170,6 @@ const Gamescreen = () => {
                         </div>
                     )
                 })}
-            </div>
-
-            <div className="absolute top-0 right-0 m-4 p-2 bg-white/70 rounded flex flex-col items-center z-200">
-                <div className="center-col items-start!">
-                    <p className="font-bold text-lg">{character.name}</p>
-                    <p className="text-sm text-gray-700">Character: {character.id}</p>
-                    <p className="text-sm text-gray-700">Account: {character.account_id}</p>
-                    <p className="text-sm text-gray-700">Admin: {admin ? "Yes" : "No"}</p>
-                    <p className="text-sm text-gray-700">
-                        Pos: ({gamestate.render_objects[character.id].x}, {gamestate.render_objects[character.id].y})
-                    </p>
-                </div>
             </div>
 
             {adminCell && (
@@ -236,21 +232,6 @@ const Gamescreen = () => {
                     </div>
                 </div>
             )}
-
-            <div className="absolute center-col items-end bottom-0 right-0 m-4 z-200">
-                <button
-                    className={
-                        `min-w-24 px-4 pt-2 pb-3 rounded text-light font-bold ` +
-                        (showGrid ? "bg-success" : "bg-danger")
-                    }
-                    onClick={() => setShowGrid(!showGrid)}
-                >
-                    {showGrid ? "Grid on" : "Grid off"}
-                </button>
-                <button className="min-w-24 px-4 pt-2 pb-3 mt-4 text-light bg-danger font-bold" onClick={logout}>
-                    Logout
-                </button>
-            </div>
         </div>
     )
 }

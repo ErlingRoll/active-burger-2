@@ -1,10 +1,6 @@
 import React, { Dispatch, SetStateAction, createContext, use, useEffect } from "react"
-
-export type Character = {
-    id: string
-    name: string
-    account_id: string
-}
+import { Item } from "../models/item"
+import { Character } from "../models/object"
 
 type CharacterContextType = {
     character: Character | null

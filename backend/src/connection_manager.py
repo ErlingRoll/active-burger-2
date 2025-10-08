@@ -11,7 +11,7 @@ class GameEvent(BaseModel):
 
 class ConnectionManager:
 
-    connection_counter = 0
+    connection_counter = 0  # Total connections since server start
     connections = {}
     connections_account_map = {}
 

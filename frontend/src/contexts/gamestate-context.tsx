@@ -1,6 +1,6 @@
 import React, { Dispatch, SetStateAction, createContext, useContext, useEffect, useRef } from "react"
 import { UserContext } from "./user-context"
-import { RenderObject } from "../models/game-models"
+import { RenderObject } from "../models/object"
 import GameActions from "./game-actions"
 import { CharacterContext } from "./character-context"
 
