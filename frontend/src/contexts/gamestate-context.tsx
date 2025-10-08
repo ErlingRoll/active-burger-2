@@ -70,7 +70,9 @@ export const GameProvider = ({ children }: { children: any }) => {
                 break
             case "gamestate_update":
                 setGamestate(payload)
-                // console.log(gamestate, gameCon, user)
+                break
+            case "character_update":
+                setCharacter(payload)
                 break
             default:
                 console.error("Unhandled WebSocket event:", event, payload)

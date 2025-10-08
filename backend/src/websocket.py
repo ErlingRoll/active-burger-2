@@ -31,7 +31,7 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
     elif action == "delete_object":
         await delete_object(request, ws, account, payload)
     elif action == "give_item":
-        await give_item(request, ws, account, payload)
+        await give_item(request, ws, account, character, payload)
     else:
         await ws.send_str(f"Error: Unknown action '{action}'")
 

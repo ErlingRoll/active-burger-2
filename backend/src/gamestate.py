@@ -2,9 +2,11 @@ import datetime
 from typing import Dict
 from supabase import Client
 
+from src.models.account import Account
+from src.database.character import get_character_data_by_id
 from src.database.object import get_objects
 from src.models.render_object import RenderObject
-from src.models.character import Character
+from src.models.character import Character, CharacterData
 
 
 class Gamestate:
@@ -34,7 +36,20 @@ class Gamestate:
             return characters
         return {}
 
-    # async def publishCharacter(self, character):
+    async def publishCharacter(self, account: Account, character_id: str = None, character_data: CharacterData = None):
+        if not character_id and not character_data:
+            raise ValueError("Either character_id or character_data must be provided")
+
+        _character_data = character_data
+        if character_id and not character_data:
+            _character_data = get_character_data_by_id(self.database, character_id)
+
+        event = {
+            "event": "character_update",
+            "payload": _character_data.model_dump()
+        }
+
+        await self.connection_manager.send(account.id, event)
 
     async def publishGamestate(self):
         gamestate = self.getGamestate()

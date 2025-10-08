@@ -70,11 +70,11 @@ class GameActions {
         this.send(action)
     }
 
-    giveItem({ item_id, character_id }: { item_id: string; character_id: string }) {
+    giveItem({ item_id }: { item_id: string }) {
         if (!this.ready()) return
         const action = {
             action: "give_item",
-            payload: { item_id, character_id },
+            payload: { item_id },
         }
         this.send(action)
     }

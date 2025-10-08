@@ -281,9 +281,7 @@ const Gamescreen = () => {
                                 <p className="font-bold mb-2">Give Object</p>
                                 <button
                                     className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
-                                    onClick={() =>
-                                        gameActions.giveItem({ item_id: "burger", character_id: character.id })
-                                    }
+                                    onClick={() => gameActions.giveItem({ item_id: "burger" })}
                                 >
                                     Burger
                                 </button>
