@@ -1,3 +1,0 @@
-
-class GoldOre(Entity):
-    pass

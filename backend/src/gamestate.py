@@ -1,12 +1,13 @@
 import datetime
+from typing import Dict
 from supabase import Client
 
+from src.database.object import get_objects
 from src.models.render_object import RenderObject
 from src.models.character import Character
 
 
 class Gamestate:
-
     start_datetime = None
     characters: dict[str, Character] = {}
     objects: dict[str, RenderObject] = {}
@@ -23,11 +24,8 @@ class Gamestate:
         self.objects = self.fetch_objects()
         self.characters = self.fetch_characters()
 
-    def fetch_objects(self):
-        data = self.database.table("object").select("*").execute()
-        if data and data.data:
-            return {obj["id"]: RenderObject(**obj) for obj in data.data}
-        return {}
+    def fetch_objects(self) -> Dict[str, RenderObject]:
+        return get_objects(self.database, dict=True)
 
     def fetch_characters(self):
         data = self.database.table("character").select("*").execute()

@@ -3,6 +3,7 @@ from aiohttp.web import Request, WSMsgType, WebSocketResponse
 import asyncio
 
 from .models.account import Account
+from .models.character import Character
 from .actions.character import get_character
 from .actions.login import login
 from .actions.move import move
@@ -14,6 +15,8 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
     payload = data.get("payload", {})
     account = data.get("account")
     account = Account(**account) if account else None
+    character = data.get("character")
+    character = Character(**character) if character else None
 
     # print(f"Handling action: {action} with payload: {payload} and account: {account.get('id')}")
 
@@ -22,9 +25,9 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
     elif action == "get_character":
         await get_character(request, ws, account, payload)
     elif action == "move":
-        await move(request, ws, account, payload)
+        await move(request, ws, account, character, payload)
     elif action == "place_object":
-        await place_object(request, ws, account, payload)
+        await place_object(request, ws, account, character, payload)
     elif action == "delete_object":
         await delete_object(request, ws, account, payload)
     elif action == "give_item":

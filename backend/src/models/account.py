@@ -1,6 +1,5 @@
 
 class Account:
-
     id: str
     created_at: str
     discord_id: str

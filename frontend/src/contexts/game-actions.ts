@@ -20,6 +20,7 @@ class GameActions {
 
     send(action: any) {
         action.account = this.account
+        action.character = this.character
         this.gameCon.send(JSON.stringify(action))
     }
 
@@ -36,17 +37,26 @@ class GameActions {
         if (!this.ready()) return
         const action = {
             action: "move",
-            payload: { character_id: this.character.id, x, y, direction },
+            payload: { x, y, direction },
+        }
+        this.send(action)
+    }
+
+    interact({ object_id }: { object_id: string }) {
+        if (!this.ready()) return
+        const action = {
+            action: "interact",
+            payload: { object_id },
         }
         this.send(action)
     }
 
     // --- Admin Actions ---
-    placeObject(obj: Partial<RenderObject>) {
+    placeObject({ object_id, x, y }: { object_id: string; x: number; y: number }) {
         if (!this.ready()) return
         const action = {
             action: "place_object",
-            payload: obj,
+            payload: { object_id, x, y },
         }
         this.send(action)
     }

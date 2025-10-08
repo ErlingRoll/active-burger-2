@@ -1,15 +1,14 @@
 import json
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class RenderObject(BaseModel):
-
     # Characters, Objects, NPCs, etc.
 
-    id: str
-    type: str = "object"
-    created_at: str
+    id: Optional[str] = None
+    created_at: Optional[str] = None
+    type: Optional[str] = "object"
     name: str
     name_visible: bool = True
     x: int
@@ -19,16 +18,10 @@ class RenderObject(BaseModel):
     width: Optional[int] = None  # in pixels
     solid: bool = False
 
-    def get_attributes(self):
-        # Get all attributes that are not callable (i.e. not methods)
-        return {
-            k: v
-            for k, v in self.__dict__.items()
-            if not callable(v)
-        }
+    model_config = ConfigDict(extra="allow")
 
     def to_dict(self):
-        return self.get_attributes()
+        return {**self.__dict__, **self.model_extra}
 
     def to_json_string(self):
         return json.dumps(self.to_dict())

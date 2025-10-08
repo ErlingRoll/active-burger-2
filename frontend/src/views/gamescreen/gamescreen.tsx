@@ -3,9 +3,9 @@ import { GamestateContext } from "../../contexts/gamestate-context"
 import { UserContext } from "../../contexts/user-context"
 import { FaTimes } from "react-icons/fa"
 import { stone } from "../../game/objects/stone"
-import { goldOre } from "../../game/objects/gold_ore"
+import { goldOre } from "../../game/objects/ore/gold"
 import { bush } from "../../game/objects/bush"
-import { RenderObject } from "../../models/object"
+import { Character, Entity, RenderObject } from "../../models/object"
 import { CharacterContext } from "../../contexts/character-context"
 import Inventory from "./components/inventory"
 import CharacterInfo from "./components/character-info"
@@ -17,7 +17,7 @@ const Gamescreen = () => {
     const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 }) // x and y will be set to center on player
     const [showGrid, setShowGrid] = useState(false)
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
-    const [adminMode, setAdminMode] = useState(false)
+    const [adminMode, setAdminMode] = useState(true)
 
     const { gamestate, logout, gameActions } = useContext(GamestateContext)
     const { admin } = useContext(UserContext)
@@ -42,7 +42,7 @@ const Gamescreen = () => {
         }
     }
 
-    function drawObject(obj: RenderObject) {
+    function drawObject(obj: RenderObject & Entity & Character) {
         const cell = document.getElementById(cellName(obj.x, obj.y))
         if (!cell) return
 
@@ -54,10 +54,22 @@ const Gamescreen = () => {
         div.className = "flex flex-col items-center z-100"
         cell.appendChild(div)
 
+        // Add HP bar
+        if (obj.max_hp! != null && obj.current_hp != null && obj.type !== "character") {
+            const hpBarContainer = document.createElement("div")
+            hpBarContainer.className = "w-10 h-2 bg-red-200 rounded"
+            const hpBar = document.createElement("div")
+            hpBar.className = "h-2 bg-red-600 rounded"
+            const hpPercent = Math.max(0, (obj.current_hp / obj.max_hp) * 100)
+            hpBar.style.width = hpPercent + "%"
+            hpBarContainer.appendChild(hpBar)
+            div.appendChild(hpBarContainer)
+        }
+
         // Add Name
         if (obj.name_visible) {
             const nameTag = document.createElement("p")
-            nameTag.className = "text-[0.7rem] text-blue-700 font-bold mb-1"
+            nameTag.className = "text-[0.7rem] text-blue-700 font-bold"
             nameTag.innerText = obj.name
             div.appendChild(nameTag)
         }
@@ -125,9 +137,42 @@ const Gamescreen = () => {
         return () => window.removeEventListener("keydown", handleKeyDown)
     }, [gamestate, character, gameActions])
 
+    function getSelectedCellPos() {
+        const player = gamestate.render_objects[character.id]
+        const x = player.x
+        const y = player.y
+        switch (player.direction) {
+            case "up":
+                return { x: x, y: y + 1 }
+            case "down":
+                return { x: x, y: y - 1 }
+            case "left":
+                return { x: x - 1, y: y }
+            case "right":
+                return { x: x + 1, y: y }
+        }
+    }
+
+    function clearNeighborHighlights() {
+        const gameGrid = document.getElementById("game-grid")
+        if (!gameGrid) return
+        gameGrid.querySelectorAll(".selected-cell").forEach((cell) => {
+            cell.classList.remove("selected-cell", "border-2", "border-orange-400")
+        })
+    }
+
+    function colorSelectedCell() {
+        clearNeighborHighlights()
+        const selectedPos = getSelectedCellPos()
+        const cell = document.getElementById(cellName(selectedPos.x, selectedPos.y))
+        if (!cell) return
+        cell.classList.add("selected-cell", "border-2", "border-orange-400")
+    }
+
     useEffect(() => {
         clearGrid()
-        Object.values(gamestate.render_objects).forEach((obj) => drawObject(obj))
+        Object.values(gamestate.render_objects).forEach((obj: any) => drawObject(obj))
+        colorSelectedCell()
     }, [gamestate])
 
     return (
@@ -198,24 +243,30 @@ const Gamescreen = () => {
                             </div>
                             <div className="self-start center-col">
                                 <p className="font-bold mb-2">Place objects</p>
-                                <button
+                                {/* <button
                                     className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
-                                    onClick={() => gameActions.placeObject(stone({ x: adminCell.x, y: adminCell.y }))}
+                                    onClick={() => gameActions.placeObject(stone)}
                                 >
                                     Stone
-                                </button>
+                                </button> */}
                                 <button
                                     className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
-                                    onClick={() => gameActions.placeObject(goldOre({ x: adminCell.x, y: adminCell.y }))}
+                                    onClick={() =>
+                                        gameActions.placeObject({
+                                            object_id: "gold_ore",
+                                            x: adminCell.x,
+                                            y: adminCell.y,
+                                        })
+                                    }
                                 >
                                     Gold ore
                                 </button>
-                                <button
+                                {/* <button
                                     className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
                                     onClick={() => gameActions.placeObject(bush({ x: adminCell.x, y: adminCell.y }))}
                                 >
                                     Bush
-                                </button>
+                                </button> */}
                             </div>
                             <div className="self-start center-col">
                                 <p className="font-bold mb-2">Give Object</p>

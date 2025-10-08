@@ -8,7 +8,6 @@ class UseResult(BaseModel):
 
 
 class Item(BaseModel):
-
     id: Optional[str] = None
     created_at: Optional[str] = None
     item_id: Optional[str] = None
