@@ -1,34 +1,23 @@
 import json
+from typing import Optional
+from pydantic import BaseModel
 
 
-class RenderObject:
+class RenderObject(BaseModel):
 
     # Characters, Objects, NPCs, etc.
 
     id: str
-    type: str
+    type: str = "object"
     created_at: str
     name: str
     name_visible: bool = True
     x: int
     y: int
-    texture: str
-    height: int  # in pixels
-    width: int  # in pixels
+    texture: Optional[str] = None
+    height: Optional[int] = None  # in pixels
+    width: Optional[int] = None  # in pixels
     solid: bool = False
-
-    def __init__(self, id, created_at, name, name_visible, x, y, texture, height, width, solid, type="object"):
-        self.type = type
-        self.id = id
-        self.created_at = created_at
-        self.name = name
-        self.name_visible = name_visible
-        self.x = x
-        self.y = y
-        self.texture = texture
-        self.height = height
-        self.width = width
-        self.solid = solid
 
     def get_attributes(self):
         # Get all attributes that are not callable (i.e. not methods)

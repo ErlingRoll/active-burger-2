@@ -34,6 +34,7 @@ class Gamestate:
     def fetch_characters(self):
         data = self.database.table("character").select("*").execute()
         if data and data.data:
+            print(data)
             characters = {char["id"]: Character(**char) for char in data.data}
             return characters
         return {}

@@ -121,6 +121,7 @@ const Gamescreen = () => {
     }, [gamestate, character, gameActions])
 
     useEffect(() => {
+        clearGrid()
         Object.values(gamestate.render_objects).forEach((obj) => drawObject(obj))
     }, [gamestate])
 
@@ -140,9 +141,14 @@ const Gamescreen = () => {
                             {/* Admin cell overlay */}
                             {admin && (
                                 <div
-                                    className="absolute top-0 left-0 w-full h-full hover:border-2 border-orange-500 cursor-pointer z-200"
+                                    className={
+                                        `absolute top-0 left-0 w-full h-full hover:border-2 border-orange-300 cursor-pointer z-200 ` +
+                                        (adminCell && adminCell.x === wx && adminCell.y === wy
+                                            ? "border-2 border-orange-500"
+                                            : "")
+                                    }
                                     onClick={() => setAdminCell({ x: wx, y: wy })}
-                                ></div>
+                                />
                             )}
 
                             {showGrid && (

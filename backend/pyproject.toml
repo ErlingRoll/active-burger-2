@@ -9,4 +9,5 @@ dependencies = [
     "pyventus",
     "supabase",
     "python-dotenv",
+    "pydantic",
 ]

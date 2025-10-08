@@ -113,6 +113,7 @@ version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "aiohttp" },
+    { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pyventus" },
     { name = "supabase" },
@@ -121,6 +122,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "aiohttp" },
+    { name = "pydantic" },
     { name = "python-dotenv" },
     { name = "pyventus" },
     { name = "supabase" },
