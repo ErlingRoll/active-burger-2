@@ -285,6 +285,47 @@ const Gamescreen = () => {
                                 >
                                     Burger
                                 </button>
+                                <button
+                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
+                                    onClick={() => gameActions.giveItem({ item_id: "burger" })}
+                                >
+                                    Tomato
+                                </button>
+                            </div>
+
+                            <div className="self-start center-col">
+                                <p className="font-bold mb-2">Place Tiles</p>
+                                {
+                                    <img
+                                        className="min-w-28 mb-2 text-light font-bold px-4 py-2"
+                                        onClick={() =>
+                                            gameActions.placeObject({
+                                                object_id: "dirt_tile",
+                                                x: adminCell.x,
+                                                y: adminCell.y,
+                                            })
+                                        }
+                                        src="src\assets\textures\tiles\dirt.png"
+                                    ></img>
+                                }
+                                <button
+                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
+                                    onClick={() =>
+                                        gameActions.placeObject({
+                                            object_id: "gold_ore",
+                                            x: adminCell.x,
+                                            y: adminCell.y,
+                                        })
+                                    }
+                                >
+                                    Gold ore
+                                </button>
+                                {/* <button
+                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
+                                    onClick={() => gameActions.placeObject(bush({ x: adminCell.x, y: adminCell.y }))}
+                                >
+                                    Bush
+                                </button> */}
                             </div>
                         </div>
                     </div>

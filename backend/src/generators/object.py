@@ -1,9 +1,11 @@
 
 from src.models.render_object import RenderObject
 from src.models.objects.entity.ore.gold_ore import GoldOre
+from src.models.terrain import DirtTile
 
 object_map = {
-    "gold_ore": GoldOre
+    "gold_ore": GoldOre,
+    "dirt_tile": DirtTile
 }
 
 

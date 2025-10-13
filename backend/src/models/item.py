@@ -19,6 +19,7 @@ class Item(BaseModel):
     type: str = "item"
     stackable: Optional[bool] = False
     count: Optional[int] = 1
+    consumable: Optional[bool] = False
 
     def use(self) -> UseResult:  # Returns whether the item was used successfully
         return UseResult(success=False, message="This item cannot be used.")
