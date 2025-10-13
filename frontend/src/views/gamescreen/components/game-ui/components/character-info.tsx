@@ -1,7 +1,7 @@
 import { useContext, useState } from "react"
-import { CharacterContext } from "../../../contexts/character-context"
-import { UserContext } from "../../../contexts/user-context"
-import { GamestateContext } from "../../../contexts/gamestate-context"
+import { CharacterContext } from "../../../../../contexts/character-context"
+import { UserContext } from "../../../../../contexts/user-context"
+import { GamestateContext } from "../../../../../contexts/gamestate-context"
 import { FaHeart } from "react-icons/fa"
 
 const CharacterInfo = () => {

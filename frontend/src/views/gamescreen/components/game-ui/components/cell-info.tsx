@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react"
-import { CharacterContext } from "../../../contexts/character-context"
-import { UserContext } from "../../../contexts/user-context"
-import { GamestateContext } from "../../../contexts/gamestate-context"
-import { RenderObject } from "../../../models/object"
+import { CharacterContext } from "../../../../../contexts/character-context"
+import { UserContext } from "../../../../../contexts/user-context"
+import { GamestateContext } from "../../../../../contexts/gamestate-context"
+import { RenderObject } from "../../../../../models/object"
 import { FaHeart } from "react-icons/fa"
 
 const CellInfo = ({ pos }: { pos: { x: number; y: number } | null }) => {
@@ -30,7 +30,7 @@ const CellInfo = ({ pos }: { pos: { x: number; y: number } | null }) => {
                             <div className="flex items-center">
                                 <FaHeart color="red" className="mr-2" />
                                 <p>
-                                    {(obj as any).current_hp}/{(obj as any).max_hp}
+                                    {(obj as any).current_hp} / {(obj as any).max_hp}
                                 </p>
                             </div>
                         )}

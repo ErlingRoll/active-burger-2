@@ -1,7 +1,7 @@
 import { useContext } from "react"
-import { CharacterContext } from "../../../contexts/character-context"
-import { UserContext } from "../../../contexts/user-context"
-import { GamestateContext } from "../../../contexts/gamestate-context"
+import { CharacterContext } from "../../../../../contexts/character-context"
+import { UserContext } from "../../../../../contexts/user-context"
+import { GamestateContext } from "../../../../../contexts/gamestate-context"
 
 const Settings = ({
     showGrid,
@@ -18,7 +18,7 @@ const Settings = ({
     const { logout } = useContext(GamestateContext)
 
     return (
-        <div className="center-col items-end z-200">
+        <div className="center-col items-end z-200 pointer-events-auto">
             {admin && (
                 <button
                     className={

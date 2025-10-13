@@ -1,6 +1,6 @@
 import { useContext } from "react"
-import { CharacterContext } from "../../../contexts/character-context"
-import { GamestateContext } from "../../../contexts/gamestate-context"
+import { CharacterContext } from "../../../../../contexts/character-context"
+import { GamestateContext } from "../../../../../contexts/gamestate-context"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 

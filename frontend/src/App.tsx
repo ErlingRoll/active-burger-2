@@ -1,18 +1,12 @@
 import "./App.css"
-import { UserProvider } from "./contexts/user-context"
-import { GameProvider } from "./contexts/gamestate-context"
 import Game from "./Game"
-import { CharacterProvider } from "./contexts/character-context"
+import CompoundProvider from "./contexts/compound-provider"
 
 function App() {
     return (
-        <UserProvider>
-            <CharacterProvider>
-                <GameProvider>
-                    <Game />
-                </GameProvider>
-            </CharacterProvider>
-        </UserProvider>
+        <CompoundProvider>
+            <Game />
+        </CompoundProvider>
     )
 }
 

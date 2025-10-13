@@ -4,26 +4,22 @@ import { UserContext } from "../../contexts/user-context"
 import { FaTimes } from "react-icons/fa"
 import { Character, Entity, RenderObject } from "../../models/object"
 import { CharacterContext } from "../../contexts/character-context"
-import Inventory from "./components/inventory"
-import CharacterInfo from "./components/character-info"
-import Settings from "./components/settings"
-import CellInfo from "./components/cell-info"
-import Log from "./components/log"
+import { UIContext } from "../../contexts/ui-context"
+import GameUI from "./components/game-ui/game-ui"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const Gamescreen = () => {
     const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 }) // x and y will be set to center on player
-    const [showGrid, setShowGrid] = useState(false)
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
-    const [adminMode, setAdminMode] = useState(false)
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
 
     const { gamestate, logout, gameActions } = useContext(GamestateContext)
     const { admin } = useContext(UserContext)
     const { character } = useContext(CharacterContext)
+    const { showGrid, setShowGrid, adminMode, setAdminMode } = useContext(UIContext)
 
-    const renderDistance = 41 // Number of cells to render around the player
+    const renderDistance = 31 // Number of cells to render around the player
 
     const cellName = (x: number, y: number) => `cell-${x},${y}`
 
@@ -51,13 +47,14 @@ const Gamescreen = () => {
         // Obj container
         const div = document.createElement("div")
         div.id = `object-${obj.id}`
-        div.className = "flex flex-col items-center z-100"
+        div.className = "h-full flex flex-col items-center z-100"
         cell.appendChild(div)
 
         // Add HP bar
         if (obj.max_hp! != null && obj.current_hp != null && obj.type !== "character") {
             const hpBarContainer = document.createElement("div")
-            hpBarContainer.className = "w-10 h-2 bg-red-200 rounded border-2 border-dark overflow-hidden"
+            hpBarContainer.className =
+                "w-10 h-2 bg-red-200 rounded border-2 border-dark overflow-hidden pointer-events-none"
             const hpBar = document.createElement("div")
             hpBar.className = "h-2 bg-red-600"
             const hpPercent = Math.max(0, (obj.current_hp / obj.max_hp) * 100)
@@ -78,8 +75,7 @@ const Gamescreen = () => {
             const img = document.createElement("img")
             img.src = textures[`/src/assets/textures/${obj.texture}.png`] as string
             img.alt = obj.name
-            img.style.width = obj.width + "px"
-            img.style.height = obj.height + "px"
+            img.className = "h-full"
             div.appendChild(img)
             return
         }
@@ -103,7 +99,6 @@ const Gamescreen = () => {
     }
 
     useEffect(() => {
-        // Add player movement
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.repeat) return
             const player = gamestate.render_objects[character.id]
@@ -187,23 +182,13 @@ const Gamescreen = () => {
     }, [gamestate])
 
     return (
-        <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden">
-            <Inventory />
-            <div className="absolute flex items-start top-0 left-0 z-200">
-                <CharacterInfo />
-                <CellInfo pos={selectedCell} />
-            </div>
-            <div className="absolute flex flex-col items-end p-4 bottom-0 right-0 z-200 gap-4">
-                <Settings
-                    showGrid={showGrid}
-                    setShowGrid={setShowGrid}
-                    adminMode={adminMode}
-                    setAdminMode={setAdminMode}
-                />
-                <Log />
-            </div>
-
-            <div id="game-grid" className={`grid grid-cols-[repeat(41,64px)] auto-rows-[64px] gap-0 border`}>
+        <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none bg-[#f0d0b1]">
+            <GameUI selectedCell={selectedCell} />
+            <div
+                id="game-grid"
+                className={`grid auto-rows-[64px] gap-0 border border-gray-100`}
+                style={{ gridTemplateColumns: `repeat(${renderDistance}, 64px)` }}
+            >
                 {/* Grid */}
                 {Array.from({ length: renderDistance * renderDistance }).map((_, index) => {
                     const center = {
@@ -213,7 +198,7 @@ const Gamescreen = () => {
                     const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
                     const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
                     return (
-                        <div key={index} className={`relative bg-gray-100 border-[1px] border-gray-100`}>
+                        <div key={index} className={`relative border-[1px] border-gray-100`}>
                             {/* Admin cell overlay */}
                             {adminMode && (
                                 <div
@@ -265,30 +250,25 @@ const Gamescreen = () => {
                             </div>
                             <div className="self-start center-col">
                                 <p className="font-bold mb-2">Place objects</p>
-                                {/* <button
-                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
-                                    onClick={() => gameActions.placeObject(stone)}
-                                >
-                                    Stone
-                                </button> */}
-                                <button
-                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
-                                    onClick={() =>
-                                        gameActions.placeObject({
-                                            object_id: "gold_ore",
-                                            x: adminCell.x,
-                                            y: adminCell.y,
-                                        })
-                                    }
-                                >
-                                    Gold ore
-                                </button>
-                                {/* <button
-                                    className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
-                                    onClick={() => gameActions.placeObject(bush({ x: adminCell.x, y: adminCell.y }))}
-                                >
-                                    Bush
-                                </button> */}
+                                {[
+                                    { name: "Rock", object_id: "rock" },
+                                    { name: "Bush", object_id: "bush" },
+                                    { name: "Gold ore", object_id: "gold_ore" },
+                                    { name: "Shop", object_id: "shopkeeper" },
+                                ].map((item) => (
+                                    <button
+                                        className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
+                                        onClick={() =>
+                                            gameActions.placeObject({
+                                                object_id: item.object_id,
+                                                x: adminCell.x,
+                                                y: adminCell.y,
+                                            })
+                                        }
+                                    >
+                                        {item.name}
+                                    </button>
+                                ))}
                             </div>
                             <div className="self-start center-col">
                                 <p className="font-bold mb-2">Give Object</p>

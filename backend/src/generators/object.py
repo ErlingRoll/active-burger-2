@@ -1,9 +1,14 @@
 
+from src.models.npcs.npcs import Shopkeeper
+from src.models.objects.terrain import Rock, Bush
 from src.models.render_object import RenderObject
 from src.models.objects.entity.ore.gold_ore import GoldOre
 
 object_map = {
-    "gold_ore": GoldOre
+    "rock": Rock,
+    "bush": Bush,
+    "gold_ore": GoldOre,
+    "shopkeeper": Shopkeeper
 }
 
 
