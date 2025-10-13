@@ -1,8 +1,8 @@
 # Active Burger 2.0 (electric bogaloo)
 
-Technologies
+### Technologies
 
-- Docker
-- Golang backend
+- Python backend
 - React frontend
 - PostgreSQL database
+
