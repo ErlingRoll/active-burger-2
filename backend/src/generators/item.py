@@ -1,9 +1,11 @@
 
+from src.models.items.ore import GoldOre
 from src.models.item import Item
 from src.models.items.base.burger import Burger
 
 item_map = {
-    "burger": Burger
+    "burger": Burger,
+    "gold_ore": GoldOre,
 }
 
 

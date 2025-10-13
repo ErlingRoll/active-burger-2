@@ -1,5 +1,3 @@
-import { RenderObject } from "../models/object"
-
 class GameActions {
     account = null
     character = null
@@ -53,6 +51,7 @@ class GameActions {
 
     interact({ object_id }: { object_id: string }) {
         if (!this.ready()) return
+        if (!object_id) return
         const action = {
             action: "interact",
             payload: { object_id },

@@ -3,6 +3,7 @@ import { CharacterContext } from "../../../contexts/character-context"
 import { UserContext } from "../../../contexts/user-context"
 import { GamestateContext } from "../../../contexts/gamestate-context"
 import { RenderObject } from "../../../models/object"
+import { FaHeart } from "react-icons/fa"
 
 const CellInfo = ({ pos }: { pos: { x: number; y: number } | null }) => {
     const { gamestate } = useContext(GamestateContext)
@@ -20,15 +21,18 @@ const CellInfo = ({ pos }: { pos: { x: number; y: number } | null }) => {
     if (!pos || objects.length === 0) return null
 
     return (
-        <div className="m-4 p-2 pt-0 bg-white/70 rounded flex flex-col items-start">
+        <div className="m-4 p-2 pt-0 bg-dark/90 text-light rounded flex flex-col items-start">
             <div className="center-col items-start!">
                 {objects.map((obj) => (
                     <div key={obj.id}>
                         <p className="font-bold text-lg">{obj.name}</p>
                         {obj.hasOwnProperty("current_hp") && (
-                            <p>
-                                <b>HP :</b> {(obj as any).current_hp}/{(obj as any).max_hp}
-                            </p>
+                            <div className="flex items-center">
+                                <FaHeart color="red" className="mr-2" />
+                                <p>
+                                    {(obj as any).current_hp}/{(obj as any).max_hp}
+                                </p>
+                            </div>
                         )}
                     </div>
                 ))}

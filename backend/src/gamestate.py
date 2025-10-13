@@ -51,8 +51,8 @@ class Gamestate:
 
         await self.connection_manager.send(account.id, event)
 
-    async def publishGamestate(self):
-        gamestate = self.getGamestate()
+    async def publish_gamestate(self):
+        gamestate = self.get_gamestate()
         event = {
             "event": "gamestate_update",
             "payload": gamestate
@@ -60,12 +60,12 @@ class Gamestate:
         await self.connection_manager.broadcast(event)
         return gamestate
 
-    async def addCharacter(self, character: Character):
+    async def add_character(self, character: Character):
         if character.id in self.characters:
-            return await self.publishGamestate()
+            return await self.publish_gamestate()
 
         self.characters[character.id] = character
-        return await self.publishGamestate()
+        return await self.publish_gamestate()
 
     def get_character(self, character_id: str) -> Character | None:
         obj = self.characters.get(character_id)
@@ -73,19 +73,32 @@ class Gamestate:
             return obj
         return None
 
-    async def addObject(self, obj: RenderObject):
+    async def add_object(self, obj: RenderObject):
         if obj.id in self.objects:
-            return await self.publishGamestate()
+            return await self.publish_gamestate()
 
         self.objects[obj.id] = obj
-        return await self.publishGamestate()
+        return await self.publish_gamestate()
 
-    async def deleteObject(self, object_id: str):
+    async def get_object(self, object_id: str) -> RenderObject | None:
+        return self.objects.get(object_id, None)
+
+    async def update_object(self, object: RenderObject):
+        if object.id not in self.objects:
+            return await self.publish_gamestate()
+
+        self.objects[object.id] = object
+        return await self.publish_gamestate()
+
+    async def delete_object(self, object_id: str):
         if object_id not in self.objects:
-            return await self.publishGamestate()
+            return await self.publish_gamestate()
 
         del self.objects[object_id]
-        return await self.publishGamestate()
+        return await self.publish_gamestate()
+
+    def get_render_object(self, object_id: str) -> RenderObject | None:
+        return self.render_objects().get(object_id, None)
 
     def render_objects(self, dict=False):
         render_objects = {**self.characters, **self.objects}
@@ -105,7 +118,7 @@ class Gamestate:
             position_objects[pos_key].append(obj.to_dict() if dict else obj)
         return position_objects
 
-    def getGamestate(self):
+    def get_gamestate(self):
         return {
             "start_datetime": self.start_datetime.isoformat(),
             "server_datetime": datetime.datetime.now().isoformat(),

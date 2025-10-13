@@ -34,7 +34,7 @@ async def place_object(request: Request, ws: WebSocketResponse, account: Account
 
     render_object = RenderObject(**object)
 
-    await gamestate.addObject(render_object)
+    await gamestate.add_object(render_object)
 
 
 async def delete_object(request: Request, ws: WebSocketResponse, account: Account, payload: dict):
@@ -59,4 +59,4 @@ async def delete_object(request: Request, ws: WebSocketResponse, account: Accoun
         await ws.send_str("Error: Failed to delete object from database.")
         return
 
-    await gamestate.deleteObject(object_id)
+    await gamestate.delete_object(object_id)

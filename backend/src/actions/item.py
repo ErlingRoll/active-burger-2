@@ -45,7 +45,7 @@ async def use_item(app, ws: WebSocketResponse, account: Account, character: Char
     event = GameEvent(event="log", payload={}, log=result.log)
 
     if not result.success:
-        return await ws.send_str(event.model_dump())
+        return await ws.send_str(event.model_dump_json())
 
     await handle_item_consumption(item, database)
 

@@ -1,53 +1,7 @@
 import json
-from typing import List, Optional
 from aiohttp.web import Request, WSMsgType, WebSocketResponse
 import asyncio
-
-from pydantic import BaseModel
-
-
-from .models.account import Account
-from .models.character import Character
-from .actions.character import get_character
-from .actions.item import use_item
-from .actions.login import login
-from .actions.move import move
-from .actions.admin.object import place_object, delete_object
-from .actions.admin.item import give_item
-
-
-class GameEvent(BaseModel):
-    event: str
-    payload: dict
-    log: List[str] = []
-
-
-async def handle_action(request: Request, ws: WebSocketResponse, data: dict, action: str):
-    app = request.app
-    payload = data.get("payload", {})
-    account = data.get("account")
-    account = Account(**account) if account else None
-    character = data.get("character")
-    character = Character(**character) if character else None
-
-    # print(f"Handling action: {action} with payload: {payload} and account: {account.get('id')}")
-
-    if action == "login":
-        await login(request, ws, account, payload)
-    elif action == "get_character":
-        await get_character(request, ws, account, payload)
-    elif action == "move":
-        await move(request, ws, account, character, payload)
-    elif action == "use_item":
-        await use_item(app, ws, account, character, payload)
-    elif action == "place_object":
-        await place_object(request, ws, account, character, payload)
-    elif action == "delete_object":
-        await delete_object(request, ws, account, payload)
-    elif action == "give_item":
-        await give_item(request, ws, account, character, payload)
-    else:
-        await ws.send_str(f"Error: Unknown action '{action}'")
+from .action_handler import handle_action
 
 
 async def websocket_handler(request: Request):

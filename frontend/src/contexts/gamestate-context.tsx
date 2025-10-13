@@ -87,7 +87,7 @@ export const GameProvider = ({ children }: { children: any }) => {
             case "log":
                 break
             default:
-                console.error("Unhandled WebSocket event:", event, payload)
+                console.error("Unhandled WebSocket event:", event, payload, log)
         }
     }
 

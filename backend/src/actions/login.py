@@ -44,7 +44,7 @@ async def login(request: Request, ws: WebSocketResponse, account: Account, paylo
         }
     })
 
-    await gamestate.addCharacter(character)
+    await gamestate.add_character(character)
 
 
 async def get_or_create_character(request: Request, ws: WebSocketResponse, payload: dict, account: dict):

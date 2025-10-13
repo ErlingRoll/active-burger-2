@@ -8,7 +8,7 @@ from pydantic import BaseModel
 class GameEvent(BaseModel):
     event: str
     payload: dict
-    log: list[str] = []
+    log: List[str] = []
 
 
 class ConnectionManager:

@@ -17,6 +17,7 @@ class RenderObject(BaseModel):
     height: Optional[int] = None  # in pixels
     width: Optional[int] = None  # in pixels
     solid: bool = False
+    object_id: Optional[str] = None
 
     model_config = ConfigDict(extra="allow")
 

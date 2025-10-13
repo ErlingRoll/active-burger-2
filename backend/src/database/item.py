@@ -11,7 +11,8 @@ def get_item_by_id(database: Client, id: str) -> Item:
     return generate_item(**response.data[0]) if response.data else None
 
 
-def create_item(database: Client, data) -> Item:
+def create_item(database: Client, item: Item) -> Item:
+    data = item.model_dump()
     del data["id"]  # Remove id if present, as it will be auto-generated
     del data["created_at"]  # Remove created_at if present, as it will be auto-generated
     response = database.table("item").insert(data).execute()

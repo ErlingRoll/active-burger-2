@@ -2,9 +2,6 @@ import { useContext, useEffect, useState } from "react"
 import { GamestateContext } from "../../contexts/gamestate-context"
 import { UserContext } from "../../contexts/user-context"
 import { FaTimes } from "react-icons/fa"
-import { stone } from "../../game/objects/stone"
-import { goldOre } from "../../game/objects/ore/gold"
-import { bush } from "../../game/objects/bush"
 import { Character, Entity, RenderObject } from "../../models/object"
 import { CharacterContext } from "../../contexts/character-context"
 import Inventory from "./components/inventory"
@@ -19,7 +16,7 @@ const Gamescreen = () => {
     const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 }) // x and y will be set to center on player
     const [showGrid, setShowGrid] = useState(false)
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
-    const [adminMode, setAdminMode] = useState(true)
+    const [adminMode, setAdminMode] = useState(false)
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
 
     const { gamestate, logout, gameActions } = useContext(GamestateContext)
@@ -60,9 +57,9 @@ const Gamescreen = () => {
         // Add HP bar
         if (obj.max_hp! != null && obj.current_hp != null && obj.type !== "character") {
             const hpBarContainer = document.createElement("div")
-            hpBarContainer.className = "w-10 h-2 bg-red-200 rounded"
+            hpBarContainer.className = "w-10 h-2 bg-red-200 rounded border-2 border-dark overflow-hidden"
             const hpBar = document.createElement("div")
-            hpBar.className = "h-2 bg-red-600 rounded"
+            hpBar.className = "h-2 bg-red-600"
             const hpPercent = Math.max(0, (obj.current_hp / obj.max_hp) * 100)
             hpBar.style.width = hpPercent + "%"
             hpBarContainer.appendChild(hpBar)
@@ -110,35 +107,42 @@ const Gamescreen = () => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.repeat) return
             const player = gamestate.render_objects[character.id]
-            switch (event.key) {
-                case "ArrowUp":
+            const input = event.key.toLowerCase()
+            let gameInput = true
+            switch (input) {
+                case "arrowup":
                 case "w":
-                case "W":
                     gameActions.move({ x: player.x, y: player.y + 1, direction: "up" })
-                    event.preventDefault()
                     break
-                case "ArrowDown":
+                case "arrowdown":
                 case "s":
-                case "S":
                     gameActions.move({ x: player.x, y: player.y - 1, direction: "down" })
-                    event.preventDefault()
                     break
-                case "ArrowLeft":
+                case "arrowleft":
                 case "a":
-                case "A":
                     gameActions.move({ x: player.x - 1, y: player.y, direction: "left" })
                     break
-                case "ArrowRight":
+                case "arrowright":
                 case "d":
-                case "D":
                     gameActions.move({ x: player.x + 1, y: player.y, direction: "right" })
-                    event.preventDefault()
                     break
+                case "e":
+                    if (!selectedCell) break
+                    gameActions.interact({
+                        object_id: gamestate.position_objects[selectedCell.x + "_" + selectedCell.y]?.[0]?.id,
+                    })
+                    break
+                default:
+                    gameInput = false
+            }
+            if (gameInput) {
+                event.preventDefault()
+                return
             }
         }
         window.addEventListener("keydown", handleKeyDown)
         return () => window.removeEventListener("keydown", handleKeyDown)
-    }, [gamestate, character, gameActions])
+    }, [gamestate, character, gameActions, selectedCell])
 
     function getSelectedCell() {
         const player = gamestate.render_objects[character.id]

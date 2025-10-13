@@ -22,4 +22,4 @@ class Item(BaseModel):
     consumable: Optional[bool] = False
 
     async def use(self, *args, **kwargs) -> UseResult:
-        return UseResult(success=False, message="This item cannot be used.")
+        return UseResult(success=False, log=[f"Item [{self.name}] cannot be used."])

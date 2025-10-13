@@ -32,9 +32,9 @@ async def move(request: Request, ws: WebSocketResponse, account: Account, charac
     # Check for collision with solid objects
     for obj in objects_at_pos:
         if obj.solid:
-            return await gamestate.publishGamestate()
+            return await gamestate.publish_gamestate()
 
     character_state.x = payload.x
     character_state.y = payload.y
 
-    await gamestate.publishGamestate()
+    await gamestate.publish_gamestate()

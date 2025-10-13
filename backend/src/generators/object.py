@@ -8,6 +8,8 @@ object_map = {
 
 
 def generate_object(object_id, **kwargs) -> RenderObject:
+    # Note that this "object_id" is the type identifier, not the unique instance ID
+
     object_class = object_map.get(object_id)
     if object_class:
         return object_class(**kwargs)
