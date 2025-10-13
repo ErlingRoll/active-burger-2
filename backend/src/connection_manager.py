@@ -1,12 +1,14 @@
 import json
 import asyncio
 from traceback import print_exc
+from typing import List
 from pydantic import BaseModel
 
 
 class GameEvent(BaseModel):
     event: str
     payload: dict
+    log: list[str] = []
 
 
 class ConnectionManager:
@@ -69,4 +71,5 @@ class ConnectionManager:
         if inactive_connections:
             print(f"Removed {len(inactive_connections)} inactive connections. Total connections: {len(self.connections)}")
         else:
-            print(f"Broadcasted event to {len(self.connections)} connections.")
+            # print(f"Broadcasted event to {len(self.connections)} connections.")
+            pass

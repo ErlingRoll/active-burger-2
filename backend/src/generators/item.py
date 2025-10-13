@@ -7,9 +7,9 @@ item_map = {
 }
 
 
-def generate_item(item_id) -> Item:
+def generate_item(item_id, **kwargs) -> Item:
     item_class = item_map.get(item_id)
     if item_class:
-        return item_class()
+        return item_class(**kwargs)
     else:
         raise ValueError(f"Unknown item_id: {item_id}")

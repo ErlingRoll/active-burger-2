@@ -42,6 +42,15 @@ class GameActions {
         this.send(action)
     }
 
+    useItem({ id }: { id: string }) {
+        if (!this.ready()) return
+        const action = {
+            action: "use_item",
+            payload: { id },
+        }
+        this.send(action)
+    }
+
     interact({ object_id }: { object_id: string }) {
         if (!this.ready()) return
         const action = {

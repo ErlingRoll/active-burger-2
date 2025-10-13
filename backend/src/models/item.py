@@ -1,10 +1,10 @@
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel
 
 
 class UseResult(BaseModel):
     success: bool
-    message: str | None = None
+    log: List[str] | None = []
 
 
 class Item(BaseModel):
@@ -19,6 +19,7 @@ class Item(BaseModel):
     type: str = "item"
     stackable: Optional[bool] = False
     count: Optional[int] = 1
+    consumable: Optional[bool] = False
 
-    def use(self) -> UseResult:  # Returns whether the item was used successfully
+    async def use(self, *args, **kwargs) -> UseResult:
         return UseResult(success=False, message="This item cannot be used.")

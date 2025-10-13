@@ -11,6 +11,7 @@ import Inventory from "./components/inventory"
 import CharacterInfo from "./components/character-info"
 import Settings from "./components/settings"
 import CellInfo from "./components/cell-info"
+import Log from "./components/log"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -188,7 +189,15 @@ const Gamescreen = () => {
                 <CharacterInfo />
                 <CellInfo pos={selectedCell} />
             </div>
-            <Settings showGrid={showGrid} setShowGrid={setShowGrid} adminMode={adminMode} setAdminMode={setAdminMode} />
+            <div className="absolute flex flex-col items-end p-4 bottom-0 right-0 z-200 gap-4">
+                <Settings
+                    showGrid={showGrid}
+                    setShowGrid={setShowGrid}
+                    adminMode={adminMode}
+                    setAdminMode={setAdminMode}
+                />
+                <Log />
+            </div>
 
             <div id="game-grid" className={`grid grid-cols-[repeat(41,64px)] auto-rows-[64px] gap-0 border`}>
                 {/* Grid */}
@@ -228,7 +237,7 @@ const Gamescreen = () => {
 
             {adminCell && (
                 <div className="absolute top-0 left-0 w-full center-col pointer-events-none z-200">
-                    <div className="relative bg-white/70 rounded m-4 p-2 pb-4 center-col pointer-events-auto">
+                    <div className="relative bg-dark/70 text-light rounded m-4 p-2 pb-4 center-col pointer-events-auto">
                         <button
                             className="absolute top-2 right-2 bg-danger p-[0.2rem]"
                             onClick={() => setAdminCell(null)}

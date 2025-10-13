@@ -36,7 +36,7 @@ class Gamestate:
             return characters
         return {}
 
-    async def publishCharacter(self, account: Account, character_id: str = None, character_data: CharacterData = None):
+    async def publish_character(self, account: Account, character_id: str = None, character_data: CharacterData = None):
         if not character_id and not character_data:
             raise ValueError("Either character_id or character_data must be provided")
 

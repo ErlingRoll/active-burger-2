@@ -18,6 +18,8 @@ type GamestateContextType = {
     setGamestate: Dispatch<SetStateAction<Gamestate | null>>
     logout: () => void
     gameActions?: GameActions
+    log: string[]
+    setLog: Dispatch<SetStateAction<string[]>>
 }
 
 export const GamestateContext = createContext<GamestateContextType>({
@@ -27,11 +29,14 @@ export const GamestateContext = createContext<GamestateContextType>({
     setGamestate: (game: any) => {},
     logout: () => {},
     gameActions: null,
+    log: [],
+    setLog: (log: any) => {},
 })
 
 export const GameProvider = ({ children }: { children: any }) => {
     const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
     const [gameCon, setGameCon] = React.useState<WebSocket | null>(null)
+    const [log, setLog] = React.useState<string[]>([])
 
     const { user, setUser, account, setAccount } = useContext(UserContext)
     const { character, setCharacter } = useContext(CharacterContext)
@@ -62,8 +67,13 @@ export const GameProvider = ({ children }: { children: any }) => {
         setUser(null)
     }
 
-    function on_event(event: string, payload: any) {
-        console.log("Received WebSocket event:", event, payload)
+    function on_event(event: string, payload: any, log: string[] | null) {
+        console.log("Received WebSocket event:", event, payload, log)
+
+        if (log) {
+            setLog((prevLog) => [...log, ...prevLog])
+        }
+
         switch (event) {
             case "login_success":
                 on_login_success(payload)
@@ -73,6 +83,8 @@ export const GameProvider = ({ children }: { children: any }) => {
                 break
             case "character_update":
                 setCharacter(payload)
+                break
+            case "log":
                 break
             default:
                 console.error("Unhandled WebSocket event:", event, payload)
@@ -84,6 +96,9 @@ export const GameProvider = ({ children }: { children: any }) => {
         const character = data.character
         setAccount(account)
         setCharacter(character)
+
+        const loginMessage = `Logged in as ${account.name} (${character ? character.name : "no character"})`
+        setLog((prevLog) => [loginMessage, ...prevLog])
     }
 
     useEffect(() => {
@@ -110,7 +125,7 @@ export const GameProvider = ({ children }: { children: any }) => {
             }
 
             // Handle events
-            on_event(messageEvent, parsedData.payload)
+            on_event(messageEvent, parsedData.payload, parsedData.log)
         }
 
         const loginInfo = {
@@ -134,6 +149,8 @@ export const GameProvider = ({ children }: { children: any }) => {
                 setGamestate,
                 logout,
                 gameActions: gameActions.current,
+                log,
+                setLog,
             }}
         >
             {children}

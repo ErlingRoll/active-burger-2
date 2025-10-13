@@ -4,6 +4,14 @@ from src.models.item import Item
 from src.models.character import Character, CharacterData
 
 
+def update_character(database: Client, character: Character) -> Character | None:
+    character_json = character.model_dump()
+    del character_json["height"]
+    del character_json["width"]
+    response = database.table("character").update(character_json).eq("id", character.id).execute()
+    return CharacterData(**response.data[0]) if response.data else None
+
+
 def create_character(database: Client, data):
     response = database.table("character").insert(data).execute()
     return Character(**response.data[0]) if response.data else None

@@ -18,7 +18,7 @@ const Settings = ({
     const { logout } = useContext(GamestateContext)
 
     return (
-        <div className="absolute center-col items-end bottom-0 right-0 m-4 z-200">
+        <div className="center-col items-end z-200">
             {admin && (
                 <button
                     className={
