@@ -2,6 +2,7 @@ import { Item } from "./item"
 
 export interface RenderObject {
     id: string
+    object_id: string
     type: string
     created_at?: string
     name: string
@@ -13,6 +14,7 @@ export interface RenderObject {
     width: number
     height: number
     solid: boolean
+    gold: number
 }
 
 export interface Entity extends RenderObject {

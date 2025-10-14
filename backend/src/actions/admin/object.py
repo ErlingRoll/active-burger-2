@@ -24,7 +24,7 @@ async def place_object(request: Request, ws: WebSocketResponse, account: Account
 
     new_object = generate_object(payload.object_id, x=payload.x, y=payload.y)
 
-    print(f"Placing object: {new_object}")
+    # print(f"Placing object: {new_object}")
 
     object = create_object(database, new_object)
 

@@ -1,8 +1,8 @@
-import React, { Dispatch, SetStateAction, createContext, useContext, useEffect, useRef } from "react"
+import React, { Dispatch, SetStateAction, createContext, useContext, useEffect } from "react"
 import { UserContext } from "./user-context"
 import { RenderObject } from "../models/object"
-import GameActions from "./game-actions"
 import { CharacterContext } from "./character-context"
+import { UIContext } from "./ui-context"
 
 export type Gamestate = {
     render_objects: { [key: string]: RenderObject }
@@ -11,13 +11,14 @@ export type Gamestate = {
 
 export const gameWebsocketUrl = import.meta.env.VITE_GAME_WS_URL
 
+export type LocalAction = "open_shop"
+
 type GamestateContextType = {
     gameCon: WebSocket | null
     setGameCon: Dispatch<SetStateAction<any>>
     gamestate: Gamestate | null
     setGamestate: Dispatch<SetStateAction<Gamestate | null>>
     logout: () => void
-    gameActions?: GameActions
     log: string[]
     setLog: Dispatch<SetStateAction<string[]>>
 }
@@ -28,7 +29,6 @@ export const GamestateContext = createContext<GamestateContextType>({
     gamestate: null,
     setGamestate: (game: any) => {},
     logout: () => {},
-    gameActions: null,
     log: [],
     setLog: (log: any) => {},
 })
@@ -40,15 +40,7 @@ export const GameProvider = ({ children }: { children: any }) => {
 
     const { user, setUser, account, setAccount } = useContext(UserContext)
     const { character, setCharacter } = useContext(CharacterContext)
-
-    // Store gameactions in a ref so it doesn't get recreated on every render
-    const gameActions = useRef(new GameActions())
-
-    useEffect(() => {
-        gameActions.current.account = account
-        gameActions.current.character = character
-        gameActions.current.gameCon = gameCon
-    }, [account, character, gameCon])
+    const { setShopOpen } = useContext(UIContext)
 
     function logout() {
         // Remove user data from localStorage
@@ -148,7 +140,6 @@ export const GameProvider = ({ children }: { children: any }) => {
                 gamestate,
                 setGamestate,
                 logout,
-                gameActions: gameActions.current,
                 log,
                 setLog,
             }}

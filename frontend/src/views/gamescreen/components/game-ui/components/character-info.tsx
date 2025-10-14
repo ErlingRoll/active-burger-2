@@ -3,6 +3,7 @@ import { CharacterContext } from "../../../../../contexts/character-context"
 import { UserContext } from "../../../../../contexts/user-context"
 import { GamestateContext } from "../../../../../contexts/gamestate-context"
 import { FaHeart } from "react-icons/fa"
+import { RiCopperCoinFill } from "react-icons/ri"
 
 const CharacterInfo = () => {
     const { gamestate } = useContext(GamestateContext)
@@ -16,15 +17,24 @@ const CharacterInfo = () => {
             <div className="center-col items-start!">
                 <p className="font-bold text-lg">{character.name}</p>
                 <div className="flex items-center">
-                    <FaHeart color="red" className="mr-2" /> {character.current_hp} / {character.max_hp}
+                    <FaHeart color="red" className="mr-2 mt-1" />
+                    <p>
+                        {character.current_hp} / {character.max_hp}
+                    </p>
+                </div>
+                <div className="flex items-center mt-1">
+                    <RiCopperCoinFill color="gold" className="mr-2" />
+                    <p>{character.gold}</p>
                 </div>
                 {debug && <p className="">Character: {character.id}</p>}
                 {debug && <p className="">Account: {character.account_id}</p>}
                 {debug && <p className="">Admin: {admin ? "Yes" : "No"}</p>}
-                <p className="">
-                    <b>Pos :</b> ({gamestate.render_objects[character.id].x}, {gamestate.render_objects[character.id].y}
-                    )
-                </p>
+                {debug && (
+                    <p className="">
+                        <b>Pos :</b> ({gamestate.render_objects[character.id].x},{" "}
+                        {gamestate.render_objects[character.id].y})
+                    </p>
+                )}
             </div>
         </div>
     )

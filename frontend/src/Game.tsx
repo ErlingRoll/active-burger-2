@@ -11,10 +11,6 @@ function Game() {
     const { character } = useContext(CharacterContext)
     const { gameCon, gamestate } = useContext(GamestateContext)
 
-    useEffect(() => {
-        // console.log("App state:", { user, character, gameCon, gamestate })
-    }, [gameCon, gamestate])
-
     return <div>{!account || !character || !gameCon || !gamestate ? <Login /> : <Gamescreen />}</div>
 }
 

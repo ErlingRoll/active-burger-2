@@ -15,16 +15,16 @@ class UseItemPayload(BaseModel):
     id: str
 
 
-async def handle_item_consumption(item, database):
-    if not item.consumable:
+async def handle_item_consumption(database, item, count=1, consume=False):
+    if not item.consumable and not consume:
         return
 
-    if item.count == 1:
+    if item.count == count:
         delete_item(database, item.id)
         return
 
-    if item.count and item.count > 1:
-        item.count -= 1
+    if item.count and item.count > count:
+        item.count -= count
         update_item(database, item)
         return
 
@@ -47,7 +47,7 @@ async def use_item(app, ws: WebSocketResponse, account: Account, character: Char
     if not result.success:
         return await ws.send_str(event.model_dump_json())
 
-    await handle_item_consumption(item, database)
+    await handle_item_consumption(database, item)
 
     await gamestate.publish_character(account, character_id=character.id)
 

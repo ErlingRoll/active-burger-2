@@ -2,6 +2,7 @@ class GameActions {
     account = null
     character = null
     gameCon: WebSocket = null
+    parentContext: any = null
 
     ready() {
         const ready = Boolean(
@@ -55,6 +56,15 @@ class GameActions {
         const action = {
             action: "interact",
             payload: { object_id },
+        }
+        this.send(action)
+    }
+
+    sell({ item_id, count }: { item_id: string; count: number }) {
+        if (!this.ready()) return
+        const action = {
+            action: "sell",
+            payload: { item_id, count },
         }
         this.send(action)
     }

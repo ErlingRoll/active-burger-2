@@ -6,6 +6,7 @@ import { Character, Entity, RenderObject } from "../../models/object"
 import { CharacterContext } from "../../contexts/character-context"
 import { UIContext } from "../../contexts/ui-context"
 import GameUI from "./components/game-ui/game-ui"
+import { PlayerContext } from "../../contexts/player-context"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -14,10 +15,11 @@ const Gamescreen = () => {
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
 
-    const { gamestate, logout, gameActions } = useContext(GamestateContext)
+    const { gamestate, logout } = useContext(GamestateContext)
     const { admin } = useContext(UserContext)
     const { character } = useContext(CharacterContext)
     const { showGrid, setShowGrid, adminMode, setAdminMode } = useContext(UIContext)
+    const { gameActions, localInteract } = useContext(PlayerContext)
 
     const renderDistance = 31 // Number of cells to render around the player
 
@@ -123,9 +125,10 @@ const Gamescreen = () => {
                     break
                 case "e":
                     if (!selectedCell) break
-                    gameActions.interact({
-                        object_id: gamestate.position_objects[selectedCell.x + "_" + selectedCell.y]?.[0]?.id,
-                    })
+                    const object = gamestate.position_objects[selectedCell.x + "_" + selectedCell.y]?.[0]
+                    if (!object) break
+                    localInteract(object)
+                    gameActions.interact({ object_id: object.id })
                     break
                 default:
                     gameInput = false
