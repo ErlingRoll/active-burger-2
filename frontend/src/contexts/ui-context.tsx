@@ -19,7 +19,7 @@ export const UIContext = createContext<UIContextType>({
 })
 
 export const UIProvider = ({ children }: { children: any }) => {
-    const [shopOpen, setShopOpen] = React.useState<boolean>(false)
+    const [shopOpen, setShopOpen] = React.useState<boolean>(true)
     const [adminMode, setAdminMode] = React.useState<boolean>(false)
     const [showGrid, setShowGrid] = React.useState<boolean>(false)
 
