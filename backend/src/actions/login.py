@@ -8,7 +8,7 @@ from src.models.character import Character
 from src.models.account import Account
 
 
-async def login(request: Request, ws: WebSocketResponse, account: Account, payload: dict):
+async def login(request: Request, ws: WebSocketResponse, account: Account | None, payload: dict):
     database = request.app["database"]
     gamestate: Gamestate = request.app["gamestate"]
     connection_manager: ConnectionManager = request.app["connection_manager"]

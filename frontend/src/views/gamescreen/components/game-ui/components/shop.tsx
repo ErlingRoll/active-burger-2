@@ -1,5 +1,6 @@
 import { Fragment, useContext, useMemo, useState } from "react"
 import { CharacterContext } from "../../../../../contexts/character-context"
+import { RiCopperCoinFill, RiCopperCoinLine } from "react-icons/ri"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -37,14 +38,17 @@ const Shop = () => {
                 {tabName === "Sell" && (
                     <div className="grid grid-cols-5 gap-4 items-center">
                         {Object.values(character.items || []).map((item) => (
-                            <Fragment>
+                            <Fragment key={item.id}>
                                 <img
                                     src={textures[`/src/assets/textures/items/${item.texture}.png`]}
                                     className="w-12 h-12 object-fit"
                                 />
                                 <p className="font-bold text-lg">{item.name}</p>
                                 <p className="font-bold text-lg">x {item.count || 1}</p>
-                                <p className="font-bold text-lg">{item.value}</p>
+                                <div className="flex flex-row items-center gap-1">
+                                    <RiCopperCoinFill color="gold" className="" />
+                                    <p className="font-bold text-lg">{item.value}</p>
+                                </div>
                                 <button className="bg-primary text-light font-bold rounded px-2 py-1">Sell</button>
                             </Fragment>
                         ))}

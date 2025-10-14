@@ -1,7 +1,8 @@
 from aiohttp.web import Request, WebSocketResponse
 
+
 from .models import Account, Character
-from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact
+from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact, sell
 
 
 async def handle_action(request: Request, ws: WebSocketResponse, data: dict, action: str):
@@ -15,8 +16,16 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
     # print(f"Handling action: {action} with payload: {payload}")
 
     if action == "login":
-        await login(request, ws, account, payload)
-    elif action == "get_character":
+        return await login(request, ws, account, payload)
+
+    if account is None or character is None:
+        return await ws.send_json({
+            "error": "Authentication required",
+            "action": action,
+            "payload": payload
+        })
+
+    if action == "get_character":
         await get_character(request, ws, account, payload)
     elif action == "move":
         await move(request, ws, account, character, payload)
@@ -30,5 +39,7 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
         await give_item(request, ws, account, character, payload)
     elif action == "interact":
         await interact(request, ws, account, character, payload)
+    elif action == "sell":
+        await sell(request, ws, account, character, payload)
     else:
         await ws.send_str(f"Error: Unknown action '{action}'")

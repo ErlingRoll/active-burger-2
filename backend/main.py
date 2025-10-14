@@ -12,7 +12,7 @@ from src.websocket import websocket_handler
 
 load_dotenv()
 
-PORT = os.getenv("PORT", 8080)
+PORT = int(os.getenv("PORT", 8080))
 
 
 async def main():
