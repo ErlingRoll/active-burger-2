@@ -26,8 +26,6 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
         await ws.send_str("Error: Failed to create account.")
         return
 
-    print(f"login_success: {account.get('discord_id')}")
-
     # Save account_id in ws session for future reference
     ws.account_id = account.get("id")
     connection_manager.update_account_map(account.get("id"), ws)
@@ -63,7 +61,5 @@ async def get_or_create_character(request: Request, ws: WebSocketResponse, paylo
     if not character:
         await ws.send_str("Error: Failed to create character.")
         return
-
-    print(f"get_character_success: {character.id}")
 
     return character

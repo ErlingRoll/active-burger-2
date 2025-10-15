@@ -2,7 +2,7 @@ import json
 import asyncio
 from traceback import print_exc
 from typing import List
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class GameEvent(BaseModel):
@@ -11,14 +11,12 @@ class GameEvent(BaseModel):
     log: List[str] = []
 
 
-class ConnectionManager:
+class ConnectionManager(BaseModel):
 
-    connection_counter = 0  # Total connections since server start
-    connections = {}
-    connections_account_map = {}
-
-    def __init__(self):
-        self.connections = {}
+    connection_counter: int = 0  # Total connections since server start
+    connections: dict = {}
+    connections_account_map: dict = {}
+    model_config = ConfigDict(extra="allow")
 
     def add_connection(self, ws):
         self.connection_counter += 1

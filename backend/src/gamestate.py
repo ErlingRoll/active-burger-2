@@ -1,7 +1,9 @@
-import datetime
+from datetime import datetime
 from typing import Dict
+from pydantic import BaseModel, ConfigDict
 from supabase import Client
 
+from src.connection_manager import ConnectionManager
 from src.models.account import Account
 from src.database.character import get_character_data_by_id
 from src.database.object import get_objects
@@ -9,17 +11,15 @@ from src.models.render_object import RenderObject
 from src.models.character import Character, CharacterData
 
 
-class Gamestate:
-    start_datetime = None
+class Gamestate(BaseModel):
+    start_datetime: datetime = datetime.now()
     characters: dict[str, Character] = {}
     objects: dict[str, RenderObject] = {}
     database: Client
-    connection_manager = None
+    connection_manager: ConnectionManager
+    model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
-    def __init__(self, client, connection_manager):
-        self.start_datetime = datetime.datetime.now()
-        self.database = client
-        self.connection_manager = connection_manager
+    def model_post_init(self, __context: object) -> None:
         self.fetch_gamestate()
 
     def fetch_gamestate(self):
@@ -73,7 +73,7 @@ class Gamestate:
             return obj
         return None
 
-    async def add_object(self, obj: RenderObject):
+    async def add_object(self, obj: RenderObject, skip_publish=False):
         if obj.id in self.objects:
             return await self.publish_gamestate()
 
@@ -96,6 +96,17 @@ class Gamestate:
 
         del self.objects[object_id]
         return await self.publish_gamestate()
+
+    def get_render_object_window(self, x_start: int, y_start: int, x_end: int, y_end: int, dict=False):
+        position_obs = self.position_objects()
+        window_objects = {}
+        for x in range(x_start, x_end + 1):
+            for y in range(y_start, y_end + 1):
+                pos_key = f"{x}_{y}"
+                if pos_key in position_obs:
+                    for obj in position_obs[pos_key]:
+                        window_objects[obj.id] = obj.to_dict() if dict else obj
+        return window_objects
 
     def get_render_object(self, object_id: str) -> RenderObject | None:
         return self.render_objects().get(object_id, None)
@@ -121,7 +132,7 @@ class Gamestate:
     def get_gamestate(self):
         return {
             "start_datetime": self.start_datetime.isoformat(),
-            "server_datetime": datetime.datetime.now().isoformat(),
+            "server_datetime": datetime.now().isoformat(),
             "render_objects": self.render_objects(dict=True),
             "position_objects": self.position_objects(dict=True)
         }

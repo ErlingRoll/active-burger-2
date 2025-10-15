@@ -60,7 +60,7 @@ export const GameProvider = ({ children }: { children: any }) => {
     }
 
     function on_event(event: string, payload: any, log: string[] | null) {
-        console.log("Received WebSocket event:", event, payload, log)
+        // console.log("Received WebSocket event:", event, payload, log)
 
         if (log) {
             setLog((prevLog) => [...log, ...prevLog])

@@ -1,9 +1,9 @@
 import os
 import asyncio
 import aiohttp.web
-import json
 from dotenv import load_dotenv
 
+from src.game_loop import game_loop
 from src.connection_manager import ConnectionManager
 from src.init_database import create_database_client
 from src.gamestate import Gamestate
@@ -27,7 +27,7 @@ async def main():
     app["connection_manager"] = connection_manager
 
     # Init gamestate
-    gamestate = Gamestate(database, connection_manager)
+    gamestate = Gamestate(database=database, connection_manager=connection_manager)
     app["gamestate"] = gamestate
 
     app.router.add_get('/game', websocket_handler)
@@ -36,7 +36,11 @@ async def main():
     site = aiohttp.web.TCPSite(runner, 'localhost', PORT)
     await site.start()
     print(f"Server started on http://localhost:{PORT}")
-    await asyncio.Event().wait()  # Keep the server running indefinitely
+
+    # Wait a moment to ensure the server is fully up
+    # await asyncio.sleep(1)
+
+    await game_loop(app, database, connection_manager, gamestate)
 
 
 if __name__ == "__main__":

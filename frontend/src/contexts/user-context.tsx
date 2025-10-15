@@ -23,10 +23,6 @@ export const UserProvider = ({ children }: { children: any }) => {
     const [user, setUser] = React.useState<User | null>(null)
     const [account, setAccount] = React.useState<Account | null>(null)
 
-    useEffect(() => {
-        console.log("User updated:", user)
-    }, [user])
-
     return (
         <UserContext.Provider value={{ user, setUser, account, setAccount, admin: account?.admin }}>
             {children}

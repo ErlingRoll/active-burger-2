@@ -20,13 +20,13 @@ def get_objects(database: Client, dict: bool = True):
     return [RenderObject(**obj) for obj in objects]
 
 
-def create_object(database: Client, data: RenderObject):
+def create_object(database: Client, data: RenderObject) -> RenderObject | None:
     del data.id  # Remove id if present, as it will be auto-generated
     del data.created_at  # Remove created_at if present, as it will be auto-generated
     response = database.table(data.type).insert(data.model_dump()).execute()
-    return response.data[0] if response.data else None
+    return RenderObject(**response.data[0]) if response.data else None
 
 
-def remove_object(database: Client, object_id: str):
+def delete_object(database: Client, object_id: str):
     response = database.table("object").delete().eq("id", object_id).execute()
     return response.data[0] if response.data else None
