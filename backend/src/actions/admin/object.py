@@ -5,7 +5,7 @@ from src.gamestate import Gamestate
 from src.database.account import get_account_by_discord_id, create_account
 from src.database.character import get_character_by_account_id, create_character
 from src.models.render_object import RenderObject
-from src.database.object import create_object, delete_object
+from src.database.object import create_object, db_delete_object
 from src.models.account import Account
 from src.models.character import Character
 from src.generators.object import generate_object
@@ -30,9 +30,7 @@ async def place_object(request: Request, ws: WebSocketResponse, account: Account
         await ws.send_str("Error: Failed to create object.")
         return
 
-    render_object = RenderObject(**object)
-
-    await gamestate.add_object(render_object)
+    await gamestate.add_object(object)
 
 
 async def delete_object(request: Request, ws: WebSocketResponse, account: Account, payload: dict):
@@ -51,7 +49,7 @@ async def delete_object(request: Request, ws: WebSocketResponse, account: Accoun
         await ws.send_str("Error: Object not found.")
         return
 
-    deleted = delete_object(database, object_id)
+    deleted = db_delete_object(database, object_id)
 
     if not deleted:
         await ws.send_str("Error: Failed to delete object from database.")

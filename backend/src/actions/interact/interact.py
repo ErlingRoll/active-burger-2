@@ -1,7 +1,7 @@
 from typing import List
 from pydantic import BaseModel
 from aiohttp.web import Request, WebSocketResponse
-from src.database.object import delete_object
+from src.database.object import db_delete_object
 from src.models.objects.entity.ore.gold_ore import Ore
 from src.generators.object import generate_object
 from src.actions.give_loot import GiveLootPayload, give_loot
@@ -21,7 +21,7 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
     del _ore_defaults['object_id']
     ore: Ore = generate_object(object_id=object.object_id, **_ore_defaults)
 
-    damage = 100
+    damage = 20
     ore.damage(damage)
 
     await gamestate.update_object(ore)
@@ -30,7 +30,7 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
         return
 
     # Ore is mined
-    delete_object(database, ore.id)
+    db_delete_object(database, ore.id)
     await gamestate.delete_object(ore.id)
 
     loot: List[Item] = ore.roll_loot()

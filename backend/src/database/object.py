@@ -27,6 +27,6 @@ def create_object(database: Client, data: RenderObject) -> RenderObject | None:
     return RenderObject(**response.data[0]) if response.data else None
 
 
-def delete_object(database: Client, object_id: str):
+def db_delete_object(database: Client, object_id: str):
     response = database.table("object").delete().eq("id", object_id).execute()
     return response.data[0] if response.data else None
