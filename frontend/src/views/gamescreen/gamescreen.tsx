@@ -15,6 +15,9 @@ const Gamescreen = () => {
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
 
+    const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
+    const moveRepeatDelay = 100 // milliseconds
+
     const { gamestate, logout } = useContext(GamestateContext)
     const { admin } = useContext(UserContext)
     const { character } = useContext(CharacterContext)
@@ -102,7 +105,11 @@ const Gamescreen = () => {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.repeat) return
+            if (event.repeat) {
+                if (Date.now() - lastMoveRepeat < moveRepeatDelay) return
+            }
+            setLastMoveRepeat(Date.now())
+
             const player = gamestate.render_objects[character.id]
             const input = event.key.toLowerCase()
             let gameInput = true
@@ -140,7 +147,7 @@ const Gamescreen = () => {
         }
         window.addEventListener("keydown", handleKeyDown)
         return () => window.removeEventListener("keydown", handleKeyDown)
-    }, [gamestate, character, gameActions, selectedCell])
+    }, [gamestate, character, gameActions, selectedCell, lastMoveRepeat])
 
     function getSelectedCell() {
         const player = gamestate.render_objects[character.id]
@@ -260,6 +267,7 @@ const Gamescreen = () => {
                                     { name: "Shop", object_id: "shopkeeper" },
                                 ].map((item) => (
                                     <button
+                                        key={item.object_id}
                                         className="min-w-28 mb-2 bg-primary text-light font-bold px-4 py-2"
                                         onClick={() =>
                                             gameActions.placeObject({

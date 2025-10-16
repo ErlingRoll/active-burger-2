@@ -13,7 +13,7 @@ const Shop = () => {
     const [tab, setTab] = useState<number>(0)
 
     const { gameActions } = useContext(PlayerContext)
-    const { character } = useContext(CharacterContext)
+    const { items, character } = useContext(CharacterContext)
     const { setShopOpen } = useContext(UIContext)
 
     const tabName = useMemo(() => {
@@ -45,7 +45,7 @@ const Shop = () => {
             <div className="p-4">
                 {tabName === "Sell" && (
                     <div className="grid grid-cols-5 gap-4 items-center">
-                        {Object.values(character.items || []).map((item) => (
+                        {items.map((item) => (
                             <Fragment key={item.id}>
                                 <img
                                     src={textures[`/src/assets/textures/items/${item.texture}.png`]}

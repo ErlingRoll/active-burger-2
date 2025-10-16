@@ -6,7 +6,7 @@ import { PlayerContext } from "../../../../../contexts/player-context"
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const Inventory = () => {
-    const { character } = useContext(CharacterContext)
+    const { items } = useContext(CharacterContext)
     const { gameActions } = useContext(PlayerContext)
 
     return (
@@ -14,7 +14,7 @@ const Inventory = () => {
             <div className="center-col items-start!">
                 <p className="w-full font-bold text-lg mb-2">Inventory</p>
                 <div className="grid grid-cols-4 gap-2">
-                    {Object.values(character.items).map((item, index) => (
+                    {items.map((item, index) => (
                         <div
                             key={index}
                             className="relative w-12 h-12 bg-blue-100 border border-gray-400 rounded-sm flex justify-center items-center cursor-pointer hover:border-blue-600"
