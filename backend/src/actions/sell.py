@@ -22,7 +22,7 @@ async def sell(request: Request, ws: WebSocketResponse, account: Account, charac
 
     payload: SellPayload = SellPayload(**payload)
 
-    character_data = get_character_data_by_id(database, character.id)
+    character_data = await get_character_data_by_id(database, character.id)
 
     owned_item: Item = character_data.items.get(payload.item_id)
     if not owned_item:
@@ -44,7 +44,8 @@ async def sell(request: Request, ws: WebSocketResponse, account: Account, charac
     task = handle_item_consumption(database, owned_item, count=payload.count, consume=True)
     tasks.append(task)
 
-    update_character(database, character_data.to_character())
+    task = update_character(database, character_data.to_character())
+    tasks.append(task)
 
     create_task(gamestate.publish_character(account, character_id=character.id))
 

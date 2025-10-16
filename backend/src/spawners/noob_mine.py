@@ -46,7 +46,7 @@ class SpawnMine(Spawner):
 
         new_object = generate_object(object_id=object_id, x=random_position[0], y=random_position[1])
 
-        created_object = create_object(self.database, new_object)
+        created_object = await create_object(self.database, new_object)
 
         if created_object:
             await self.gamestate.add_object(created_object, skip_publish=True)

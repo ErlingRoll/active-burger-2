@@ -19,7 +19,7 @@ async def main():
     app = aiohttp.web.Application()
 
     # Init database
-    database = create_database_client()
+    database = await create_database_client()
     app["database"] = database
 
     # Connection manager
@@ -28,6 +28,7 @@ async def main():
 
     # Init gamestate
     gamestate = Gamestate(database=database, connection_manager=connection_manager)
+    await gamestate.fetch_gamestate()
     app["gamestate"] = gamestate
 
     app.router.add_get('/game', websocket_handler)

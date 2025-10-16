@@ -1,11 +1,12 @@
+from asyncio import gather
 from datetime import datetime
 from typing import Dict
 from pydantic import BaseModel, ConfigDict
-from supabase import Client
+from supabase import AsyncClient
 
 from src.connection_manager import ConnectionManager
 from src.models.account import Account
-from src.database.character import get_character_data_by_id
+from src.database.character import get_character_data_by_id, get_characters
 from src.database.object import get_objects
 from src.models.render_object import RenderObject
 from src.models.character import Character, CharacterData
@@ -15,26 +16,14 @@ class Gamestate(BaseModel):
     start_datetime: datetime = datetime.now()
     characters: dict[str, Character] = {}
     objects: dict[str, RenderObject] = {}
-    database: Client
+    database: AsyncClient
     connection_manager: ConnectionManager
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
 
-    def model_post_init(self, __context: object) -> None:
-        self.fetch_gamestate()
-
-    def fetch_gamestate(self):
-        self.objects = self.fetch_objects()
-        self.characters = self.fetch_characters()
-
-    def fetch_objects(self) -> Dict[str, RenderObject]:
-        return get_objects(self.database, dict=True)
-
-    def fetch_characters(self):
-        data = self.database.table("character").select("*").execute()
-        if data and data.data:
-            characters = {char["id"]: Character(**char) for char in data.data}
-            return characters
-        return {}
+    async def fetch_gamestate(self):
+        object_res = get_objects(self.database)
+        character_res = get_characters(self.database)
+        self.objects, self.characters = await gather(object_res, character_res)
 
     async def publish_character(self, account: Account, character_id: str = None, character_data: CharacterData = None):
         if not character_id and not character_data:
@@ -42,7 +31,7 @@ class Gamestate(BaseModel):
 
         _character_data = character_data
         if character_id and not character_data:
-            _character_data = get_character_data_by_id(self.database, character_id)
+            _character_data = await get_character_data_by_id(self.database, character_id)
 
         event = {
             "event": "character_update",

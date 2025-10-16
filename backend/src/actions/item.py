@@ -1,3 +1,4 @@
+from typing import Awaitable
 from aiohttp.web import Request, WebSocketResponse
 from pydantic import BaseModel
 
@@ -20,15 +21,11 @@ async def handle_item_consumption(database, item, count=1, consume=False):
         return
 
     if item.count == count:
-        delete_item(database, item.id)
-        return
+        return delete_item(database, item.id)
 
     if item.count and item.count > count:
         item.count -= count
-        update_item(database, item)
-        return
-
-    return
+        return await update_item(database, item)
 
 
 async def use_item(app, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
@@ -37,7 +34,7 @@ async def use_item(app, ws: WebSocketResponse, account: Account, character: Char
 
     payload = UseItemPayload(**payload)
 
-    item: Item = get_item_by_id(database, payload.id)
+    item: Item = await get_item_by_id(database, payload.id)
     character_state = gamestate.get_character(character.id)
 
     result: UseResult = await item.use(character=character_state, gamestate=gamestate, database=database, ws=ws)

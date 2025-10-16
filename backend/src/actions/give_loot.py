@@ -28,10 +28,10 @@ async def give_loot(request: Request, ws: WebSocketResponse, account: Account, c
         if item.stackable and item.item_id in stackable_item_map:
             existing_item = stackable_item_map[item.item_id]
             existing_item.count += item.count
-            update_item(database, existing_item)
+            await update_item(database, existing_item)
             continue
 
         item.character_id = character.id
-        create_item(database, item)
+        await create_item(database, item)
 
     await gamestate.publish_character(account, character_id=character.id)

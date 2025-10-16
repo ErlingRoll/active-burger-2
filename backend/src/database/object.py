@@ -1,17 +1,20 @@
-from supabase import Client
+from asyncio import gather
+from supabase import AsyncClient
 
 from src.models.render_object import RenderObject
 
 
-def get_objects(database: Client, dict: bool = True):
+async def get_objects(database: AsyncClient, dict: bool = True):
     """ Fetch all objects and inherited objects from the database """
 
     objects = []
 
-    response = database.table("only_object").select("*").execute()
-    objects += response.data if response and response.data else []
+    task_1 = database.table("only_object").select("*").execute()
+    task_2 = database.table("only_entity").select("*").execute()
 
-    entity_response = database.table("only_entity").select("*").execute()
+    object_response, entity_response = await gather(task_1, task_2)
+
+    objects += object_response.data if object_response and object_response.data else []
     objects += entity_response.data if entity_response and entity_response.data else []
 
     if dict:
@@ -20,13 +23,13 @@ def get_objects(database: Client, dict: bool = True):
     return [RenderObject(**obj) for obj in objects]
 
 
-def create_object(database: Client, data: RenderObject) -> RenderObject | None:
+async def create_object(database: AsyncClient, data: RenderObject) -> RenderObject | None:
     del data.id  # Remove id if present, as it will be auto-generated
     del data.created_at  # Remove created_at if present, as it will be auto-generated
-    response = database.table(data.type).insert(data.model_dump()).execute()
+    response = await database.table(data.type).insert(data.model_dump()).execute()
     return RenderObject(**response.data[0]) if response.data else None
 
 
-def db_delete_object(database: Client, object_id: str):
-    response = database.table("object").delete().eq("id", object_id).execute()
+async def db_delete_object(database: AsyncClient, object_id: str):
+    response = await database.table("object").delete().eq("id", object_id).execute()
     return response.data[0] if response.data else None

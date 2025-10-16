@@ -13,11 +13,11 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
     gamestate: Gamestate = request.app["gamestate"]
     connection_manager: ConnectionManager = request.app["connection_manager"]
 
-    account = get_account_by_discord_id(database, payload.get("discord_id"))
+    account = await get_account_by_discord_id(database, payload.get("discord_id"))
 
     if not account:
         print("Creating new account...")
-        account = create_account(database, payload)
+        account = await create_account(database, payload)
 
     # Automatically create a character for the new account.
     # Add character selection logic later
@@ -32,7 +32,7 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
 
     character = await get_or_create_character(request, ws, payload, account)
 
-    character_data = get_character_data_by_id(database, character.id)
+    character_data = await get_character_data_by_id(database, character.id)
 
     await ws.send_json({
         "event": "login_success",
@@ -48,7 +48,7 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
 async def get_or_create_character(request: Request, ws: WebSocketResponse, payload: dict, account: dict):
     database = request.app["database"]
 
-    character = get_character_by_account_id(database, account.get("id"))
+    character = await get_character_by_account_id(database, account.get("id"))
 
     if not character:
         print("Creating new character...")
@@ -56,7 +56,7 @@ async def get_or_create_character(request: Request, ws: WebSocketResponse, paylo
             "account_id": account.get("id"),
             "name": payload.get("name", "Newbie"),
         }
-        character = create_character(database, character_data)
+        character = await create_character(database, character_data)
 
     if not character:
         await ws.send_str("Error: Failed to create character.")

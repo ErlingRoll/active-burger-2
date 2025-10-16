@@ -1,6 +1,6 @@
 from random import random
 from pydantic import BaseModel, ConfigDict
-from supabase import Client
+from supabase import AsyncClient
 from typing import List
 from pydantic import BaseModel
 from src.models.render_object import RenderObject
@@ -34,7 +34,7 @@ class SpawnTable(BaseModel):
 
 
 class Spawner(BaseModel, GameTickerInterface):
-    database: Client
+    database: AsyncClient
     connection_manager: ConnectionManager
     gamestate: Gamestate
 
