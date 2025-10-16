@@ -1,3 +1,4 @@
+from asyncio import gather
 from typing import List
 from pydantic import BaseModel
 from aiohttp.web import Request, WebSocketResponse
@@ -30,8 +31,7 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
         return
 
     # Ore is mined
-    db_delete_object(database, ore.id)
-    await gamestate.delete_object(ore.id)
+    gather(db_delete_object(database, ore.id), gamestate.delete_object(ore.id))
 
     loot: List[Item] = ore.roll_loot()
     log_message = f"You mined {ore.name} and received: "
@@ -67,7 +67,7 @@ async def interact(request: Request, ws: WebSocketResponse, account: Account, ch
     object: RenderObject | None = gamestate.get_render_object(payload.object_id)
     if not object:
         event = GameEvent(event="error", payload={"message": f"Object with id {payload.object_id} not found"})
-        await ws.send_str(event.model_dump_json())
+        await ws.send_json(event.model_dump())
         return
 
     await type_interact(request, ws, account, character, object)

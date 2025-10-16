@@ -22,7 +22,7 @@ class Burger(Item):
     async def use(self, character: Character = None, database=None, *args, **kwargs) -> UseResult:
         character.current_hp = min(character.max_hp, character.current_hp + 20)
 
-        # update_character(database, character)
-        Thread(target=lambda: run(update_character(database, character))).start()
+        await update_character(database, character)
+        # Thread(target=lambda: run(update_character(database, character))).start()
 
         return UseResult(success=True, log=[f"The delicious burger restores 20 HP"])

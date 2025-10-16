@@ -162,7 +162,7 @@ const Gamescreen = () => {
         const gameGrid = document.getElementById("game-grid")
         if (!gameGrid) return
         gameGrid.querySelectorAll(".selected-cell").forEach((cell) => {
-            cell.classList.remove("selected-cell", "border-2", "border-orange-400")
+            cell.classList.remove("selected-cell", "border-1", "border-orange-400")
         })
     }
 
@@ -170,7 +170,7 @@ const Gamescreen = () => {
         clearNeighborHighlights()
         const cell = document.getElementById(cellName(selectedCell.x, selectedCell.y))
         if (!cell) return
-        cell.classList.add("selected-cell", "border-2", "border-orange-400")
+        cell.classList.add("selected-cell", "border-1", "border-orange-400")
     }
 
     useEffect(() => {

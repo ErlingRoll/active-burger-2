@@ -21,14 +21,14 @@ async def handle_item_consumption(database, item, count=1, consume=False):
         return
 
     if item.count == count:
-        return delete_item(database, item.id)
+        return await delete_item(database, item.id)
 
     if item.count and item.count > count:
         item.count -= count
         return await update_item(database, item)
 
 
-async def use_item(app, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
+async def use_item(request, app, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
     database = app["database"]
     gamestate: Gamestate = app["gamestate"]
 

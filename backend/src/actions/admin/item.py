@@ -22,5 +22,5 @@ async def give_item(request: Request, ws: WebSocketResponse, account: Account, c
     new_item = generate_item(payload.item_id)
     new_item.character_id = character.id
 
-    create_item(database, new_item)
+    await create_item(database, new_item)
     await gamestate.publish_character(account, character_id=character.id)

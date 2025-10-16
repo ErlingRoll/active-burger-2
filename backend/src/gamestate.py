@@ -4,7 +4,7 @@ from typing import Dict
 from pydantic import BaseModel, ConfigDict
 from supabase import AsyncClient
 
-from src.connection_manager import ConnectionManager
+from src.connection_manager import ConnectionManager, GameEvent
 from src.models.account import Account
 from src.database.character import get_character_data_by_id, get_characters
 from src.database.object import get_objects
@@ -25,7 +25,7 @@ class Gamestate(BaseModel):
         character_res = get_characters(self.database)
         self.objects, self.characters = await gather(object_res, character_res)
 
-    async def publish_character(self, account: Account, character_id: str = None, character_data: CharacterData = None):
+    async def publish_character(self, account: Account, character_id: str | None = None, character_data: CharacterData | None = None):
         if not character_id and not character_data:
             raise ValueError("Either character_id or character_data must be provided")
 
@@ -33,19 +33,22 @@ class Gamestate(BaseModel):
         if character_id and not character_data:
             _character_data = await get_character_data_by_id(self.database, character_id)
 
-        event = {
-            "event": "character_update",
-            "payload": _character_data.model_dump()
-        }
+        if not _character_data:
+            raise ValueError("Character data could not be found")
+
+        event: GameEvent = GameEvent(
+            event="character_update",
+            payload=_character_data.model_dump(),
+        )
 
         await self.connection_manager.send(account.id, event)
 
     async def publish_gamestate(self):
         gamestate = self.get_gamestate()
-        event = {
-            "event": "gamestate_update",
-            "payload": gamestate
-        }
+        event = GameEvent(
+            event="gamestate_update",
+            payload=gamestate
+        )
         await self.connection_manager.broadcast(event)
         return gamestate
 

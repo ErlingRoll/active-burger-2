@@ -21,7 +21,7 @@ async def give_loot(request: Request, ws: WebSocketResponse, account: Account, c
     payload: GiveLootPayload = GiveLootPayload(**payload)
     items = payload.items
 
-    character_data = get_character_data_by_id(database, character.id)
+    character_data = await get_character_data_by_id(database, character.id)
     stackable_item_map = {item.item_id: item for item in character_data.items.values() if item.stackable}
 
     for item in items:

@@ -44,7 +44,7 @@ class ConnectionManager(BaseModel):
         ws = self.connections_account_map.get(account_id)
         if ws and not ws.closed:
             try:
-                await ws.send_str(json.dumps(event))
+                await ws.send_json(event.model_dump())
             except Exception as e:
                 print(f"Error sending to account {account_id}: {e}")
                 print_exc()  # Print the full traceback for debugging
@@ -59,7 +59,7 @@ class ConnectionManager(BaseModel):
             if not ws.closed:
                 try:
                     pass
-                    asyncio.create_task(ws.send_str(json.dumps(event)))
+                    asyncio.create_task(ws.send_json(event.model_dump()))
                 except Exception as e:
                     print(f"Error sending to connection {connection_id}: {e}")
             else:

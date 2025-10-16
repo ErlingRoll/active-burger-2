@@ -12,7 +12,7 @@ class GetCharacterPayload(BaseModel):
     character_id: str
 
 
-async def get_character(request: Request, ws: WebSocketResponse, account: Account, payload: GetCharacterPayload):
+async def get_character(request: Request, app, ws: WebSocketResponse, account: Account, payload: GetCharacterPayload):
     database = request.app["database"]
     connection_manager: ConnectionManager = request.app["connection_manager"]
 

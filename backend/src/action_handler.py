@@ -26,11 +26,11 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
         })
 
     if action == "get_character":
-        await get_character(request, ws, account, payload)
+        await get_character(request, app, ws, account, payload)
     elif action == "move":
         await move(request, ws, account, character, payload)
     elif action == "use_item":
-        await use_item(app, ws, account, character, payload)
+        await use_item(request, app, ws, account, character, payload)
     elif action == "place_object":
         await place_object(request, ws, account, character, payload)
     elif action == "delete_object":

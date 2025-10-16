@@ -24,7 +24,7 @@ async def place_object(request: Request, ws: WebSocketResponse, account: Account
 
     new_object = generate_object(payload.object_id, x=payload.x, y=payload.y)
 
-    object = create_object(database, new_object)
+    object = await create_object(database, new_object)
 
     if not object:
         await ws.send_str("Error: Failed to create object.")
@@ -49,7 +49,7 @@ async def delete_object(request: Request, ws: WebSocketResponse, account: Accoun
         await ws.send_str("Error: Object not found.")
         return
 
-    deleted = db_delete_object(database, object_id)
+    deleted = await db_delete_object(database, object_id)
 
     if not deleted:
         await ws.send_str("Error: Failed to delete object from database.")

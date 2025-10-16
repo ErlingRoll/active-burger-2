@@ -1,6 +1,7 @@
 import json
+from threading import Thread
 from aiohttp.web import Request, WSMsgType, WebSocketResponse
-import asyncio
+from asyncio import CancelledError, create_task
 from .action_handler import handle_action
 
 
@@ -35,7 +36,8 @@ async def websocket_handler(request: Request):
 
                     action = data.get("action")
 
-                    await handle_action(request, ws, data, action)
+                    # await handle_action(request, ws, data, action)
+                    create_task(handle_action(request, ws, data, action))
 
                 elif msg.type == WSMsgType.CLOSE:
                     print(f"WebSocket closed by client: {request.remote}")
@@ -44,12 +46,12 @@ async def websocket_handler(request: Request):
                 elif msg.type == WSMsgType.ERROR:
                     print(
                         f"WebSocket connection closed with exception: {ws.exception()}")
-        except asyncio.CancelledError:
+        except CancelledError:
             print(f"Receive task for {request.remote} cancelled.")
         finally:
             print(f"Receive task for {request.remote} finished.")
 
-    await asyncio.create_task(receive_messages())
+    await create_task(receive_messages())
 
     print(f"WebSocket disconnected: {request.remote}")
 
