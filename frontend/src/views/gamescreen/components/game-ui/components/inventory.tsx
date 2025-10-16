@@ -1,12 +1,13 @@
 import { useContext } from "react"
 import { CharacterContext } from "../../../../../contexts/character-context"
 import { GamestateContext } from "../../../../../contexts/gamestate-context"
+import { PlayerContext } from "../../../../../contexts/player-context"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const Inventory = () => {
     const { character } = useContext(CharacterContext)
-    const { gameActions } = useContext(GamestateContext)
+    const { gameActions } = useContext(PlayerContext)
 
     return (
         <div className="absolute bottom-0 left-0 m-4 p-2 pt-0 bg-dark/90 text-light rounded flex flex-col items-center z-200 pointer-events-auto">
