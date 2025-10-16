@@ -8,6 +8,7 @@ class Character(Entity):
     type: str = "character"
     direction: str = "right"
     gold: int = 0
+    name_visible: bool = True
 
     model_config = ConfigDict(extra="allow")
 
