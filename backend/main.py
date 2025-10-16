@@ -33,9 +33,9 @@ async def main():
     app.router.add_get('/game', websocket_handler)
     runner = aiohttp.web.AppRunner(app)
     await runner.setup()
-    site = aiohttp.web.TCPSite(runner, 'localhost', PORT)
+    site = aiohttp.web.TCPSite(runner, '0.0.0.0', PORT)
     await site.start()
-    print(f"Server started on http://localhost:{PORT}")
+    print(f"Server started on http://0.0.0.0:{PORT}")
 
     # Wait a moment to ensure the server is fully up
     # await asyncio.sleep(1)
