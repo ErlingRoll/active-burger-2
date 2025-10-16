@@ -1,5 +1,6 @@
 from aiohttp.web import Request, WebSocketResponse
 from pydantic import BaseModel
+from asyncio import create_task, gather
 
 from src.connection_manager import GameEvent
 from src.actions.item import handle_item_consumption
@@ -17,6 +18,7 @@ class SellPayload(BaseModel):
 async def sell(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
     database = request.app['database']
     gamestate: Gamestate = request.app['gamestate']
+    tasks = []
 
     payload: SellPayload = SellPayload(**payload)
 
@@ -39,11 +41,12 @@ async def sell(request: Request, ws: WebSocketResponse, account: Account, charac
 
     character_data.gold += total_sell_price
 
-    await handle_item_consumption(database, owned_item, count=payload.count, consume=True)
+    task = handle_item_consumption(database, owned_item, count=payload.count, consume=True)
+    tasks.append(task)
 
     update_character(database, character_data.to_character())
 
-    await gamestate.publish_character(account, character_id=character.id)
+    create_task(gamestate.publish_character(account, character_id=character.id))
 
     event = GameEvent(
         event="log",
@@ -51,4 +54,7 @@ async def sell(request: Request, ws: WebSocketResponse, account: Account, charac
         log=[f"You sold {owned_item.name} x{payload.count} for {total_sell_price} gold"]
     )
 
-    await ws.send_str(event.model_dump_json())
+    task = ws.send_str(event.model_dump_json())
+    tasks.append(task)
+
+    await gather(*tasks)

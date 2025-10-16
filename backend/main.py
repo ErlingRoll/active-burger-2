@@ -37,9 +37,6 @@ async def main():
     await site.start()
     print(f"Server started on http://0.0.0.0:{PORT}")
 
-    # Wait a moment to ensure the server is fully up
-    # await asyncio.sleep(1)
-
     await game_loop(app, database, connection_manager, gamestate)
 
 

@@ -26,9 +26,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     const gameActions = useRef(new GameActions())
 
     function localInteract(object: RenderObject) {
-        console.log("Local interact with object:", object)
         if (object.object_id === "shopkeeper") {
-            console.log("Opening shop locally")
             setShopOpen(true)
         }
     }
