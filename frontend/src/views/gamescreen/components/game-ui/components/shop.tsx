@@ -5,6 +5,7 @@ import { GamestateContext } from "../../../../../contexts/gamestate-context"
 import { UIContext } from "../../../../../contexts/ui-context"
 import { PlayerContext } from "../../../../../contexts/player-context"
 import { Item } from "../../../../../models/item"
+import ItemTooltip from "./item-tooltip"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -12,13 +13,19 @@ const shopTabs = ["Sell", "Buy"]
 
 const shopItems: Partial<Item>[] = [
     {
+        id: "shop-item-pickaxe",
         name: "Pickaxe",
         item_id: "pickaxe",
+        description: "Looks a bit rusty but probably useful for mining.",
         count: 1,
         texture: "tool/pickaxe",
         value: 50,
         type: "tool",
         stackable: false,
+        base_mods: {
+            efficiency: 5,
+            fortune: 1,
+        },
     },
 ]
 
@@ -60,7 +67,9 @@ const Shop = () => {
                     <div className="grid grid-cols-5 gap-4 items-center">
                         {items.map((item) => (
                             <Fragment key={item.id}>
+                                <ItemTooltip item={item} namespace="shop" />
                                 <img
+                                    id={`shop-item-${item.id}`}
                                     src={textures[`/src/assets/textures/item/${item.texture}.png`]}
                                     className="w-12 h-12 object-fit"
                                 />
@@ -82,9 +91,11 @@ const Shop = () => {
                 )}
                 {tabName === "Buy" && (
                     <div className="grid grid-cols-5 gap-4 items-center">
-                        {shopItems.map((item, index) => (
+                        {shopItems.map((item: Item, index) => (
                             <Fragment key={index}>
+                                <ItemTooltip item={item} namespace="shop" />
                                 <img
+                                    id={`shop-item-${item.id}`}
                                     src={textures[`/src/assets/textures/item/${item.texture}.png`]}
                                     className="w-12 h-12 object-fit"
                                 />

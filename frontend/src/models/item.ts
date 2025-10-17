@@ -10,4 +10,6 @@ export type Item = {
     stackable: boolean
     count: number
     character_id: string
+    base_mods: { [key: string]: number }
+    mods: { [key: string]: number }
 }
