@@ -12,8 +12,13 @@ async def update_character(database: AsyncClient, character: Character) -> Chara
     return CharacterData(**response.data[0]) if response.data else None
 
 
-async def create_character(database: AsyncClient, data):
-    response = await database.table("character").insert(data).execute()
+async def create_character(database: AsyncClient, character: Character):
+    character_json = character.model_dump()
+    del character_json["id"]
+    del character_json["created_at"]
+    del character_json["height"]
+    del character_json["width"]
+    response = await database.table("character").insert(character_json).execute()
     return Character(**response.data[0]) if response.data else None
 
 

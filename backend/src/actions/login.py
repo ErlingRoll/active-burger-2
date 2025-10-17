@@ -1,11 +1,19 @@
+from asyncio import create_task
 from aiohttp.web import Request, WebSocketResponse
+from pydantic import BaseModel
 
-from src.connection_manager import ConnectionManager
+from src.connection_manager import ConnectionManager, GameEvent
 from src.gamestate import Gamestate
 from src.database.account import get_account_by_discord_id, create_account
 from src.database.character import get_character_by_account_id, create_character, get_character_data_by_id
-from src.models.character import Character
+from src.models.character import Character, CharacterData
 from src.models.account import Account
+
+
+class LoginPayload(BaseModel):
+    discord_id: str
+    discord_avatar: str | None = None
+    name: str | None = None
 
 
 async def login(request: Request, ws: WebSocketResponse, account: Account | None, payload: dict):
@@ -13,11 +21,13 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
     gamestate: Gamestate = request.app["gamestate"]
     connection_manager: ConnectionManager = request.app["connection_manager"]
 
-    account = await get_account_by_discord_id(database, payload.get("discord_id"))
+    payload: LoginPayload = LoginPayload(**payload)
+
+    account: Account = await get_account_by_discord_id(database, payload.discord_id)
 
     if not account:
-        print("Creating new account...")
-        account = await create_account(database, payload)
+        new_account: Account = Account.model_construct(**payload.model_dump())
+        account = await create_account(database, new_account)
 
     # Automatically create a character for the new account.
     # Add character selection logic later
@@ -27,36 +37,34 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
         return
 
     # Save account_id in ws session for future reference
-    ws.account_id = account.get("id")
-    connection_manager.update_account_map(account.get("id"), ws)
+    ws.account_id = account.id
+    connection_manager.update_account_map(account.id, ws)
 
-    character = await get_or_create_character(request, ws, payload, account)
+    character: Character = await get_or_create_character(request, ws, account)
 
-    character_data = await get_character_data_by_id(database, character.id)
-
-    await ws.send_json({
-        "event": "login_success",
-        "payload": {
-            "account": account,
-            "character": character_data.model_dump()
-        }
-    })
+    character_data: CharacterData = await get_character_data_by_id(database, character.id)
 
     await gamestate.add_character(character)
 
+    login_event = GameEvent(
+        event="login_success",
+        payload={
+            "account": account,
+            "character": character_data.model_dump()
+        }
+    )
 
-async def get_or_create_character(request: Request, ws: WebSocketResponse, payload: dict, account: dict):
+    create_task(ws.send_json(login_event.model_dump()))
+
+
+async def get_or_create_character(request: Request, ws: WebSocketResponse, account: Account) -> Character:
     database = request.app["database"]
 
-    character = await get_character_by_account_id(database, account.get("id"))
+    character: Character = await get_character_by_account_id(database, account.id)
 
     if not character:
-        print("Creating new character...")
-        character_data = {
-            "account_id": account.get("id"),
-            "name": payload.get("name", "Newbie"),
-        }
-        character = await create_character(database, character_data)
+        new_character = Character.model_construct(account_id=account.id, name=account.name or "Newbie")
+        character = await create_character(database, new_character)
 
     if not character:
         await ws.send_str("Error: Failed to create character.")

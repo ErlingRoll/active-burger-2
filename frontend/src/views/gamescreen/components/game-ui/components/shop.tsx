@@ -15,7 +15,7 @@ const shopItems: Partial<Item>[] = [
         name: "Pickaxe",
         item_id: "pickaxe",
         count: 1,
-        texture: "pickaxe",
+        texture: "tool/pickaxe",
         value: 50,
         type: "tool",
         stackable: false,
@@ -99,7 +99,6 @@ const Shop = () => {
                                 <button
                                     className="bg-primary text-light font-bold rounded px-2 py-1"
                                     onClick={() => gameActions.buy({ item_id: item.item_id!, count: 1 })}
-                                    disabled={character.gold < (item.value || 0)}
                                 >
                                     Buy
                                 </button>

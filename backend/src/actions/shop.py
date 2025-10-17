@@ -25,7 +25,6 @@ class SellPayload(BaseModel):
 async def buy(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
     database = request.app['database']
     gamestate: Gamestate = request.app['gamestate']
-    tasks = []
 
     payload: SellPayload = SellPayload(**payload)
 
@@ -45,14 +44,23 @@ async def buy(request: Request, ws: WebSocketResponse, account: Account, charact
         event = GameEvent(
             event="log",
             payload={},
-            log=[f"Not enough gold to buy {item.name} x{payload.count}. You need {total_price} gold."]
+            log=[f"Not enough gold to buy {item.name} x{payload.count}. Ya poor!"]
         )
         return await ws.send_json(event.model_dump())
 
     character_data.gold -= total_price
 
     await add_or_stack_items(database, character_data, [item])
+    await update_character(database, character_data.to_character())
+
     create_task(gamestate.publish_character(account, character_id=character.id))
+
+    event = GameEvent(
+        event="log",
+        payload={},
+        log=[f"You bought {item.name} x{payload.count} for {total_price} gold"]
+    )
+    create_task(ws.send_json(event.model_dump()))
 
 
 async def sell(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
@@ -87,6 +95,8 @@ async def sell(request: Request, ws: WebSocketResponse, account: Account, charac
     task = update_character(database, character_data.to_character())
     tasks.append(task)
 
+    await gather(*tasks)
+
     create_task(gamestate.publish_character(account, character_id=character.id))
 
     event = GameEvent(
@@ -94,8 +104,4 @@ async def sell(request: Request, ws: WebSocketResponse, account: Account, charac
         payload={},
         log=[f"You sold {owned_item.name} x{payload.count} for {total_sell_price} gold"]
     )
-
-    task = ws.send_json(event.model_dump())
-    tasks.append(task)
-
-    await gather(*tasks)
+    create_task(ws.send_json(event.model_dump()))
