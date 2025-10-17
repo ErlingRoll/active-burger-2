@@ -7,7 +7,7 @@ class Character(Entity):
     account_id: str
     type: str = "character"
     direction: str = "right"
-    gold: int = 0
+    gold: int = 100
     name_visible: bool = True
 
     model_config = ConfigDict(extra="allow")

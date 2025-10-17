@@ -2,17 +2,57 @@ from aiohttp.web import Request, WebSocketResponse
 from pydantic import BaseModel
 from asyncio import create_task, gather
 
+from src.models.character import CharacterData
+from src.generators.item import generate_item
 from src.connection_manager import GameEvent
-from src.actions.item import handle_item_consumption
+from src.actions.item import add_or_stack_items, handle_item_consumption
 from src.gamestate import Gamestate
 from src.database.item import create_item, update_item
 from src.database.character import get_character_by_id, get_character_data_by_id, update_character
 from src.models import Account, Character, Item
 
 
+class BuyPayload(BaseModel):
+    item_id: str
+    count: int = 1
+
+
 class SellPayload(BaseModel):
     item_id: str
     count: int = 1
+
+
+async def buy(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
+    database = request.app['database']
+    gamestate: Gamestate = request.app['gamestate']
+    tasks = []
+
+    payload: SellPayload = SellPayload(**payload)
+
+    character_data: CharacterData = await get_character_data_by_id(database, character.id)
+
+    item: Item = generate_item(payload.item_id)
+
+    if not item.value:
+        return await ws.send_json({
+            'type': 'error',
+            'message': f'Item {item.name} has no value.'
+        })
+
+    total_price = item.value * payload.count
+
+    if character_data.gold < total_price:
+        event = GameEvent(
+            event="log",
+            payload={},
+            log=[f"Not enough gold to buy {item.name} x{payload.count}. You need {total_price} gold."]
+        )
+        return await ws.send_json(event.model_dump())
+
+    character_data.gold -= total_price
+
+    await add_or_stack_items(database, character_data, [item])
+    create_task(gamestate.publish_character(account, character_id=character.id))
 
 
 async def sell(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
@@ -55,7 +95,7 @@ async def sell(request: Request, ws: WebSocketResponse, account: Account, charac
         log=[f"You sold {owned_item.name} x{payload.count} for {total_sell_price} gold"]
     )
 
-    task = ws.send_str(event.model_dump_json())
+    task = ws.send_json(event.model_dump())
     tasks.append(task)
 
     await gather(*tasks)

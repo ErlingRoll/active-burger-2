@@ -22,7 +22,7 @@ const Inventory = () => {
                             onClick={() => gameActions.useItem({ id: item.id })}
                         >
                             <img
-                                src={textures[`/src/assets/textures/items/${item.texture}.png`]}
+                                src={textures[`/src/assets/textures/item/${item.texture}.png`]}
                                 alt={item.name}
                                 className="w-full h-full object-cover"
                             />

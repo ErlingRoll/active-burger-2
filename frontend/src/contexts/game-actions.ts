@@ -69,6 +69,15 @@ class GameActions {
         this.send(action)
     }
 
+    buy({ item_id, count }: { item_id: string; count: number }) {
+        if (!this.ready()) return
+        const action = {
+            action: "buy",
+            payload: { item_id, count },
+        }
+        this.send(action)
+    }
+
     // --- Admin Actions ---
     placeObject({ object_id, x, y }: { object_id: string; x: number; y: number }) {
         if (!this.ready()) return

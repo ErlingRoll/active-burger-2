@@ -20,6 +20,8 @@ class Item(BaseModel):
     stackable: Optional[bool] = False
     count: Optional[int] = 1
     consumable: Optional[bool] = False
+    base_mods: dict = {}
+    mods: dict = {}
 
     async def use(self, *args, **kwargs) -> UseResult:
         return UseResult(success=False, log=[f"Item [{self.name}] cannot be used."])
