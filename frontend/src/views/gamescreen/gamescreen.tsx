@@ -70,10 +70,18 @@ const Gamescreen = () => {
 
         // Add Name
         if (obj.name_visible) {
+            const nameContainer = document.createElement("div")
+            const nameTagHeightHolder = document.createElement("p")
+            nameTagHeightHolder.innerHTML = "&nbsp;"
+            nameTagHeightHolder.className = "text-transparent text-[0.7rem] user-select-none select-none"
+            nameContainer.appendChild(nameTagHeightHolder)
+
             const nameTag = document.createElement("p")
-            nameTag.className = "text-[0.7rem] text-blue-700 font-bold"
+            nameTag.className =
+                "absolute top-0 left-1/2 transform -translate-x-1/2 text-[0.7rem] text-blue-700 font-bold whitespace-nowrap"
             nameTag.innerText = obj.name
-            div.appendChild(nameTag)
+            nameContainer.appendChild(nameTag)
+            div.appendChild(nameContainer)
         }
 
         if (obj.texture) {

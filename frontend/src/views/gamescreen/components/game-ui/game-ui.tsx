@@ -1,4 +1,4 @@
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { UIContext } from "../../../../contexts/ui-context"
 import Inventory from "./components/inventory"
 import CharacterInfo from "./components/character-info"
