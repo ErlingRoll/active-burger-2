@@ -9,6 +9,7 @@ async def upsert_equipment(database: AsyncClient, equipment: Equipment) -> Equip
     data = equipment.model_dump()
     equipment_id = data.pop("id", None)
     created_at = data.pop("created_at", None)
+    item = data.pop("item", None)
 
     # Upsert equipment based on character_id and slot. On conflict, update the item_id.
     response = await database.table("equipment").upsert(

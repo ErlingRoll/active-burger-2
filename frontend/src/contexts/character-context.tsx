@@ -1,5 +1,5 @@
 import React, { Dispatch, SetStateAction, createContext, use, useEffect } from "react"
-import { Item } from "../models/item"
+import { EQUIP_SLOTS, Item } from "../models/item"
 import { Character } from "../models/object"
 
 type CharacterContextType = {
@@ -9,6 +9,7 @@ type CharacterContextType = {
     setItems: Dispatch<SetStateAction<Item[] | null>>
     itemMap: { [id: string]: Item }
     setItemMap: Dispatch<SetStateAction<{ [id: string]: Item }>>
+    equipment: { [slot: string]: Item | null }
 }
 
 export const CharacterContext = createContext<CharacterContextType>({
@@ -18,12 +19,14 @@ export const CharacterContext = createContext<CharacterContextType>({
     setItems: (items: any) => {},
     itemMap: {},
     setItemMap: (itemMap: any) => {},
+    equipment: {},
 })
 
 export const CharacterProvider = ({ children }: { children: any }) => {
     const [character, setCharacter] = React.useState<Character | null>(null)
     const [items, setItems] = React.useState<Item[]>([])
     const [itemMap, setItemMap] = React.useState<{ [id: string]: Item }>({})
+    const [equipment, setEquipment] = React.useState<{ [slot: string]: Item | null }>({})
 
     useEffect(() => {
         if (!character || !character.items) return
@@ -34,10 +37,14 @@ export const CharacterProvider = ({ children }: { children: any }) => {
             newItemMap[item.id] = item
         })
         setItemMap(newItemMap)
+
+        const _equipment: { [slot: string]: Item | null } = {}
+        EQUIP_SLOTS.forEach((slot) => (_equipment[slot] = character.equipment?.[slot]))
+        setEquipment(_equipment)
     }, [character])
 
     return (
-        <CharacterContext.Provider value={{ character, setCharacter, items, setItems, itemMap, setItemMap }}>
+        <CharacterContext.Provider value={{ character, setCharacter, items, setItems, itemMap, setItemMap, equipment }}>
             {children}
         </CharacterContext.Provider>
     )

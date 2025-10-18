@@ -1,3 +1,4 @@
+from asyncio import create_task
 from pydantic import BaseModel
 from aiohttp.web import Request, WebSocketResponse
 
@@ -30,4 +31,4 @@ async def get_character(request: Request, app, ws: WebSocketResponse, account: A
         "payload": character.model_dump()
     }
 
-    await connection_manager.send(account.id, event)
+    create_task(connection_manager.send(account.id, event))

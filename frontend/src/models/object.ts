@@ -25,4 +25,5 @@ export interface Entity extends RenderObject {
 export interface Character extends Entity {
     account_id: string
     items: { [id: string]: Item }
+    equipment: { [slot: string]: Item | null }
 }

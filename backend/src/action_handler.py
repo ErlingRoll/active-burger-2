@@ -2,7 +2,7 @@ from aiohttp.web import Request, WebSocketResponse
 
 
 from .models import Account, Character
-from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact, sell, buy
+from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact, unequip_item, sell, buy
 
 
 async def handle_action(request: Request, ws: WebSocketResponse, data: dict, action: str):
@@ -39,6 +39,8 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
         await give_item(request, ws, account, character, payload)
     elif action == "interact":
         await interact(request, ws, account, character, payload)
+    elif action == "unequip_item":
+        await unequip_item(request, app, ws, account, character, payload)
     elif action == "buy":
         await buy(request, ws, account, character, payload)
     elif action == "sell":

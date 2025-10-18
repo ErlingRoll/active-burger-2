@@ -18,13 +18,13 @@ class GameActions {
     }
 
     send(action: any) {
+        if (!this.ready()) return
         action.account = this.account
         action.character = this.character
         this.gameCon.send(JSON.stringify(action))
     }
 
     getCharacter({ character_id }: { character_id: string }) {
-        if (!this.ready()) return
         const action = {
             action: "get_character",
             payload: { character_id },
@@ -33,7 +33,6 @@ class GameActions {
     }
 
     move({ x, y, direction }: { x: number; y: number; direction: string }) {
-        if (!this.ready()) return
         const action = {
             action: "move",
             payload: { x, y, direction },
@@ -42,7 +41,6 @@ class GameActions {
     }
 
     useItem({ id }: { id: string }) {
-        if (!this.ready()) return
         const action = {
             action: "use_item",
             payload: { id },
@@ -51,7 +49,6 @@ class GameActions {
     }
 
     interact({ object_id }: { object_id: string }) {
-        if (!this.ready()) return
         if (!object_id) return
         const action = {
             action: "interact",
@@ -61,7 +58,6 @@ class GameActions {
     }
 
     sell({ item_id, count }: { item_id: string; count: number }) {
-        if (!this.ready()) return
         const action = {
             action: "sell",
             payload: { item_id, count },
@@ -70,7 +66,6 @@ class GameActions {
     }
 
     buy({ item_id, count }: { item_id: string; count: number }) {
-        if (!this.ready()) return
         const action = {
             action: "buy",
             payload: { item_id, count },
@@ -78,9 +73,16 @@ class GameActions {
         this.send(action)
     }
 
+    unequipItem({ slot }: { slot: string }) {
+        const action = {
+            action: "unequip_item",
+            payload: { slot },
+        }
+        this.send(action)
+    }
+
     // --- Admin Actions ---
     placeObject({ object_id, x, y }: { object_id: string; x: number; y: number }) {
-        if (!this.ready()) return
         const action = {
             action: "place_object",
             payload: { object_id, x, y },
@@ -89,7 +91,6 @@ class GameActions {
     }
 
     deleteObject(obj_id: string) {
-        if (!this.ready()) return
         const action = {
             action: "delete_object",
             payload: { id: obj_id },
@@ -98,7 +99,6 @@ class GameActions {
     }
 
     giveItem({ item_id }: { item_id: string }) {
-        if (!this.ready()) return
         const action = {
             action: "give_item",
             payload: { item_id },

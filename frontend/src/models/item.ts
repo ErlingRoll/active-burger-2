@@ -13,3 +13,11 @@ export type Item = {
     base_mods: { [key: string]: number }
     mods: { [key: string]: number }
 }
+
+export enum EquipSlot {
+    WEAPON = "weapon",
+    ARMOR = "armor",
+    PICKAXE = "pickaxe",
+}
+
+export const EQUIP_SLOTS: EquipSlot[] = Object.values(EquipSlot)

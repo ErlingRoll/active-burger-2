@@ -1,9 +1,9 @@
-import { Tooltip } from "react-tooltip"
+import { PlacesType, Tooltip } from "react-tooltip"
 import { Item } from "../../../../../models/item"
 import { RiCopperCoinFill } from "react-icons/ri"
 import { useEffect, useState } from "react"
 
-const ItemTooltip = ({ item, namespace }: { item: Item; namespace: string }) => {
+const ItemTooltip = ({ item, namespace, place }: { item: Item; namespace: string; place?: PlacesType }) => {
     const [baseMods, setBaseMods] = useState<{ [key: string]: number }[]>()
     const [mods, setMods] = useState<{ [key: string]: number }[]>()
 
@@ -15,7 +15,7 @@ const ItemTooltip = ({ item, namespace }: { item: Item; namespace: string }) => 
     }, [item])
     return (
         <div className="absolute z-210">
-            <Tooltip className="pointer-events-none" anchorSelect={`#${namespace}-item-${item.id}`} place="top">
+            <Tooltip className="pointer-events-none" anchorSelect={`#${namespace}-item-${item.id}`} place={place}>
                 <div className="flex flex-col">
                     <p className="font-bold text-lg">{item.name}</p>
                     <div className="flex flex-row items-center gap-1">
