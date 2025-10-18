@@ -176,6 +176,7 @@ const WorldEditor = () => {
                             <div className="center-col items-start! gap-2">
                                 {terrainObjects.map((obj) => (
                                     <button
+                                        key={obj.object_id}
                                         className={
                                             `w-full px-4 py-2 border-2 border-primary text-light font-bold ` +
                                             (brush === obj.object_id && "bg-primary")

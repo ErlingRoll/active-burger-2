@@ -1,6 +1,5 @@
 import { useContext, useEffect, useState } from "react"
 import { GamestateContext } from "../../contexts/gamestate-context"
-import { UserContext } from "../../contexts/user-context"
 import { FaTimes } from "react-icons/fa"
 import { Character, Entity, RenderObject } from "../../models/object"
 import { CharacterContext } from "../../contexts/character-context"
@@ -11,18 +10,12 @@ import { PlayerContext } from "../../contexts/player-context"
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const Gamescreen = () => {
-    const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 1 }) // x and y will be set to center on player
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
-    const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
 
-    const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
-    const moveRepeatDelay = 100 // milliseconds
-
-    const { gamestate, logout } = useContext(GamestateContext)
-    const { admin } = useContext(UserContext)
+    const { gamestate } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
-    const { showGrid, setShowGrid, adminMode, setAdminMode } = useContext(UIContext)
-    const { gameActions, localInteract } = useContext(PlayerContext)
+    const { showGrid, adminMode } = useContext(UIContext)
+    const { gameActions, selectedCell, setSelectedCell } = useContext(PlayerContext)
 
     const renderDistance = 31 // Number of cells to render around the player
 
@@ -111,52 +104,6 @@ const Gamescreen = () => {
         div.appendChild(spriteElement)
     }
 
-    useEffect(() => {
-        const handleKeyDown = (event: KeyboardEvent) => {
-            if (event.repeat) {
-                if (Date.now() - lastMoveRepeat < moveRepeatDelay) return
-            }
-            setLastMoveRepeat(Date.now())
-
-            const player = gamestate.render_objects[character.id]
-            const input = event.key.toLowerCase()
-            let gameInput = true
-            switch (input) {
-                case "arrowup":
-                case "w":
-                    gameActions.move({ x: player.x, y: player.y + 1, direction: "up" })
-                    break
-                case "arrowdown":
-                case "s":
-                    gameActions.move({ x: player.x, y: player.y - 1, direction: "down" })
-                    break
-                case "arrowleft":
-                case "a":
-                    gameActions.move({ x: player.x - 1, y: player.y, direction: "left" })
-                    break
-                case "arrowright":
-                case "d":
-                    gameActions.move({ x: player.x + 1, y: player.y, direction: "right" })
-                    break
-                case "e":
-                    if (!selectedCell) break
-                    const object = gamestate.position_objects[selectedCell.x + "_" + selectedCell.y]?.[0]
-                    if (!object) break
-                    localInteract(object)
-                    gameActions.interact({ object_id: object.id })
-                    break
-                default:
-                    gameInput = false
-            }
-            if (gameInput) {
-                event.preventDefault()
-                return
-            }
-        }
-        window.addEventListener("keydown", handleKeyDown)
-        return () => window.removeEventListener("keydown", handleKeyDown)
-    }, [gamestate, character, gameActions, selectedCell, lastMoveRepeat])
-
     function getSelectedCell() {
         const player = gamestate.render_objects[character.id]
         const x = player.x
@@ -204,7 +151,7 @@ const Gamescreen = () => {
             <GameUI selectedCell={selectedCell} />
             <div
                 id="game-grid"
-                className={`grid auto-rows-[64px] gap-0 border border-gray-100`}
+                className={`grid auto-rows-[64px] gap-0 border border-gray-100/30`}
                 style={{ gridTemplateColumns: `repeat(${renderDistance}, 64px)` }}
             >
                 {/* Grid */}
@@ -216,7 +163,7 @@ const Gamescreen = () => {
                     const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
                     const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
                     return (
-                        <div key={index} className={`relative border-[1px] border-gray-100`}>
+                        <div key={index} className={`relative border-[1px] border-red-100/30`}>
                             {/* Admin cell overlay */}
                             {adminMode && (
                                 <div
