@@ -1,9 +1,6 @@
 import { Fragment, useContext } from "react"
 import { CharacterContext } from "../../../../../contexts/character-context"
-import { GamestateContext } from "../../../../../contexts/gamestate-context"
 import { PlayerContext } from "../../../../../contexts/player-context"
-import { Tooltip } from "react-tooltip"
-import { Item } from "../../../../../models/item"
 import ItemTooltip from "./item-tooltip"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
