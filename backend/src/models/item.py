@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import List, Optional
 from pydantic import BaseModel
 
@@ -22,6 +23,8 @@ class Item(BaseModel):
     consumable: Optional[bool] = False
     base_mods: dict = {}
     mods: dict = {}
+    equipable: Optional[bool] = False
+    equip_slot: Optional[str] = None
 
     async def use(self, *args, **kwargs) -> UseResult:
         return UseResult(success=False, log=[f"Item [{self.name}] cannot be used."])

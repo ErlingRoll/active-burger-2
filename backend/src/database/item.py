@@ -1,8 +1,9 @@
-from typing import List
+from typing import Awaitable, List, cast
+from postgrest import APIResponse
 from supabase import AsyncClient
 
 from src.generators.item import generate_item
-from src.models.item import Item
+from src.models import Item
 
 
 async def get_item_by_id(database: AsyncClient, id: str) -> Item:
@@ -32,7 +33,11 @@ async def delete_item(database: AsyncClient, item_id: str) -> bool:
     return True
 
 
+async def raw_get_items_by_character_id(database: AsyncClient, character_id: str) -> APIResponse:
+    return await cast(Awaitable[APIResponse], database.table("item").select("*").eq("character_id", character_id).execute())
+
+
 async def get_items_by_character_id(database: AsyncClient, character_id: str) -> List[Item]:
-    response = await database.table("item").select("*").eq("character_id", character_id).execute()
+    response: APIResponse = await raw_get_items_by_character_id(database, character_id)
     items = response.data if response.data else []
     return [generate_item(**item) for item in items]

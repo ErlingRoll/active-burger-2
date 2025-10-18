@@ -1,11 +1,6 @@
-from asyncio import run, create_task
-from threading import Thread
-from typing import Awaitable
 from src.models.item import UseResult
-from src.database.character import update_character
 from src.models import Item
-from src.models import Account, Character
-from src.gamestate import Gamestate
+from src.models import Character
 
 
 class Burger(Item):
@@ -20,6 +15,8 @@ class Burger(Item):
     consumable: bool = True
 
     async def use(self, character: Character = None, database=None, *args, **kwargs) -> UseResult:
+        from src.database.character import update_character
+
         character.current_hp = min(character.max_hp, character.current_hp + 20)
 
         await update_character(database, character)

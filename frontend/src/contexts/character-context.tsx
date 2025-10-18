@@ -27,6 +27,7 @@ export const CharacterProvider = ({ children }: { children: any }) => {
 
     useEffect(() => {
         if (!character || !character.items) return
+        console.log(character)
         const newItems = Object.values(character.items).sort((a: Item, b: Item) => a.name.localeCompare(b.name))
         setItems(newItems)
         const newItemMap: { [id: string]: Item } = {}

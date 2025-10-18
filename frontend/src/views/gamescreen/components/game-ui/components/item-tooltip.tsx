@@ -8,8 +8,6 @@ const ItemTooltip = ({ item, namespace }: { item: Item; namespace: string }) => 
     const [mods, setMods] = useState<{ [key: string]: number }[]>()
 
     useEffect(() => {
-        console.log("item mods", item.name, item.mods)
-        console.log("item base mods", item.name, item.base_mods)
         const baseMods = Object.entries(item.base_mods || {}).map(([key, value]) => ({ [key]: value }))
         const mods = Object.entries(item.mods || {}).map(([key, value]) => ({ [key]: value }))
         setBaseMods(baseMods)

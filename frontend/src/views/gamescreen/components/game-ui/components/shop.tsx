@@ -1,7 +1,6 @@
 import { Fragment, useContext, useMemo, useState } from "react"
 import { CharacterContext } from "../../../../../contexts/character-context"
 import { RiCopperCoinFill } from "react-icons/ri"
-import { GamestateContext } from "../../../../../contexts/gamestate-context"
 import { UIContext } from "../../../../../contexts/ui-context"
 import { PlayerContext } from "../../../../../contexts/player-context"
 import { Item } from "../../../../../models/item"

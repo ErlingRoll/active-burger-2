@@ -1,7 +1,9 @@
+from asyncio import gather
 from supabase import AsyncClient
 
-from src.models.item import Item
-from src.models.character import Character, CharacterData
+from src.database.item import get_items_by_character_id
+from src.database.equipment import get_equipment_by_character_id
+from src.models import Character, CharacterData, Item, Equipment
 
 
 async def update_character(database: AsyncClient, character: Character) -> Character | None:
@@ -35,17 +37,21 @@ async def get_character_by_account_id(database: AsyncClient, account_id: str):
 async def get_character_data_by_id(database: AsyncClient, character_id: str) -> CharacterData | None:
     """ Fetches all data related to a character, including items and stats. """
 
-    character = await get_character_by_id(database, character_id)
+    character_promise = get_character_by_id(database, character_id)
+    items_promise = get_items_by_character_id(database, character_id)
+    equipment_promise = get_equipment_by_character_id(database, character_id)
+
+    character, items, equipment = await gather(character_promise, items_promise, equipment_promise)
+
     if not character:
         return None
 
-    response = await database.table("item").select("*").eq("character_id", character_id).execute()
-    items = response.data if response.data else []
-    item_map = {item["id"]: Item(**item) for item in items}
-    # stats_response = database.table("stat").select("*").eq("character_id", character_id).execute()
+    item_map = {item.id: item for item in items}
+    equipment_map = {equip.slot: equip.item for equip in equipment}
 
     character_data = CharacterData(**character.model_dump())
     character_data.items = item_map
+    character_data.equipment = equipment_map
 
     return character_data
 
