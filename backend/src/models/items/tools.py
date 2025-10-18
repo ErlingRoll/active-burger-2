@@ -9,6 +9,9 @@ class Tool(Item):
     count: int = 1
     equipable: bool = True
 
+    def get_efficiency(self) -> int:
+        return self.base_mods.get(ToolMod.EFFICIENCY.value, 0)
+
 
 class Pickaxe(Tool):
     item_id: str = "pickaxe"

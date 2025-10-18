@@ -2,7 +2,7 @@ from typing import Awaitable, List, cast
 from postgrest import APIResponse
 from supabase import AsyncClient
 
-from src.models import Equipment
+from src.models import Equipment, Item, EquipSlot
 
 
 async def upsert_equipment(database: AsyncClient, equipment: Equipment) -> Equipment:
@@ -35,3 +35,15 @@ async def get_equipment_by_character_id(database: AsyncClient, character_id: str
         return []
 
     return [Equipment(**item) for item in response.data]
+
+
+async def get_equipment_item(database, character_id: str, slot: EquipSlot) -> Item | None:
+    query = database.table("equipment").select("*, item(*)").eq("character_id", character_id).eq("slot", slot.value).limit(1)
+    response: APIResponse = await cast(Awaitable[APIResponse], query.execute())
+
+    if not response.data:
+        return None
+
+    equipment = Equipment(**response.data[0])
+
+    return equipment.item

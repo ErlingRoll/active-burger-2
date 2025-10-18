@@ -7,7 +7,7 @@ from pydantic import BaseModel, ConfigDict
 
 class GameEvent(BaseModel):
     event: str
-    payload: dict
+    payload: dict = {}
     log: List[str] = []
 
 

@@ -2,27 +2,41 @@ from asyncio import gather
 from typing import List
 from pydantic import BaseModel
 from aiohttp.web import Request, WebSocketResponse
+from src.models.items.tools import Tool
+from src.database.equipment import get_equipment_item
 from src.database.object import db_delete_object
-from src.models.objects.entity.ore.gold_ore import Ore
 from src.generators.object import generate_object
 from src.actions.give_loot import GiveLootPayload, give_loot
 from src.connection_manager import GameEvent
 from src.gamestate import Gamestate
-from src.models import Account, Character, RenderObject, Item
+from src.models.objects.entity.ore.gold_ore import Ore
+from src.models import Account, Character, RenderObject, Item, EquipSlot
 
 
 class InteractPayload(BaseModel):
     object_id: str | None
 
 
-async def mine_interact(request: Request, ws: WebSocketResponse, account: Account, character, object: RenderObject):
+async def mine_interact(request: Request, ws: WebSocketResponse, account: Account, character: Character, object: RenderObject):
     database = request.app['database']
     gamestate: Gamestate = request.app['gamestate']
+
+    pickaxe = await get_equipment_item(database, character.id, EquipSlot.PICKAXE)
+
+    if pickaxe is None:
+        event = GameEvent(
+            event="log",
+            log=["You need to equip a pickaxe to mine ore"],
+        )
+        return await ws.send_json(event.model_dump())
+
+    pickaxe: Tool = Tool(**pickaxe.model_dump())
+
     _ore_defaults = object.to_dict()
     del _ore_defaults['object_id']
     ore: Ore = generate_object(object_id=object.object_id, **_ore_defaults)
 
-    damage = 20
+    damage = pickaxe.get_efficiency()
     ore.damage(damage)
 
     await gamestate.update_object(ore)
@@ -51,7 +65,7 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
     await ws.send_str(event.model_dump_json())
 
 
-async def type_interact(request: Request, ws: WebSocketResponse, account: Account, character, object: RenderObject):
+async def type_interact(request: Request, ws: WebSocketResponse, account: Account, character: Character, object: RenderObject):
     if not object or not object.object_id:
         return
 
