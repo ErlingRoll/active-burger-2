@@ -1,10 +1,10 @@
 
 from typing import ClassVar
 from src.models import Entity
-from src.models.objects.drop_table import LootTable
+from src.models.objects.drop_table import LootTable, LootTableItem, Lootable
 
 
-class Ore(Entity):
+class Ore(Entity, Lootable):
     type: str = "entity"
     solid: bool = True
     name_visible: bool = False
@@ -22,12 +22,12 @@ class GoldOre(Ore):
 
     loot_table: ClassVar[LootTable] = LootTable(
         items=[
-            {
-                "item_id": "gold_ore",
-                "chance": 1.0,
-                "amount": 1,
-                "random_amount": 2,
-            }
+            LootTableItem(
+                item_id="gold_ore",
+                chance=1.0,
+                amount=1,
+                random_amount=2,
+            )
         ]
     )
 

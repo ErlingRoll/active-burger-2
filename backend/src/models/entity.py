@@ -18,3 +18,6 @@ class Entity(RenderObject):
 
     def is_alive(self) -> bool:
         return self.current_hp > 0
+
+    def roll_damage(self) -> int:
+        raise NotImplementedError("roll_damage must be implemented by subclasses")

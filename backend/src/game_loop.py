@@ -2,7 +2,7 @@
 from asyncio import gather, get_event_loop, sleep
 
 from src.gamestate import Gamestate
-from src.spawners.noob_mine import SpawnMine
+from src.spawners.noobmine import NoobmineEntry, NoobmineMonsters
 
 
 TICK_RATE = 1.0  # seconds
@@ -15,7 +15,8 @@ async def game_tick(tickers):
 
 async def game_loop(app, database, connection_manager, gamestate: Gamestate):
     tickers = [
-        SpawnMine(database=database, connection_manager=connection_manager, gamestate=gamestate),
+        NoobmineEntry(database=database, connection_manager=connection_manager, gamestate=gamestate),
+        NoobmineMonsters(database=database, connection_manager=connection_manager, gamestate=gamestate),
     ]
 
     while True:

@@ -26,3 +26,19 @@ class RenderObject(BaseModel):
 
     def to_json_string(self):
         return json.dumps(self.to_dict())
+
+    def to_render_object(self):
+        # Remove all other fields except those needed for rendering
+        return RenderObject(
+            id=self.id,
+            type=self.type,
+            name=self.name,
+            name_visible=self.name_visible,
+            x=self.x,
+            y=self.y,
+            texture=self.texture,
+            height=self.height,
+            width=self.width,
+            solid=self.solid,
+            object_id=self.object_id
+        )

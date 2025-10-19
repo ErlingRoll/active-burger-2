@@ -25,3 +25,10 @@ class LootTable(BaseModel):
                 dropped_items.append(item)
 
         return dropped_items
+
+
+class Lootable(BaseModel):
+    loot_table: LootTable
+
+    def roll_loot(self) -> List[Item]:
+        raise NotImplementedError("roll_loot must be implemented by subclasses")
