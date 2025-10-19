@@ -2,6 +2,7 @@ from asyncio import create_task
 from aiohttp.web import WebSocketResponse
 from pydantic import BaseModel
 
+from src.actions.action import ActionRequest
 from src.connection_manager import GameEvent
 from src.actions.equip import equip_item
 from src.gamestate import Gamestate
@@ -40,28 +41,31 @@ async def handle_item_consumption(database, item, count=1, consume=False):
         return await update_item(database, item)
 
 
-async def use_item(request, app, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
-    database = app["database"]
-    gamestate: Gamestate = app["gamestate"]
+async def use_item(action: ActionRequest):
+    database = action.app["database"]
+    gamestate: Gamestate = action.app["gamestate"]
 
-    item_payload: UseItemPayload = UseItemPayload(**payload)
+    item_payload: UseItemPayload = UseItemPayload(**action.payload)
 
     item: Item = await get_item_by_id(database, item_payload.id)
 
-    if item.equipable:
-        return create_task(equip_item(request, app, ws, account, character, item))
+    equip_action_request = ActionRequest(**action.model_dump())
+    equip_action_request.payload = {"item": item}
 
-    character_state = gamestate.get_character(character.id)
+    if item.equipable:
+        return create_task(equip_item(equip_action_request))
+
+    character_state = gamestate.get_character(action.character.id)
 
     result: UseResult = await item.use(character=character_state, gamestate=gamestate, database=database, ws=ws)
 
     event = GameEvent(event="log", payload={}, log=result.log)
 
     if not result.success:
-        return await ws.send_str(event.model_dump_json())
+        return await action.ws.send_str(event.model_dump_json())
 
     await handle_item_consumption(database, item)
 
-    await gamestate.publish_character(account, character_id=character.id)
+    await gamestate.publish_character(action.account, character_id=action.character.id)
 
-    return create_task(ws.send_str(event.model_dump_json()))
+    return create_task(action.ws.send_str(event.model_dump_json()))

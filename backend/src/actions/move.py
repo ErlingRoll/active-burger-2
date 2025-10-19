@@ -1,6 +1,7 @@
 from aiohttp.web import Request, WebSocketResponse
 from pydantic import BaseModel
 
+from src.actions.action import ActionRequest
 from src.gamestate import Gamestate
 from src.models.character import Character
 from src.models.account import Account
@@ -12,14 +13,14 @@ class MovePayload(BaseModel):
     direction: str
 
 
-async def move(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
-    gamestate: Gamestate = request.app["gamestate"]
-    payload = MovePayload(**payload)
+async def move(action: ActionRequest):
+    gamestate: Gamestate = action.request.app["gamestate"]
+    payload = MovePayload(**action.payload)
 
-    character_state = gamestate.get_character(character.id)
+    character_state = gamestate.get_character(action.character.id)
 
     if character_state is None:
-        await ws.send_str("Error: Character not found.")
+        await action.ws.send_str("Error: Character not found.")
         return
 
     # Get objects at target position

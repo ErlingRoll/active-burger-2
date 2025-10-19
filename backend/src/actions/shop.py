@@ -2,6 +2,7 @@ from aiohttp.web import Request, WebSocketResponse
 from pydantic import BaseModel
 from asyncio import create_task, gather
 
+from src.actions.action import ActionRequest
 from src.models.character import CharacterData
 from src.generators.item import generate_item
 from src.connection_manager import GameEvent
@@ -22,18 +23,18 @@ class SellPayload(BaseModel):
     count: int = 1
 
 
-async def buy(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
-    database = request.app['database']
-    gamestate: Gamestate = request.app['gamestate']
+async def buy(action: ActionRequest):
+    database = action.request.app['database']
+    gamestate: Gamestate = action.request.app['gamestate']
 
-    payload: SellPayload = SellPayload(**payload)
+    payload: SellPayload = SellPayload(**action.payload)
 
-    character_data: CharacterData = await get_character_data_by_id(database, character.id)
+    character_data: CharacterData = await get_character_data_by_id(database, action.character.id)
 
     item: Item = generate_item(payload.item_id)
 
     if not item.value:
-        return await ws.send_json({
+        return await action.ws.send_json({
             'type': 'error',
             'message': f'Item {item.name} has no value.'
         })
@@ -46,41 +47,41 @@ async def buy(request: Request, ws: WebSocketResponse, account: Account, charact
             payload={},
             log=[f"Not enough gold to buy {item.name} x{payload.count}. Ya poor!"]
         )
-        return await ws.send_json(event.model_dump())
+        return await action.ws.send_json(event.model_dump())
 
     character_data.gold -= total_price
 
     await add_or_stack_items(database, character_data, [item])
     await update_character(database, character_data.to_character())
 
-    create_task(gamestate.publish_character(account, character_id=character.id))
+    create_task(gamestate.publish_character(action.account, character_id=action.character.id))
 
     event = GameEvent(
         event="log",
         payload={},
         log=[f"You bought {item.name} x{payload.count} for {total_price} gold"]
     )
-    create_task(ws.send_json(event.model_dump()))
+    create_task(action.ws.send_json(event.model_dump()))
 
 
-async def sell(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: dict):
-    database = request.app['database']
-    gamestate: Gamestate = request.app['gamestate']
+async def sell(action: ActionRequest):
+    database = action.request.app['database']
+    gamestate: Gamestate = action.request.app['gamestate']
     tasks = []
 
-    payload: SellPayload = SellPayload(**payload)
+    payload: SellPayload = SellPayload(**action.payload)
 
-    character_data = await get_character_data_by_id(database, character.id)
+    character_data = await get_character_data_by_id(database, action.character.id)
 
     owned_item: Item = character_data.items.get(payload.item_id)
     if not owned_item:
-        return await ws.send_json({
+        return await action.ws.send_json({
             'type': 'error',
             'message': 'Item not found in inventory.'
         })
 
     if owned_item.count is not None and owned_item.count < payload.count:
-        return await ws.send_json({
+        return await action.ws.send_json({
             'type': 'error',
             'message': 'Not enough items to sell.'
         })
@@ -97,11 +98,11 @@ async def sell(request: Request, ws: WebSocketResponse, account: Account, charac
 
     await gather(*tasks)
 
-    create_task(gamestate.publish_character(account, character_id=character.id))
+    create_task(gamestate.publish_character(action.account, character_id=action.character.id))
 
     event = GameEvent(
         event="log",
         payload={},
         log=[f"You sold {owned_item.name} x{payload.count} for {total_sell_price} gold"]
     )
-    create_task(ws.send_json(event.model_dump()))
+    create_task(action.ws.send_json(event.model_dump()))

@@ -26,7 +26,7 @@ const WorldEditor = () => {
     const { gameActions } = useContext(PlayerContext)
 
     const renderDistance = 31 // Number of cells to render around the player
-    const cameraStep = 5
+    const cameraStep = 3
 
     const cellName = (x: number, y: number) => `cell-${x},${y}`
     const terrainCellName = (x: number, y: number) => `terrain-${x},${y}`

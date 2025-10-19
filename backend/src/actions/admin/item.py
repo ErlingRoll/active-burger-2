@@ -1,7 +1,7 @@
 from asyncio import create_task
 from pydantic import BaseModel
-from aiohttp.web import Request, WebSocketResponse
 
+from src.actions.action import ActionRequest
 from src.actions.item import add_or_stack_items
 from src.gamestate import Gamestate
 from src.database.account import get_account_by_discord_id, create_account
@@ -16,16 +16,16 @@ class GiveItemPayload(BaseModel):
     item_id: str
 
 
-async def give_item(request: Request, ws: WebSocketResponse, account: Account, character: Character, payload: GiveItemPayload):
-    gamestate: Gamestate = request.app["gamestate"]
-    database = request.app["database"]
-    payload = GiveItemPayload(**payload)
+async def give_item(action: ActionRequest):
+    gamestate: Gamestate = action.request.app["gamestate"]
+    database = action.request.app["database"]
+    payload = GiveItemPayload(**action.payload)
 
     new_item = generate_item(payload.item_id)
-    new_item.character_id = character.id
+    new_item.character_id = action.character.id
 
-    character_data: CharacterData = await get_character_data_by_id(database, character.id)
+    character_data: CharacterData = await get_character_data_by_id(database, action.character.id)
 
     await add_or_stack_items(database, character_data, [new_item])
 
-    create_task(gamestate.publish_character(account, character_id=character.id))
+    create_task(gamestate.publish_character(action.account, character_id=action.character.id))

@@ -1,6 +1,7 @@
 from aiohttp.web import Request, WebSocketResponse
-
+from src.actions.action import ActionRequest
 from .models import Account, Character
+
 from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact, unequip_item, sell, buy, place_terrain, delete_terrain
 
 
@@ -24,29 +25,31 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
             "payload": payload
         })
 
+    action_request = ActionRequest(request=request, app=app, ws=ws, account=account, character=character, payload=payload)
+
     if action == "get_character":
-        await get_character(request, app, ws, account, payload)
+        await get_character(action_request)
     elif action == "move":
-        await move(request, ws, account, character, payload)
+        await move(action_request)
     elif action == "use_item":
-        await use_item(request, app, ws, account, character, payload)
+        await use_item(action_request)
     elif action == "place_terrain":
-        await place_terrain(request, ws, account, character, payload)
+        await place_terrain(action_request)
     elif action == "delete_terrain":
-        await delete_terrain(request, ws, account, character, payload)
+        await delete_terrain(action_request)
     elif action == "place_object":
-        await place_object(request, ws, account, character, payload)
+        await place_object(action_request)
     elif action == "delete_object":
-        await delete_object(request, ws, account, payload)
+        await delete_object(action_request)
     elif action == "give_item":
-        await give_item(request, ws, account, character, payload)
+        await give_item(action_request)
     elif action == "interact":
-        await interact(request, ws, account, character, payload)
+        await interact(action_request)
     elif action == "unequip_item":
-        await unequip_item(request, app, ws, account, character, payload)
+        await unequip_item(action_request)
     elif action == "buy":
-        await buy(request, ws, account, character, payload)
+        await buy(action_request)
     elif action == "sell":
-        await sell(request, ws, account, character, payload)
+        await sell(action_request)
     else:
         await ws.send_str(f"Error: Unknown action '{action}'")
