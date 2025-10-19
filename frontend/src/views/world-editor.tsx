@@ -7,6 +7,8 @@ import { PlayerContext } from "../contexts/player-context"
 import { TERRAIN_OBJECTS } from "../game/objects"
 import { TERRAIN } from "../game/terrain"
 import { Terrain } from "../models/terrain"
+import Settings from "./gamescreen/components/game-ui/components/settings"
+import Log from "./gamescreen/components/game-ui/components/log"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -242,6 +244,12 @@ const WorldEditor = () => {
                 backgroundRepeat: "repeat",
             }}
         >
+            <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none z-200 pointer-events-none">
+                <div className="absolute flex flex-col items-end p-4 bottom-0 right-0 z-200 gap-4 pointer-events-none">
+                    <Settings />
+                    <Log />
+                </div>
+            </div>
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-200">
                 <div className="absolute bottom-0 left-0 m-4 pointer-events-auto">
                     <div className="bg-dark/90 text-light p-2 pt-1 rounded">

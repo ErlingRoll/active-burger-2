@@ -6,13 +6,14 @@ import { CharacterContext } from "../../contexts/character-context"
 import { UIContext } from "../../contexts/ui-context"
 import GameUI from "./components/game-ui/game-ui"
 import { PlayerContext } from "../../contexts/player-context"
+import { Terrain } from "../../models/terrain"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const Gamescreen = () => {
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
 
-    const { gamestate } = useContext(GamestateContext)
+    const { gamestate, terrain } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
     const { showGrid, adminMode } = useContext(UIContext)
     const { gameActions, selectedCell, setSelectedCell } = useContext(PlayerContext)
@@ -20,6 +21,7 @@ const Gamescreen = () => {
     const renderDistance = 31 // Number of cells to render around the player
 
     const cellName = (x: number, y: number) => `cell-${x},${y}`
+    const terrainCellName = (x: number, y: number) => `terrain-${x},${y}`
 
     function clearGrid() {
         const gameGrid = document.getElementById("game-grid")
@@ -71,7 +73,7 @@ const Gamescreen = () => {
 
             const nameTag = document.createElement("p")
             nameTag.className =
-                "absolute top-0 left-1/2 transform -translate-x-1/2 text-[0.7rem] text-blue-700 font-bold whitespace-nowrap"
+                "absolute top-0 left-1/2 transform -translate-x-1/2 text-[0.7rem] text-blue-100 drop-shadow-[0.1px_0.3px_1px_rgb(0,0,0)] font-bold whitespace-nowrap"
             nameTag.innerText = obj.name
             nameContainer.appendChild(nameTag)
             div.appendChild(nameContainer)
@@ -91,8 +93,7 @@ const Gamescreen = () => {
             img.src = textures["/src/assets/textures/character/among_us.png"] as string
             if (obj.direction === "left") img.style.transform = "scaleX(-1)"
             img.alt = obj.name
-            img.style.width = 42 + "px"
-            img.style.height = 42 + "px"
+            img.className = "h-full"
             div.appendChild(img)
             return
         }
@@ -135,6 +136,39 @@ const Gamescreen = () => {
         cell.classList.add("selected-cell", "border-1", "border-orange-400")
     }
 
+    function drawTerrain(terrainData: { [pos: string]: Terrain[] }) {
+        const player = gamestate.render_objects[character.id]
+        const center = { x: player.x, y: player.y }
+        const pos_list: { x: number; y: number }[] = Array.from({ length: renderDistance * renderDistance }).map(
+            (_, index) => {
+                const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
+                const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
+                return { x: wx, y: wy }
+            }
+        )
+
+        for (const pos of pos_list) {
+            const worldX = pos.x
+            const worldY = pos.y
+            const tCell = document.getElementById(terrainCellName(worldX, worldY))
+            if (!tCell) continue
+            tCell.innerHTML = ""
+            const terrains = terrainData[`${pos.x}_${pos.y}`]
+            if (!terrains) continue
+            terrains.forEach((terrain) => {
+                const img = document.createElement("img")
+                img.src = textures[`/src/assets/textures/${terrain.texture}.png`] as string
+                img.className = "w-full h-full"
+                img.style.zIndex = terrain.z.toString()
+                tCell.appendChild(img)
+            })
+        }
+    }
+
+    useEffect(() => {
+        drawTerrain(terrain)
+    }, [terrain, gamestate])
+
     useEffect(() => {
         if (!selectedCell) return
         colorSelectedCell()
@@ -147,7 +181,13 @@ const Gamescreen = () => {
     }, [gamestate])
 
     return (
-        <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none bg-[#f0d0b1]">
+        <div
+            className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none"
+            style={{
+                backgroundImage: `url(${textures[`/src/assets/textures/terrain/grass.png`]})`,
+                backgroundRepeat: "repeat",
+            }}
+        >
             <GameUI selectedCell={selectedCell} />
             <div
                 id="game-grid"
@@ -163,7 +203,7 @@ const Gamescreen = () => {
                     const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
                     const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
                     return (
-                        <div key={index} className={`relative border-[1px] border-gray-100/30`}>
+                        <div key={index} className={`relative`}>
                             {/* Admin cell overlay */}
                             {adminMode && (
                                 <div
@@ -180,6 +220,8 @@ const Gamescreen = () => {
                             {showGrid && (
                                 <p className="absolute bottom-0 left-0 ml-[1px] text-[0.5rem] text-gray-500">{`${wx}, ${wy}`}</p>
                             )}
+                            <div className="absolute top-0 left-0 w-full h-full" id={terrainCellName(wx, wy)} />
+                            <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-20" />
                             <div id={cellName(wx, wy)} className="h-full flex flex-row items-center justify-around" />
                         </div>
                     )

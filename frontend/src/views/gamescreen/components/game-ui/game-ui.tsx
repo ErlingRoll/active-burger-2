@@ -23,12 +23,7 @@ const GameUI = ({ selectedCell }: { selectedCell: { x: number; y: number } | nul
                 <CellInfo pos={selectedCell} />
             </div>
             <div className="absolute flex flex-col items-end p-4 bottom-0 right-0 z-200 gap-4 pointer-events-none">
-                <Settings
-                    showGrid={showGrid}
-                    setShowGrid={setShowGrid}
-                    adminMode={adminMode}
-                    setAdminMode={setAdminMode}
-                />
+                <Settings />
                 <Log />
             </div>
         </div>
