@@ -1,4 +1,4 @@
-import { Fragment, useContext, useEffect, useState } from "react"
+import { Fragment, useContext, useEffect, useMemo, useState } from "react"
 import { GamestateContext } from "../../../contexts/gamestate-context"
 import { CharacterContext } from "../../../contexts/character-context"
 import { UIContext } from "../../../contexts/ui-context"
@@ -26,7 +26,6 @@ const GameGrid = ({
     const { gamestate, terrain } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
     const { showGrid } = useContext(UIContext)
-    const { selectedCell } = useContext(PlayerContext)
 
     const cellName = (x: number, y: number) => `cell-${x},${y}`
     const terrainCellName = (x: number, y: number) => `terrain-${x},${y}`
@@ -145,6 +144,24 @@ const GameGrid = ({
             })
         }
     }
+
+    function getSelectedCell() {
+        if (!character || !gamestate) return
+        const player = gamestate.render_objects[character.id]
+        const x = player.x
+        const y = player.y
+
+        const newPosMap = {
+            up: { x: x, y: y + 1 },
+            down: { x: x, y: y - 1 },
+            left: { x: x - 1, y: y },
+            right: { x: x + 1, y: y },
+        }
+
+        return newPosMap[player.direction]
+    }
+
+    const selectedCell = useMemo(() => getSelectedCell(), [gamestate])
 
     useEffect(() => {
         drawTerrain(terrain)
