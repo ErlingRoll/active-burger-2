@@ -1,8 +1,7 @@
 from aiohttp.web import Request, WebSocketResponse
 
-
 from .models import Account, Character
-from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact, unequip_item, sell, buy
+from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact, unequip_item, sell, buy, place_terrain, delete_terrain
 
 
 async def handle_action(request: Request, ws: WebSocketResponse, data: dict, action: str):
@@ -31,6 +30,10 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
         await move(request, ws, account, character, payload)
     elif action == "use_item":
         await use_item(request, app, ws, account, character, payload)
+    elif action == "place_terrain":
+        await place_terrain(request, ws, account, character, payload)
+    elif action == "delete_terrain":
+        await delete_terrain(request, ws, account, character, payload)
     elif action == "place_object":
         await place_object(request, ws, account, character, payload)
     elif action == "delete_object":

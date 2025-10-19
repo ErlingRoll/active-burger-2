@@ -6,8 +6,7 @@ from src.connection_manager import ConnectionManager, GameEvent
 from src.gamestate import Gamestate
 from src.database.account import get_account_by_discord_id, create_account
 from src.database.character import get_character_by_account_id, create_character, get_character_data_by_id
-from src.models.character import Character, CharacterData
-from src.models.account import Account
+from src.models import Account, Character, CharacterData
 
 
 class LoginPayload(BaseModel):
@@ -45,6 +44,8 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
     character_data: CharacterData = await get_character_data_by_id(database, character.id)
 
     await gamestate.add_character(character)
+
+    await gamestate.publish_terrain(account=account)
 
     login_event = GameEvent(
         event="login_success",

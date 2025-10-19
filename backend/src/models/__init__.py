@@ -3,3 +3,4 @@ from .item import *
 from .entity import *
 from .character import *
 from .equipment import *
+from .terrain.terrain import *

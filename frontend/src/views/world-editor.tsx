@@ -4,18 +4,20 @@ import { Character, Entity, RenderObject } from "../models/object"
 import { CharacterContext } from "../contexts/character-context"
 import { UIContext } from "../contexts/ui-context"
 import { PlayerContext } from "../contexts/player-context"
-import { terrainObjects } from "../game/objects"
+import { TERRAIN_OBJECTS } from "../game/objects"
+import { TERRAIN } from "../game/terrain"
+import { Terrain } from "../models/terrain"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const WorldEditor = () => {
     const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 0.8 }) // x and y will be set to center on player
-    const [brush, setBrush] = useState<string | null>(null)
+    const [brush, setBrush] = useState<{ id: string; type: "terrain" | "object"; properties: object } | null>(null)
 
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
     const moveRepeatDelay = 100 // milliseconds
 
-    const { gamestate, logout } = useContext(GamestateContext)
+    const { gamestate, terrain } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
     const { showGrid } = useContext(UIContext)
     const { gameActions } = useContext(PlayerContext)
@@ -23,6 +25,7 @@ const WorldEditor = () => {
     const renderDistance = 31 // Number of cells to render around the player
 
     const cellName = (x: number, y: number) => `cell-${x},${y}`
+    const terrainCellName = (x: number, y: number) => `terrain-${x},${y}`
 
     function clearGrid() {
         const gameGrid = document.getElementById("game-grid")
@@ -74,7 +77,7 @@ const WorldEditor = () => {
 
             const nameTag = document.createElement("p")
             nameTag.className =
-                "absolute top-0 left-1/2 transform -translate-x-1/2 text-[0.7rem] text-blue-700 font-bold whitespace-nowrap"
+                "absolute top-0 left-1/2 transform -translate-x-1/2 text-[0.7rem] text-blue-100 drop-shadow-[0.1px_0.3px_1px_rgb(0,0,0)] font-bold whitespace-nowrap"
             nameTag.innerText = obj.name
             nameContainer.appendChild(nameTag)
             div.appendChild(nameContainer)
@@ -106,6 +109,38 @@ const WorldEditor = () => {
         div.appendChild(spriteElement)
     }
 
+    function drawTerrain(terrainData: { [pos: string]: Terrain[] }) {
+        const center = { x: camera.x, y: camera.y }
+        const pos_list: { x: number; y: number }[] = Array.from({ length: renderDistance * renderDistance }).map(
+            (_, index) => {
+                const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
+                const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
+                return { x: wx, y: wy }
+            }
+        )
+
+        for (const pos of pos_list) {
+            const worldX = pos.x
+            const worldY = pos.y
+            const tCell = document.getElementById(terrainCellName(worldX, worldY))
+            if (!tCell) continue
+            tCell.innerHTML = ""
+            const terrains = terrainData[`${pos.x}_${pos.y}`]
+            if (!terrains) continue
+            terrains.forEach((terrain) => {
+                const img = document.createElement("img")
+                img.src = textures[`/src/assets/textures/${terrain.texture}.png`] as string
+                img.className = "w-full h-full"
+                img.style.zIndex = terrain.z.toString()
+                tCell.appendChild(img)
+            })
+        }
+    }
+
+    useEffect(() => {
+        drawTerrain(terrain)
+    }, [terrain, camera])
+
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.repeat) {
@@ -115,22 +150,23 @@ const WorldEditor = () => {
 
             const input = event.key.toLowerCase()
             let gameInput = true
+            const step = 2
             switch (input) {
                 case "arrowup":
                 case "w":
-                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y + 1 }))
+                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y + step }))
                     break
                 case "arrowdown":
                 case "s":
-                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y - 1 }))
+                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y - step }))
                     break
                 case "arrowleft":
                 case "a":
-                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x - 1 }))
+                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x - step }))
                     break
                 case "arrowright":
                 case "d":
-                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x + 1 }))
+                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x + step }))
                     break
                 default:
                     gameInput = false
@@ -149,60 +185,129 @@ const WorldEditor = () => {
         Object.values(gamestate.render_objects).forEach((obj: any) => drawObject(obj))
     }, [gamestate, camera])
 
+    function changeBrush({
+        id,
+        type,
+        properties = {},
+    }: {
+        id: string
+        type: "terrain" | "object"
+        properties?: object
+    }) {
+        if (brush?.id === id && brush?.type === type) return setBrush(null)
+        setBrush({ id, type, properties })
+    }
+
     function handleCellClick(x: number, y: number) {
         if (!brush) return
 
-        const posObjects = gamestate.position_objects[`${x}_${y}`] || []
-        if (brush === "delete") {
+        if (brush.id === "delete" && brush.type === "terrain") {
+            const terrains = terrain[`${x}_${y}`] || []
+            terrains.sort((a, b) => b.z - a.z) // Delete highest z-index first
+            if (terrains.length === 0) return
+            gameActions.deleteTerrain(terrains[0].id)
+            return
+        }
+
+        if (brush.id === "delete" && brush.type === "object") {
+            const posObjects = gamestate.position_objects[`${x}_${y}`] || []
             if (posObjects.length === 0) return
             gameActions.deleteObject(posObjects[0].id)
             return
         }
 
-        gameActions.placeObject({
-            object_id: brush,
-            x: x,
-            y: y,
-        })
+        if (brush.type === "object") {
+            gameActions.placeObject({
+                object_id: brush.id,
+                x: x,
+                y: y,
+            })
+        }
+
+        if (brush.type === "terrain") {
+            gameActions.placeTerrain({
+                game_id: brush.id,
+                properties: TERRAIN[brush.id],
+                x: x,
+                y: y,
+            })
+        }
     }
 
     return (
-        <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none bg-[#f0d0b1]">
+        <div
+            className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none"
+            style={{
+                backgroundImage: `url(${textures[`/src/assets/textures/terrain/grass.png`]})`,
+                backgroundRepeat: "repeat",
+            }}
+        >
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-200">
                 <div className="absolute bottom-0 left-0 m-4 pointer-events-auto">
                     <div className="bg-dark/90 text-light p-2 pt-1 rounded">
-                        <p className="text-lg font-bold">Brush: {brush}</p>
+                        <p className="text-lg font-bold mb-2">Brush: {brush?.id}</p>
                         <div className="flex gap-2 items-end">
                             <div className="center-col items-start! gap-2">
-                                {terrainObjects.map((obj) => (
-                                    <button
+                                {Object.values(TERRAIN_OBJECTS).map((obj: RenderObject) => (
+                                    <div
                                         key={obj.object_id}
                                         className={
-                                            `w-full px-4 py-2 border-2 border-primary text-light font-bold ` +
-                                            (brush === obj.object_id && "bg-primary")
+                                            `w-full flex items-center gap-2 px-4 py-2 border-2 rounded cursor-pointer border-primary text-light font-bold ` +
+                                            (brush?.id === obj.object_id && "bg-primary")
                                         }
-                                        onClick={() => setBrush(obj.object_id)}
+                                        onClick={() => changeBrush({ id: obj.object_id, type: "object" })}
                                     >
+                                        <img
+                                            src={textures[`/src/assets/textures/${obj.texture}.png`]}
+                                            className="h-10 w-10 rounded"
+                                        />
                                         {obj.name}
-                                    </button>
+                                    </div>
                                 ))}
+                                <button
+                                    className={
+                                        `w-full px-4 py-2 border-2 border-danger text-light font-bold ` +
+                                        (brush?.id === "delete" && brush?.type === "object" && "bg-danger")
+                                    }
+                                    onClick={() => changeBrush({ id: "delete", type: "object" })}
+                                >
+                                    Delete
+                                </button>
                             </div>
-                            <button
-                                className={
-                                    `px-4 py-2 border-2 border-danger text-light font-bold ` +
-                                    (brush === "delete" && "bg-danger")
-                                }
-                                onClick={() => setBrush("delete")}
-                            >
-                                Delete
-                            </button>
+                            <div className="center-col items-start! gap-2">
+                                {Object.values(TERRAIN).map((obj: Terrain) => (
+                                    <div
+                                        key={obj.game_id}
+                                        className={
+                                            `w-full flex items-center gap-2 px-4 py-2 border-2 rounded cursor-pointer border-primary text-light font-bold ` +
+                                            (brush?.id === obj.game_id && "bg-primary")
+                                        }
+                                        onClick={() => changeBrush({ id: obj.game_id, type: "terrain" })}
+                                    >
+                                        <img
+                                            src={textures[`/src/assets/textures/${obj.texture}.png`]}
+                                            className="h-10 w-10 rounded"
+                                        />
+                                        {obj.name}
+                                    </div>
+                                ))}
+                                <button
+                                    className={
+                                        `w-full px-4 py-2 border-2 border-danger text-light font-bold ` +
+                                        (brush?.id === "delete" && brush?.type === "terrain" && "bg-danger")
+                                    }
+                                    onClick={() => changeBrush({ id: "delete", type: "terrain" })}
+                                >
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div
                 id="game-grid"
-                className={`grid gap-0 border border-gray-100 user-select-auto`}
+                className={`grid gap-0 border border-gray-100/20 user-select-auto`}
                 style={{
                     gridTemplateColumns: `repeat(${renderDistance}, ${64 * camera.zoom}px)`,
                     gridTemplateRows: `repeat(${renderDistance}, ${64 * camera.zoom}px)`,
@@ -214,7 +319,7 @@ const WorldEditor = () => {
                     const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
                     const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
                     return (
-                        <div key={index} className={`relative border-[1px] border-gray-100`}>
+                        <div key={index} className={`relative`}>
                             {/* Admin cell overlay */}
                             <div
                                 className={`absolute top-0 left-0 w-full h-full hover:border-2 border-orange-300 cursor-pointer z-110`}
@@ -224,10 +329,13 @@ const WorldEditor = () => {
                             {showGrid && (
                                 <p className="absolute bottom-0 left-0 ml-[1px] text-[0.5rem] text-gray-500">{`${wx}, ${wy}`}</p>
                             )}
-                            <div
-                                id={cellName(wx, wy)}
-                                className="h-full flex flex-row items-center justify-around bg-[#f0d0b1]"
+                            <img
+                                src={textures[`/src/assets/textures/terrain/grass.png`]}
+                                className="absolute top-0 left-0 w-full h-full"
                             />
+                            <div className="absolute top-0 left-0 w-full h-full" id={terrainCellName(wx, wy)} />
+                            <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-20" />
+                            <div id={cellName(wx, wy)} className="h-full flex flex-row items-center justify-around" />
                         </div>
                     )
                 })}

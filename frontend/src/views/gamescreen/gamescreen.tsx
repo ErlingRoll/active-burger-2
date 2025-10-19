@@ -163,7 +163,7 @@ const Gamescreen = () => {
                     const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
                     const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
                     return (
-                        <div key={index} className={`relative border-[1px] border-red-100/30`}>
+                        <div key={index} className={`relative border-[1px] border-gray-100/30`}>
                             {/* Admin cell overlay */}
                             {adminMode && (
                                 <div
@@ -180,10 +180,7 @@ const Gamescreen = () => {
                             {showGrid && (
                                 <p className="absolute bottom-0 left-0 ml-[1px] text-[0.5rem] text-gray-500">{`${wx}, ${wy}`}</p>
                             )}
-                            <div
-                                id={cellName(wx, wy)}
-                                className="h-full flex flex-row items-center justify-around bg-[#f0d0b1]"
-                            />
+                            <div id={cellName(wx, wy)} className="h-full flex flex-row items-center justify-around" />
                         </div>
                     )
                 })}

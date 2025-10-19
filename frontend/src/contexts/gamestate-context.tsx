@@ -2,11 +2,11 @@ import React, { Dispatch, SetStateAction, createContext, useContext, useEffect }
 import { UserContext } from "./user-context"
 import { RenderObject } from "../models/object"
 import { CharacterContext } from "./character-context"
-import { UIContext } from "./ui-context"
+import { Terrain } from "../models/terrain"
 
 export type Gamestate = {
     render_objects: { [key: string]: RenderObject }
-    position_objects: { [key: string]: RenderObject[] } // Map of "x,y" to array of object IDs
+    position_objects: { [key: string]: RenderObject[] }
 }
 
 export const gameWebsocketUrl = import.meta.env.VITE_GAME_WS_URL
@@ -21,6 +21,7 @@ type GamestateContextType = {
     logout: () => void
     log: string[]
     setLog: Dispatch<SetStateAction<string[]>>
+    terrain: { [pos: string]: Terrain[] }
 }
 
 export const GamestateContext = createContext<GamestateContextType>({
@@ -31,16 +32,17 @@ export const GamestateContext = createContext<GamestateContextType>({
     logout: () => {},
     log: [],
     setLog: (log: any) => {},
+    terrain: {},
 })
 
 export const GameProvider = ({ children }: { children: any }) => {
-    const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
     const [gameCon, setGameCon] = React.useState<WebSocket | null>(null)
+    const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
+    const [terrain, setTerrain] = React.useState<{ [pos: string]: Terrain[] }>({})
     const [log, setLog] = React.useState<string[]>([])
 
-    const { user, setUser, account, setAccount } = useContext(UserContext)
-    const { character, setCharacter } = useContext(CharacterContext)
-    const { setShopOpen } = useContext(UIContext)
+    const { user, setUser, setAccount } = useContext(UserContext)
+    const { setCharacter } = useContext(CharacterContext)
 
     function logout() {
         // Remove user data from localStorage
@@ -72,6 +74,9 @@ export const GameProvider = ({ children }: { children: any }) => {
                 break
             case "gamestate_update":
                 setGamestate(payload)
+                break
+            case "terrain_update":
+                setTerrain(payload)
                 break
             case "character_update":
                 setCharacter(payload)
@@ -142,6 +147,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 logout,
                 log,
                 setLog,
+                terrain,
             }}
         >
             {children}

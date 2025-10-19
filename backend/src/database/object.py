@@ -4,7 +4,7 @@ from supabase import AsyncClient
 from src.models.render_object import RenderObject
 
 
-async def get_objects(database: AsyncClient, dict: bool = True):
+async def get_objects(database: AsyncClient):
     """ Fetch all objects and inherited objects from the database """
 
     objects = []
@@ -17,10 +17,7 @@ async def get_objects(database: AsyncClient, dict: bool = True):
     objects += object_response.data if object_response and object_response.data else []
     objects += entity_response.data if entity_response and entity_response.data else []
 
-    if dict:
-        return {obj["id"]: RenderObject(**obj) for obj in objects}
-
-    return [RenderObject(**obj) for obj in objects]
+    return {obj["id"]: RenderObject(**obj) for obj in objects}
 
 
 async def create_object(database: AsyncClient, data: RenderObject) -> RenderObject | None:

@@ -82,6 +82,22 @@ class GameActions {
     }
 
     // --- Admin Actions ---
+    placeTerrain({ game_id, x, y, properties }: { game_id: string; properties: object; x: number; y: number }) {
+        const action = {
+            action: "place_terrain",
+            payload: { properties: { game_id, x, y, ...properties } },
+        }
+        this.send(action)
+    }
+
+    deleteTerrain(terrain_id: string) {
+        const action = {
+            action: "delete_terrain",
+            payload: { id: terrain_id },
+        }
+        this.send(action)
+    }
+
     placeObject({ object_id, x, y }: { object_id: string; x: number; y: number }) {
         const action = {
             action: "place_object",

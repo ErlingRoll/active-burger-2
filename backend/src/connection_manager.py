@@ -22,7 +22,6 @@ class ConnectionManager(BaseModel):
         self.connection_counter += 1
         connection_id = self.connection_counter
         self.connections[connection_id] = ws
-        print(f"Connection added. Total connections: {len(self.connections)}")
         return connection_id
 
     def update_account_map(self, account_id, ws):

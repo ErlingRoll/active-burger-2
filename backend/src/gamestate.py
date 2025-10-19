@@ -1,21 +1,24 @@
 from asyncio import gather
 from datetime import datetime
-from typing import Dict
+from typing import Dict, List
 from pydantic import BaseModel, ConfigDict
 from supabase import AsyncClient
 
+from src.database.terrain import db_get_terrain
 from src.connection_manager import ConnectionManager, GameEvent
-from src.models.account import Account
 from src.database.character import get_character_data_by_id, get_characters
 from src.database.object import get_objects
+from src.models.account import Account
 from src.models.render_object import RenderObject
 from src.models.character import Character, CharacterData
+from src.models.terrain.terrain import Terrain
 
 
 class Gamestate(BaseModel):
     start_datetime: datetime = datetime.now()
     characters: dict[str, Character] = {}
     objects: dict[str, RenderObject] = {}
+    terrain: dict[str, Terrain] = {}
     database: AsyncClient
     connection_manager: ConnectionManager
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
@@ -23,7 +26,8 @@ class Gamestate(BaseModel):
     async def fetch_gamestate(self):
         object_res = get_objects(self.database)
         character_res = get_characters(self.database)
-        self.objects, self.characters = await gather(object_res, character_res)
+        terrain_res = db_get_terrain(self.database)
+        self.objects, self.characters, self.terrain = await gather(object_res, character_res, terrain_res)
 
     async def publish_character(self, account: Account, character_id: str | None = None, character_data: CharacterData | None = None):
         if not character_id and not character_data:
@@ -43,14 +47,45 @@ class Gamestate(BaseModel):
 
         await self.connection_manager.send(account.id, event)
 
-    async def publish_gamestate(self):
+    def position_terrain(self) -> Dict[str, List[Terrain]]:
+        position_terrain = {}
+        for terrain in self.terrain.values():
+            pos_key = f"{terrain.x}_{terrain.y}"
+            if pos_key not in position_terrain:
+                position_terrain[pos_key] = []
+            position_terrain[pos_key].append(terrain.model_dump())
+        return position_terrain
+
+    async def publish_terrain(self, account: Account | None = None):
+        # Send full terrain data. Data is grouped by position key (x_y)
+        data = self.position_terrain()
+        event = GameEvent(
+            event="terrain_update",
+            payload=data
+        )
+
+        if account:
+            await self.connection_manager.send(account.id, event)
+        else:
+            await self.connection_manager.broadcast(event)
+
+    async def publish_gamestate(self, account: Account | None = None):
         gamestate = self.get_gamestate()
         event = GameEvent(
             event="gamestate_update",
             payload=gamestate
         )
-        await self.connection_manager.broadcast(event)
+
+        if account:
+            await self.connection_manager.send(account.id, event)
+        else:
+            await self.connection_manager.broadcast(event)
+
         return gamestate
+
+    async def add_terrain(self, terrain: Terrain):
+        self.terrain[terrain.id] = terrain
+        return await self.publish_terrain()
 
     async def add_character(self, character: Character):
         if character.id in self.characters:
@@ -81,6 +116,13 @@ class Gamestate(BaseModel):
 
         self.objects[object.id] = object
         return await self.publish_gamestate()
+
+    async def delete_terrain(self, terrain_id: str):
+        if terrain_id not in self.terrain:
+            return await self.publish_terrain()
+
+        del self.terrain[terrain_id]
+        return await self.publish_terrain()
 
     async def delete_object(self, object_id: str):
         if object_id not in self.objects:
