@@ -39,17 +39,17 @@ const Settings = () => {
                     >
                         {adminMode ? "Admin on" : "Admin off"}
                     </button>
+                    <button
+                        className={
+                            `min-w-28 px-4 pt-2 pb-3 mt-4 rounded text-light text-sm font-bold ` +
+                            (showGrid ? "bg-success" : "bg-danger")
+                        }
+                        onClick={() => setShowGrid(!showGrid)}
+                    >
+                        {showGrid ? "Grid on" : "Grid off"}
+                    </button>
                 </Fragment>
             )}
-            <button
-                className={
-                    `min-w-28 px-4 pt-2 pb-3 mt-4 rounded text-light text-sm font-bold ` +
-                    (showGrid ? "bg-success" : "bg-danger")
-                }
-                onClick={() => setShowGrid(!showGrid)}
-            >
-                {showGrid ? "Grid on" : "Grid off"}
-            </button>
             <button className="min-w-28 px-4 pt-2 pb-3 mt-4 text-light bg-danger text-sm font-bold" onClick={logout}>
                 Logout
             </button>

@@ -17,7 +17,7 @@ export const PlayerContext = createContext<PlayerContextType>({
     gameActions: null,
     localInteract: (object: RenderObject) => {},
     selectedCell: null,
-    setSelectedCell: (cell: any) => {},
+    setSelectedCell: (cell: { x: number; y: number }) => {},
 })
 
 export const PlayerProvider = ({ children }: { children: any }) => {
@@ -38,6 +38,27 @@ export const PlayerProvider = ({ children }: { children: any }) => {
             setShopOpen(true)
         }
     }
+
+    function getSelectedCell() {
+        if (!character || !gamestate) return
+        const player = gamestate.render_objects[character.id]
+        const x = player.x
+        const y = player.y
+
+        const newPosMap = {
+            up: { x: x, y: y + 1 },
+            down: { x: x, y: y - 1 },
+            left: { x: x - 1, y: y },
+            right: { x: x + 1, y: y },
+        }
+
+        const newPos = newPosMap[player.direction]
+        setSelectedCell(newPos)
+    }
+
+    useEffect(() => {
+        getSelectedCell()
+    }, [gamestate])
 
     useEffect(() => {
         gameActions.current.account = account
@@ -96,7 +117,9 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     }, [gamestate, character, gameActions, selectedCell, lastMoveRepeat])
 
     return (
-        <PlayerContext.Provider value={{ gameActions: gameActions.current, localInteract, setSelectedCell }}>
+        <PlayerContext.Provider
+            value={{ gameActions: gameActions.current, localInteract, selectedCell, setSelectedCell }}
+        >
             {children}
         </PlayerContext.Provider>
     )

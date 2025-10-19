@@ -1,184 +1,20 @@
 import { useContext, useEffect, useState } from "react"
 import { GamestateContext } from "../../contexts/gamestate-context"
 import { FaTimes } from "react-icons/fa"
-import { Character, Entity, RenderObject } from "../../models/object"
 import { CharacterContext } from "../../contexts/character-context"
 import { UIContext } from "../../contexts/ui-context"
 import GameUI from "./components/game-ui/game-ui"
 import { PlayerContext } from "../../contexts/player-context"
-import { Terrain } from "../../models/terrain"
+import GameGrid from "./components/game-grid"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const Gamescreen = () => {
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
 
-    const { gamestate, terrain } = useContext(GamestateContext)
-    const { character } = useContext(CharacterContext)
-    const { showGrid, adminMode } = useContext(UIContext)
-    const { gameActions, selectedCell, setSelectedCell } = useContext(PlayerContext)
-
-    const renderDistance = 31 // Number of cells to render around the player
-
-    const cellName = (x: number, y: number) => `cell-${x},${y}`
-    const terrainCellName = (x: number, y: number) => `terrain-${x},${y}`
-
-    function clearGrid() {
-        const gameGrid = document.getElementById("game-grid")
-        if (!gameGrid) return
-        gameGrid.querySelectorAll('div[id^="cell-"]').forEach((cell) => {
-            cell.innerHTML = ""
-        })
-    }
-
-    function clearObject(objectId: string) {
-        const obj = document.getElementById(`object-${objectId}`)
-        if (obj && obj.parentNode) {
-            obj.parentNode.removeChild(obj)
-        }
-    }
-
-    function drawObject(obj: RenderObject & Entity & Character) {
-        const cell = document.getElementById(cellName(obj.x, obj.y))
-        if (!cell) return
-
-        clearObject(obj.id)
-
-        // Obj container
-        const div = document.createElement("div")
-        div.id = `object-${obj.id}`
-        div.className = "h-full flex flex-col items-center z-100"
-        cell.appendChild(div)
-
-        // Add HP bar
-        if (obj.max_hp! != null && obj.current_hp != null && obj.type !== "character" && obj.current_hp < obj.max_hp) {
-            const hpBarContainer = document.createElement("div")
-            hpBarContainer.className =
-                "w-10 h-2 bg-red-200 rounded border-2 border-dark overflow-hidden pointer-events-none"
-            const hpBar = document.createElement("div")
-            hpBar.className = "h-2 bg-red-600"
-            const hpPercent = Math.max(0, (obj.current_hp / obj.max_hp) * 100)
-            hpBar.style.width = hpPercent + "%"
-            hpBarContainer.appendChild(hpBar)
-            div.appendChild(hpBarContainer)
-        }
-
-        // Add Name
-        if (obj.name_visible) {
-            const nameContainer = document.createElement("div")
-            const nameTagHeightHolder = document.createElement("p")
-            nameTagHeightHolder.innerHTML = "&nbsp;"
-            nameTagHeightHolder.className = "text-transparent text-[0.7rem] user-select-none select-none"
-            nameContainer.appendChild(nameTagHeightHolder)
-
-            const nameTag = document.createElement("p")
-            nameTag.className =
-                "absolute top-0 left-1/2 transform -translate-x-1/2 text-[0.7rem] text-blue-100 drop-shadow-[0.1px_0.3px_1px_rgb(0,0,0)] font-bold whitespace-nowrap"
-            nameTag.innerText = obj.name
-            nameContainer.appendChild(nameTag)
-            div.appendChild(nameContainer)
-        }
-
-        if (obj.texture) {
-            const img = document.createElement("img")
-            img.src = textures[`/src/assets/textures/${obj.texture}.png`] as string
-            img.alt = obj.name
-            img.className = "h-full"
-            div.appendChild(img)
-            return
-        }
-
-        if (obj.type === "character") {
-            const img = document.createElement("img")
-            img.src = textures["/src/assets/textures/character/among_us.png"] as string
-            if (obj.direction === "left") img.style.transform = "scaleX(-1)"
-            img.alt = obj.name
-            img.className = "h-full"
-            div.appendChild(img)
-            return
-        }
-
-        // Add sprite to cell
-        const spriteElement = document.createElement("div")
-        spriteElement.className = "h-[30px] w-[18px]"
-        spriteElement.style.backgroundColor = "brown"
-        div.appendChild(spriteElement)
-    }
-
-    function getSelectedCell() {
-        const player = gamestate.render_objects[character.id]
-        const x = player.x
-        const y = player.y
-
-        const newPosMap = {
-            up: { x: x, y: y + 1 },
-            down: { x: x, y: y - 1 },
-            left: { x: x - 1, y: y },
-            right: { x: x + 1, y: y },
-        }
-
-        const newPos = newPosMap[player.direction]
-        setSelectedCell(newPos)
-    }
-
-    function clearNeighborHighlights() {
-        const gameGrid = document.getElementById("game-grid")
-        if (!gameGrid) return
-        gameGrid.querySelectorAll(".selected-cell").forEach((cell) => {
-            cell.classList.remove("selected-cell", "border-1", "border-orange-400")
-        })
-    }
-
-    function colorSelectedCell() {
-        clearNeighborHighlights()
-        const cell = document.getElementById(cellName(selectedCell.x, selectedCell.y))
-        if (!cell) return
-        cell.classList.add("selected-cell", "border-1", "border-orange-400")
-    }
-
-    function drawTerrain(terrainData: { [pos: string]: Terrain[] }) {
-        const player = gamestate.render_objects[character.id]
-        const center = { x: player.x, y: player.y }
-        const pos_list: { x: number; y: number }[] = Array.from({ length: renderDistance * renderDistance }).map(
-            (_, index) => {
-                const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
-                const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
-                return { x: wx, y: wy }
-            }
-        )
-
-        for (const pos of pos_list) {
-            const worldX = pos.x
-            const worldY = pos.y
-            const tCell = document.getElementById(terrainCellName(worldX, worldY))
-            if (!tCell) continue
-            tCell.innerHTML = ""
-            const terrains = terrainData[`${pos.x}_${pos.y}`]
-            if (!terrains) continue
-            terrains.forEach((terrain) => {
-                const img = document.createElement("img")
-                img.src = textures[`/src/assets/textures/${terrain.texture}.png`] as string
-                img.className = "w-full h-full"
-                img.style.zIndex = terrain.z.toString()
-                tCell.appendChild(img)
-            })
-        }
-    }
-
-    useEffect(() => {
-        drawTerrain(terrain)
-    }, [terrain, gamestate])
-
-    useEffect(() => {
-        if (!selectedCell) return
-        colorSelectedCell()
-    }, [selectedCell])
-
-    useEffect(() => {
-        clearGrid()
-        Object.values(gamestate.render_objects).forEach((obj: any) => drawObject(obj))
-        getSelectedCell()
-    }, [gamestate])
+    const { adminMode } = useContext(UIContext)
+    const { gamestate } = useContext(GamestateContext)
+    const { gameActions, selectedCell } = useContext(PlayerContext)
 
     return (
         <div
@@ -189,44 +25,7 @@ const Gamescreen = () => {
             }}
         >
             <GameUI selectedCell={selectedCell} />
-            <div
-                id="game-grid"
-                className={`grid auto-rows-[64px] gap-0 border border-gray-100/30`}
-                style={{ gridTemplateColumns: `repeat(${renderDistance}, 64px)` }}
-            >
-                {/* Grid */}
-                {Array.from({ length: renderDistance * renderDistance }).map((_, index) => {
-                    const center = {
-                        x: gamestate.render_objects[character.id].x,
-                        y: gamestate.render_objects[character.id].y,
-                    }
-                    const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
-                    const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
-                    return (
-                        <div key={index} className={`relative`}>
-                            {/* Admin cell overlay */}
-                            {adminMode && (
-                                <div
-                                    className={
-                                        `absolute top-0 left-0 w-full h-full hover:border-2 border-orange-300 cursor-pointer z-110 ` +
-                                        (adminCell && adminCell.x === wx && adminCell.y === wy
-                                            ? "border-2 border-orange-500"
-                                            : "")
-                                    }
-                                    onClick={() => setAdminCell({ x: wx, y: wy })}
-                                />
-                            )}
-
-                            {showGrid && (
-                                <p className="absolute bottom-0 left-0 ml-[1px] text-[0.5rem] text-gray-500">{`${wx}, ${wy}`}</p>
-                            )}
-                            <div className="absolute top-0 left-0 w-full h-full" id={terrainCellName(wx, wy)} />
-                            <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-20" />
-                            <div id={cellName(wx, wy)} className="h-full flex flex-row items-center justify-around" />
-                        </div>
-                    )
-                })}
-            </div>
+            <GameGrid hoverHighlight={adminMode} onCellClick={(pos) => adminMode && setAdminCell(pos)} />
 
             {adminCell && (
                 <div className="absolute top-0 left-0 w-full center-col pointer-events-none z-200">

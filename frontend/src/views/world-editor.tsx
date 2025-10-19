@@ -9,6 +9,7 @@ import { TERRAIN } from "../game/terrain"
 import { Terrain } from "../models/terrain"
 import Settings from "./gamescreen/components/game-ui/components/settings"
 import Log from "./gamescreen/components/game-ui/components/log"
+import GameGrid from "./gamescreen/components/game-grid"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -25,6 +26,7 @@ const WorldEditor = () => {
     const { gameActions } = useContext(PlayerContext)
 
     const renderDistance = 31 // Number of cells to render around the player
+    const cameraStep = 5
 
     const cellName = (x: number, y: number) => `cell-${x},${y}`
     const terrainCellName = (x: number, y: number) => `terrain-${x},${y}`
@@ -152,23 +154,22 @@ const WorldEditor = () => {
 
             const input = event.key.toLowerCase()
             let gameInput = true
-            const step = 2
             switch (input) {
                 case "arrowup":
                 case "w":
-                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y + step }))
+                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y + cameraStep }))
                     break
                 case "arrowdown":
                 case "s":
-                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y - step }))
+                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y - cameraStep }))
                     break
                 case "arrowleft":
                 case "a":
-                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x - step }))
+                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x - cameraStep }))
                     break
                 case "arrowright":
                 case "d":
-                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x + step }))
+                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x + cameraStep }))
                     break
                 default:
                     gameInput = false
@@ -244,7 +245,7 @@ const WorldEditor = () => {
                 backgroundRepeat: "repeat",
             }}
         >
-            <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none z-200 pointer-events-none">
+            <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none z-300 pointer-events-none">
                 <div className="absolute flex flex-col items-end p-4 bottom-0 right-0 z-200 gap-4 pointer-events-none">
                     <Settings />
                     <Log />
@@ -313,41 +314,13 @@ const WorldEditor = () => {
                     </div>
                 </div>
             </div>
-            <div
-                id="game-grid"
-                className={`grid gap-0 border border-gray-100/20 user-select-auto`}
-                style={{
-                    gridTemplateColumns: `repeat(${renderDistance}, ${64 * camera.zoom}px)`,
-                    gridTemplateRows: `repeat(${renderDistance}, ${64 * camera.zoom}px)`,
-                }}
-            >
-                {/* Grid */}
-                {Array.from({ length: renderDistance * renderDistance }).map((_, index) => {
-                    const center = { x: camera.x, y: camera.y }
-                    const wx = (index % renderDistance) + center.x - Math.floor(renderDistance / 2)
-                    const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + center.y
-                    return (
-                        <div key={index} className={`relative`}>
-                            {/* Admin cell overlay */}
-                            <div
-                                className={`absolute top-0 left-0 w-full h-full hover:border-2 border-orange-300 cursor-pointer z-110`}
-                                onClick={() => handleCellClick(wx, wy)}
-                            />
-
-                            {showGrid && (
-                                <p className="absolute bottom-0 left-0 ml-[1px] text-[0.5rem] text-gray-500">{`${wx}, ${wy}`}</p>
-                            )}
-                            <img
-                                src={textures[`/src/assets/textures/terrain/grass.png`]}
-                                className="absolute top-0 left-0 w-full h-full"
-                            />
-                            <div className="absolute top-0 left-0 w-full h-full" id={terrainCellName(wx, wy)} />
-                            <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-20" />
-                            <div id={cellName(wx, wy)} className="h-full flex flex-row items-center justify-around" />
-                        </div>
-                    )
-                })}
-            </div>
+            <GameGrid
+                center={camera}
+                onCellClick={(pos) => handleCellClick(pos.x, pos.y)}
+                renderDistance={31}
+                hoverHighlight={true}
+                showSelectedCell={false}
+            />
         </div>
     )
 }
