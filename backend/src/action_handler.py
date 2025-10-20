@@ -13,8 +13,6 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
     character = data.get("character")
     character = Character(**character) if character else None
 
-    # print(f"Handling action: {action} with payload: {payload}")
-
     if action == "login":
         return await login(request, ws, account, payload)
 

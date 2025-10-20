@@ -67,7 +67,6 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
 
 
 async def type_interact(request: Request, ws: WebSocketResponse, account: Account, character: Character, object: RenderObject):
-    print(object)
 
     if not object or not object.object_id:
         return

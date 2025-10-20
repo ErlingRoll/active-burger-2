@@ -46,7 +46,6 @@ class ConnectionManager(BaseModel):
                 await ws.send_json(event.model_dump())
             except Exception as e:
                 print(f"Error sending to account {account_id}: {e}")
-                print_exc()  # Print the full traceback for debugging
 
         else:
             print(f"No active WebSocket for account {account_id}")

@@ -21,12 +21,11 @@ async def websocket_handler(request: Request):
         try:
             async for msg in ws:
                 if msg.type == WSMsgType.TEXT:
-                    # print(f"Received from {request.remote}: {msg.data}")
 
                     # Parse data as json
                     try:
                         data = json.loads(msg.data)
-                        # print(f"Parsed JSON data: {data}")
+                        # f"Parsed JSON data: {data}")
                     except json.JSONDecodeError:
                         print(f"Failed to parse JSON: {msg.data}")
 
@@ -36,7 +35,6 @@ async def websocket_handler(request: Request):
 
                     action = data.get("action")
 
-                    # await handle_action(request, ws, data, action)
                     create_task(handle_action(request, ws, data, action))
 
                 elif msg.type == WSMsgType.CLOSE:

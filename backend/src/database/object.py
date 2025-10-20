@@ -26,7 +26,6 @@ async def create_object(database: AsyncClient, object: RenderObject) -> RenderOb
         raise ValueError("object.type is required to create an object in the database")
 
     data = object.prep_db()
-    print("Creating object in database:", data)
 
     response = await database.table(db_type).insert(data).execute()
     return RenderObject(**response.data[0]) if response.data else None
