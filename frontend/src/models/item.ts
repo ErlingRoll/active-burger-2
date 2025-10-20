@@ -11,6 +11,7 @@ export interface Item {
     count: number
     character_id: string
     rarity: string
+    equipable?: boolean
 }
 
 export interface Equipment extends Item {

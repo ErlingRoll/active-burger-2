@@ -49,4 +49,3 @@ async def move(action: ActionRequest):
     character_state.y = payload.y
 
     create_task(gamestate.publish_gamestate())
-    create_task(update_character(gamestate.database, character_state))

@@ -1,8 +1,7 @@
-import { Fragment, useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useMemo } from "react"
 import { GamestateContext } from "../../../contexts/gamestate-context"
 import { CharacterContext } from "../../../contexts/character-context"
 import { UIContext } from "../../../contexts/ui-context"
-import { PlayerContext } from "../../../contexts/player-context"
 import { Character, Entity, RenderObject } from "../../../models/object"
 import { Terrain } from "../../../models/terrain"
 
@@ -18,7 +17,7 @@ type GameGridProps = {
 
 const GameGrid = ({
     center,
-    renderDistance = 31,
+    renderDistance = 21,
     hoverHighlight = false,
     showSelectedCell = true,
     onCellClick,
@@ -35,31 +34,13 @@ const GameGrid = ({
         return center || { x: player.x, y: player.y, zoom: 1 }
     }
 
-    function clearGrid() {
-        const gameGrid = document.getElementById("game-grid")
-        if (!gameGrid) return
-        gameGrid.querySelectorAll('div[id^="cell-"]').forEach((cell) => {
-            cell.innerHTML = ""
-        })
-    }
-
-    function clearObject(objectId: string) {
-        const obj = document.getElementById(`object-${objectId}`)
-        if (obj && obj.parentNode) {
-            obj.parentNode.removeChild(obj)
-        }
-    }
-
-    function drawObject(obj: RenderObject & Entity & Character) {
-        const cell = document.getElementById(cellName(obj.x, obj.y))
-        if (!cell) return
-
-        clearObject(obj.id)
+    function drawObjectCell(obj: RenderObject & Entity & Character, cell: HTMLElement) {
+        cell.innerHTML = ""
 
         // Obj container
         const div = document.createElement("div")
         div.id = `object-${obj.id}`
-        div.className = "h-full flex flex-col items-center"
+        div.className = "h-full w-full flex flex-col items-center"
         cell.appendChild(div)
 
         // Add Name
@@ -91,29 +72,56 @@ const GameGrid = ({
         }
 
         if (obj.texture) {
-            const img = document.createElement("img")
-            img.src = textures[`/src/assets/textures/${obj.texture}.png`] as string
-            img.alt = obj.name
-            img.className = "h-full"
-            div.appendChild(img)
+            const imgContainer = document.createElement("div")
+            imgContainer.className = "w-full flex-1 flex"
+            imgContainer.style.backgroundImage = `url('${
+                textures[`/src/assets/textures/${obj.texture}.png`] as string
+            }')`
+            imgContainer.style.backgroundSize = "contain"
+            imgContainer.style.backgroundRepeat = "no-repeat"
+            imgContainer.style.backgroundPosition = "center"
+            if (obj.direction === "left") imgContainer.style.transform = "scaleX(-1)"
+            div.appendChild(imgContainer)
             return
         }
 
         if (obj.type === "character") {
-            const img = document.createElement("img")
-            img.src = textures["/src/assets/textures/character/among_us.png"] as string
-            if (obj.direction === "left") img.style.transform = "scaleX(-1)"
-            img.alt = obj.name
-            img.className = "h-full"
-            div.appendChild(img)
+            const imgContainer = document.createElement("div")
+            imgContainer.className = "w-full flex-1 flex"
+            imgContainer.style.backgroundImage = `url('${
+                textures["/src/assets/textures/character/among_us.png"] as string
+            }')`
+            imgContainer.style.backgroundSize = "contain"
+            imgContainer.style.backgroundRepeat = "no-repeat"
+            imgContainer.style.backgroundPosition = "center"
+            if (obj.direction === "left") imgContainer.style.transform = "scaleX(-1)"
+            div.appendChild(imgContainer)
             return
         }
+    }
 
-        // Add sprite to cell
-        const spriteElement = document.createElement("div")
-        spriteElement.className = "h-[30px] w-[18px]"
-        spriteElement.style.backgroundColor = "brown"
-        div.appendChild(spriteElement)
+    function drawObjects(objects: { [id: string]: RenderObject & Entity & Character }) {
+        const _center = camera()
+        const pos_list: { x: number; y: number }[] = Array.from({ length: renderDistance * renderDistance }).map(
+            (_, index) => {
+                const wx = (index % renderDistance) + _center.x - Math.floor(renderDistance / 2)
+                const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + _center.y
+                return { x: wx, y: wy }
+            }
+        )
+
+        for (const pos of pos_list) {
+            const worldX = pos.x
+            const worldY = pos.y
+            const cell = document.getElementById(cellName(worldX, worldY))
+            if (!cell) continue
+            cell.innerHTML = ""
+            const pos_objects: (RenderObject & Entity & Character)[] = objects[`${pos.x}_${pos.y}`] as any
+            if (!pos_objects) continue
+            pos_objects.forEach((obj) => {
+                drawObjectCell(obj, cell)
+            })
+        }
     }
 
     function drawTerrain(terrainData: { [pos: string]: Terrain[] }) {
@@ -167,8 +175,7 @@ const GameGrid = ({
     }, [terrain, gamestate])
 
     useEffect(() => {
-        clearGrid()
-        Object.values(gamestate.render_objects).forEach((obj: any) => drawObject(obj))
+        drawObjects(gamestate.position_objects as any)
     }, [gamestate])
 
     return (

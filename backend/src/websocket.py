@@ -1,5 +1,4 @@
 import json
-from threading import Thread
 from aiohttp.web import Request, WSMsgType, WebSocketResponse
 from asyncio import CancelledError, create_task
 from .action_handler import handle_action
