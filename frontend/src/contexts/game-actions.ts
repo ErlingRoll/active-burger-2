@@ -3,17 +3,24 @@ class GameActions {
     character = null
     gameCon: WebSocket = null
     parentContext: any = null
+    reconnect: () => void = null
+
+    constructor(reconnect: () => void) {
+        this.reconnect = reconnect
+    }
 
     ready() {
         const ready = Boolean(
             this.account && this.character && this.gameCon && this.gameCon.readyState === WebSocket.OPEN
         )
-        if (!ready)
+        if (!ready) {
             console.error("GameActions not ready", {
                 account: this.account,
                 character: this.character,
                 gameCon: this.gameCon,
             })
+            this.reconnect()
+        }
         return ready
     }
 

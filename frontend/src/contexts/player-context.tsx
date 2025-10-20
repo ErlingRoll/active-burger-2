@@ -23,7 +23,7 @@ export const PlayerContext = createContext<PlayerContextType>({
 export const PlayerProvider = ({ children }: { children: any }) => {
     const { account } = useContext(UserContext)
     const { character } = useContext(CharacterContext)
-    const { gameCon, gamestate } = useContext(GamestateContext)
+    const { gameCon, gamestate, reconnect } = useContext(GamestateContext)
     const { setShopOpen } = useContext(UIContext)
 
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
@@ -31,7 +31,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     const moveRepeatDelay = 100 // milliseconds
 
     // Store gameactions in a ref so it doesn't get recreated on every render
-    const gameActions = useRef(new GameActions())
+    const gameActions = useRef(new GameActions(reconnect))
 
     function localInteract(object: RenderObject) {
         if (object.object_id === "shopkeeper") {

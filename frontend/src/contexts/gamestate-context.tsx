@@ -22,6 +22,7 @@ type GamestateContextType = {
     log: string[]
     setLog: Dispatch<SetStateAction<string[]>>
     terrain: { [pos: string]: Terrain[] }
+    reconnect: () => void
 }
 
 export const GamestateContext = createContext<GamestateContextType>({
@@ -33,6 +34,7 @@ export const GamestateContext = createContext<GamestateContextType>({
     log: [],
     setLog: (log: any) => {},
     terrain: {},
+    reconnect: () => {},
 })
 
 export const GameProvider = ({ children }: { children: any }) => {
@@ -40,6 +42,9 @@ export const GameProvider = ({ children }: { children: any }) => {
     const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
     const [terrain, setTerrain] = React.useState<{ [pos: string]: Terrain[] }>({})
     const [log, setLog] = React.useState<string[]>([])
+
+    const [connecting, setConnecting] = React.useState<boolean>(false)
+    const [connectTimeout, setConnectTimeout] = React.useState(null)
 
     const { user, setUser, setAccount } = useContext(UserContext)
     const { setCharacter } = useContext(CharacterContext)
@@ -137,6 +142,28 @@ export const GameProvider = ({ children }: { children: any }) => {
         gameCon.send(JSON.stringify(loginInfo))
     }, [gameCon])
 
+    function connect() {
+        console.log("Connecting to WebSocket at", gameWebsocketUrl)
+
+        // Stop if already connected
+        if (gameCon) {
+            console.log("WebSocket already connected")
+            return
+        }
+
+        const ws = new WebSocket(gameWebsocketUrl)
+        ws.onopen = () => {
+            console.log("WebSocket connection established")
+            setGameCon(ws)
+        }
+    }
+
+    useEffect(() => {
+        if (!user) return
+        // console.log("User state updated:", user)
+        connect()
+    }, [user])
+
     return (
         <GamestateContext.Provider
             value={{
@@ -144,6 +171,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 setGameCon,
                 gamestate,
                 setGamestate,
+                reconnect: connect,
                 logout,
                 log,
                 setLog,

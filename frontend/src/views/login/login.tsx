@@ -22,22 +22,6 @@ const Login = () => {
         initiateDiscordLogin()
     }
 
-    function connect() {
-        console.log("Connecting to WebSocket at", gameWebsocketUrl)
-
-        // Stop if already connected
-        if (gameCon) {
-            console.log("WebSocket already connected")
-            return
-        }
-
-        const ws = new WebSocket(gameWebsocketUrl)
-        ws.onopen = () => {
-            console.log("WebSocket connection established")
-            setGameCon(ws)
-        }
-    }
-
     async function discordLogin() {
         const token = await exchangeCodeForToken(code)
             .catch((error) => {
@@ -81,12 +65,6 @@ const Login = () => {
 
         discordLogin()
     }, [])
-
-    useEffect(() => {
-        if (!user) return
-        // console.log("User state updated:", user)
-        connect()
-    }, [user])
 
     return (
         <div id="login" className="relative">
