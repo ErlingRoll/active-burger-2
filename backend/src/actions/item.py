@@ -21,7 +21,7 @@ async def add_or_stack_items(database, character_data: CharacterData, items: lis
     for item in items:
         if item.stackable and item.item_id in stackable_item_map:
             existing_item = stackable_item_map[item.item_id]
-            existing_item.count += item.count
+            existing_item.count += item.count  # type: ignore
             await update_item(database, existing_item)
             continue
 

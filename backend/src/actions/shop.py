@@ -1,16 +1,13 @@
-from aiohttp.web import Request, WebSocketResponse
 from pydantic import BaseModel
 from asyncio import create_task, gather
 
 from src.actions.action import ActionRequest
-from src.models.character import CharacterData
 from src.generators.item import generate_item
 from src.connection_manager import GameEvent
 from src.actions.item import add_or_stack_items, handle_item_consumption
 from src.gamestate import Gamestate
-from src.database.item import create_item, update_item
-from src.database.character import get_character_by_id, get_character_data_by_id, update_character
-from src.models import Account, Character, Item
+from src.database import get_character_data_by_id, update_character
+from src.models import CharacterData, Item
 
 
 class BuyPayload(BaseModel):
@@ -75,16 +72,22 @@ async def sell(action: ActionRequest):
 
     owned_item: Item = character_data.items.get(payload.item_id)
     if not owned_item:
-        return await action.ws.send_json({
-            'type': 'error',
-            'message': 'Item not found in inventory.'
-        })
+        error_message = f"You do not own any {payload.item_id} to sell"
+        event = GameEvent(
+            event="log",
+            payload={"error": error_message},
+            log=[error_message]
+        )
+        return await action.ws.send_json(event.model_dump())
 
     if owned_item.count is not None and owned_item.count < payload.count:
-        return await action.ws.send_json({
-            'type': 'error',
-            'message': 'Not enough items to sell.'
-        })
+        error_message = f"Not enough {owned_item.name} to sell"
+        event = GameEvent(
+            event="log",
+            payload={"error": error_message},
+            log=[error_message]
+        )
+        return await action.ws.send_json(event.model_dump())
 
     total_sell_price = owned_item.value * payload.count
 

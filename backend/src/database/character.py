@@ -7,7 +7,6 @@ from src.models import Character, CharacterData, Item, EquipmentSlot
 
 
 async def update_character(database: AsyncClient, character: Character) -> Character | None:
-    character_id = character.id
     data = character.db_prep()
     response = await database.table("character").update(data).eq("id", character.id).execute()
     return CharacterData(**response.data[0]) if response.data else None
