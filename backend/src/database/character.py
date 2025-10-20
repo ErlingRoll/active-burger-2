@@ -7,20 +7,15 @@ from src.models import Character, CharacterData, Item, EquipmentSlot
 
 
 async def update_character(database: AsyncClient, character: Character) -> Character | None:
-    character_json = character.model_dump()
-    del character_json["height"]
-    del character_json["width"]
-    response = await database.table("character").update(character_json).eq("id", character.id).execute()
+    character_id = character.id
+    data = character.db_prep()
+    response = await database.table("character").update(data).eq("id", character.id).execute()
     return CharacterData(**response.data[0]) if response.data else None
 
 
 async def create_character(database: AsyncClient, character: Character):
-    character_json = character.model_dump()
-    del character_json["id"]
-    del character_json["created_at"]
-    del character_json["height"]
-    del character_json["width"]
-    response = await database.table("character").insert(character_json).execute()
+    data = character.db_prep()
+    response = await database.table("character").insert(data).execute()
     return Character(**response.data[0]) if response.data else None
 
 

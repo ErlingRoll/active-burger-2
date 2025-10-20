@@ -10,6 +10,7 @@ export interface Item {
     stackable: boolean
     count: number
     character_id: string
+    rarity: string
 }
 
 export interface Equipment extends Item {

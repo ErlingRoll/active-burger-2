@@ -3,6 +3,15 @@ from typing import List, Optional
 from pydantic import BaseModel
 
 
+class Rarity(str, Enum):
+    COMMON = "common"
+    UNCOMMON = "uncommon"
+    RARE = "rare"
+    EPIC = "epic"
+    LEGENDARY = "legendary"
+    ARTIFACT = "artifact"
+
+
 class UseResult(BaseModel):
     success: bool
     log: List[str] | None = []
@@ -25,13 +34,13 @@ class Item(BaseModel):
     mods: dict = {}
     equipable: Optional[bool] = False
     equip_slot: Optional[str] = None
+    rarity: Rarity = Rarity.COMMON
 
     async def use(self, *args, **kwargs) -> UseResult:
         return UseResult(success=False, log=[f"Item [{self.name}] cannot be used."])
 
     def to_item(self):
-        # Remove all other fields except those needed for rendering
-
+        # Only DB model fields
         return Item(
             id=self.id,
             item_id=self.item_id,

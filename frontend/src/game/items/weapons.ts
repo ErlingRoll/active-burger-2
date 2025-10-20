@@ -5,7 +5,7 @@ export const WEAPONS: { [object_id: string]: Partial<Equipment> } = {
     toothpick: {
         item_id: "toothpick",
         name: "Toothpick",
-        description: "Looks a bit rusty but probably useful for mining.",
+        description: "You COULD play golf with this.",
         type: "weapon",
         texture: "item/weapon/toothpick",
         count: 1,

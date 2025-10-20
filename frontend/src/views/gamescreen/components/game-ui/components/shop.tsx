@@ -60,7 +60,9 @@ const Shop = () => {
                                         className="h-full"
                                     />
                                 </div>
-                                <p className="font-bold text-lg">{item.name}</p>
+                                <p id={`shop-item-${item.id}`} className="font-bold text-lg">
+                                    {item.name}
+                                </p>
                                 <p className="font-bold text-lg">x {item.count || 1}</p>
                                 <div className="flex flex-row items-center gap-1">
                                     <RiCopperCoinFill color="gold" className="" />
@@ -80,15 +82,17 @@ const Shop = () => {
                     <div className="grid grid-cols-5 gap-4 items-center">
                         {shopItems.map((item: Item, index) => (
                             <Fragment key={index}>
-                                <ItemTooltip item={item} namespace="shop" />
+                                <ItemTooltip item={{ id: item.item_id + "-" + index, ...item }} namespace="shop" />
                                 <div className="center-col w-12 h-12">
                                     <img
-                                        id={`shop-item-${item.id}`}
+                                        id={`shop-item-${item.item_id}-${index}`}
                                         src={textures[`/src/assets/textures/${item.texture}.png`]}
                                         className="h-full"
                                     />
                                 </div>
-                                <p className="font-bold text-lg">{item.name}</p>
+                                <p id={`shop-item-${item.item_id}-${index}`} className="font-bold text-lg">
+                                    {item.name}
+                                </p>
                                 <p className="font-bold text-lg">
                                     {item.count && item.count > 1 ? `x ${item.count}` : null}
                                 </p>
