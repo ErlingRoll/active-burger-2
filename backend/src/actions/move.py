@@ -1,10 +1,10 @@
-from aiohttp.web import Request, WebSocketResponse
+from asyncio import create_task
 from pydantic import BaseModel
 
+from src.database.character import update_character
+from src.connection_manager import GameEvent
 from src.actions.action import ActionRequest
 from src.gamestate import Gamestate
-from src.models.character import Character
-from src.models.account import Account
 
 
 class MovePayload(BaseModel):
@@ -17,11 +17,21 @@ async def move(action: ActionRequest):
     gamestate: Gamestate = action.request.app["gamestate"]
     payload = MovePayload(**action.payload)
 
+    if not action.character.id:
+        event = GameEvent(
+            event="log",
+            payload={"error": "Character ID not found for move action."}
+        )
+        return await action.ws.send_json(event.model_dump())
+
     character_state = gamestate.get_character(action.character.id)
 
     if character_state is None:
-        await action.ws.send_str("Error: Character not found.")
-        return
+        event = GameEvent(
+            event="log",
+            payload={"error": "Character state not found for move action."}
+        )
+        return await action.ws.send_json(event.model_dump())
 
     # Get objects at target position
     pos_key = f"{payload.x}_{payload.y}"
@@ -38,4 +48,5 @@ async def move(action: ActionRequest):
     character_state.x = payload.x
     character_state.y = payload.y
 
-    await gamestate.publish_gamestate()
+    create_task(gamestate.publish_gamestate())
+    create_task(update_character(gamestate.database, character_state))

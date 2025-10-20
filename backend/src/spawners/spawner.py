@@ -66,7 +66,10 @@ class Spawner(BaseModel, GameTickerInterface):
 
         has_space = True
         for obj in neighboring_objects.values():
-            if obj.solid or obj.type in ["character"]:
+            if obj.type in ["character"]:
+                has_space = False
+                break
+            if obj.solid and obj.type not in ["object"]:
                 has_space = False
                 break
 
