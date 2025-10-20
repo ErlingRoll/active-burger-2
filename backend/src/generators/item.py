@@ -1,12 +1,11 @@
 from src.models.item import Item
-from src.models.items.tools import Pickaxe
-from src.models.items.ore import GoldOre
-from src.models.items.base.burger import Burger
+from src.models.items import Burger, GoldOre, Pickaxe, Toothpick
 
 item_map = {
     "burger": Burger,
     "gold_ore": GoldOre,
-    "pickaxe": Pickaxe
+    "pickaxe": Pickaxe,
+    "toothpick": Toothpick,
 }
 
 

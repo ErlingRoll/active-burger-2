@@ -7,7 +7,7 @@ from src.connection_manager import GameEvent
 from src.gamestate import Gamestate
 from src.database import upsert_equipment
 
-from src.models import Account, Character, CharacterData, Item, UseResult, Equipment
+from src.models import Account, Character, CharacterData, Item, UseResult, EquipmentSlot
 
 
 class UnequipItemPayload(BaseModel):
@@ -24,7 +24,7 @@ async def unequip_item(action: ActionRequest):
 
     unequip_payload: UnequipItemPayload = UnequipItemPayload(**action.payload)
 
-    equipment = Equipment(character_id=action.character.id, item_id=None, slot=unequip_payload.slot)
+    equipment = EquipmentSlot(character_id=action.character.id, item_id=None, slot=unequip_payload.slot)
 
     await upsert_equipment(database, equipment)
 
@@ -45,7 +45,7 @@ async def equip_item(action: ActionRequest):
 
     item = EquipItemPayload(**action.payload).item
 
-    equipment = Equipment(character_id=action.character.id, item_id=item.id, slot=item.equip_slot)
+    equipment = EquipmentSlot(character_id=action.character.id, item_id=item.id, slot=item.equip_slot)
 
     await upsert_equipment(database, equipment)
 

@@ -21,7 +21,7 @@ const Equipment = () => {
                                     <ItemTooltip item={item} namespace="equipment" place="top-start" />
                                     <img
                                         id={`equipment-item-${item.id}`}
-                                        src={textures[`/src/assets/textures/item/${item.texture}.png`]}
+                                        src={textures[`/src/assets/textures/${item.texture}.png`]}
                                         alt={item.name}
                                         className="w-10 h-10 cursor-pointer"
                                         onClick={() => gameActions.unequipItem({ slot })}
@@ -29,7 +29,7 @@ const Equipment = () => {
                                 </div>
                             </div>
                         ) : (
-                            <p className="text-md text-gray-300">Empty</p>
+                            <div className="h-10 w-10 bg-light/30 rounded" />
                         )}
                     </Fragment>
                 ))}

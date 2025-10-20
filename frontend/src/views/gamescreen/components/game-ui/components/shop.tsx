@@ -3,30 +3,16 @@ import { CharacterContext } from "../../../../../contexts/character-context"
 import { RiCopperCoinFill } from "react-icons/ri"
 import { UIContext } from "../../../../../contexts/ui-context"
 import { PlayerContext } from "../../../../../contexts/player-context"
-import { Item } from "../../../../../models/item"
+import { Equipment, Item } from "../../../../../models/item"
 import ItemTooltip from "./item-tooltip"
+import { TOOLS } from "../../../../../game/items/tools"
+import { WEAPONS } from "../../../../../game/items/weapons"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const shopTabs = ["Sell", "Buy"]
 
-const shopItems: Partial<Item>[] = [
-    {
-        id: "shop-item-pickaxe",
-        name: "Pickaxe",
-        item_id: "pickaxe",
-        description: "Looks a bit rusty but probably useful for mining.",
-        count: 1,
-        texture: "tool/pickaxe",
-        value: 50,
-        type: "tool",
-        stackable: false,
-        base_mods: {
-            efficiency: 5,
-            fortune: 1,
-        },
-    },
-]
+const shopItems: Partial<Equipment>[] = [TOOLS["pickaxe"], WEAPONS["toothpick"]]
 
 const Shop = () => {
     const [tab, setTab] = useState<number>(0)
@@ -67,11 +53,13 @@ const Shop = () => {
                         {items.map((item) => (
                             <Fragment key={item.id}>
                                 <ItemTooltip item={item} namespace="shop" />
-                                <img
-                                    id={`shop-item-${item.id}`}
-                                    src={textures[`/src/assets/textures/item/${item.texture}.png`]}
-                                    className="w-12 h-12 object-fit"
-                                />
+                                <div className="center-col w-12 h-12">
+                                    <img
+                                        id={`shop-item-${item.id}`}
+                                        src={textures[`/src/assets/textures/${item.texture}.png`]}
+                                        className="h-full"
+                                    />
+                                </div>
                                 <p className="font-bold text-lg">{item.name}</p>
                                 <p className="font-bold text-lg">x {item.count || 1}</p>
                                 <div className="flex flex-row items-center gap-1">
@@ -93,11 +81,13 @@ const Shop = () => {
                         {shopItems.map((item: Item, index) => (
                             <Fragment key={index}>
                                 <ItemTooltip item={item} namespace="shop" />
-                                <img
-                                    id={`shop-item-${item.id}`}
-                                    src={textures[`/src/assets/textures/item/${item.texture}.png`]}
-                                    className="w-12 h-12 object-fit"
-                                />
+                                <div className="center-col w-12 h-12">
+                                    <img
+                                        id={`shop-item-${item.id}`}
+                                        src={textures[`/src/assets/textures/${item.texture}.png`]}
+                                        className="h-full"
+                                    />
+                                </div>
                                 <p className="font-bold text-lg">{item.name}</p>
                                 <p className="font-bold text-lg">
                                     {item.count && item.count > 1 ? `x ${item.count}` : null}

@@ -1,7 +1,7 @@
 
 from typing import ClassVar
 from src.models import Entity
-from src.models.objects.drop_table import LootTable, LootTableItem, Lootable
+from src.models.objects.loot_table import LootTable, LootTableItem, Lootable
 
 
 class Ore(Entity, Lootable):

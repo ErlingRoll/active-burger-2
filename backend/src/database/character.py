@@ -3,7 +3,7 @@ from supabase import AsyncClient
 
 from src.database.item import get_items_by_character_id
 from src.database.equipment import get_equipment_by_character_id
-from src.models import Character, CharacterData, Item, Equipment
+from src.models import Character, CharacterData, Item, EquipmentSlot
 
 
 async def update_character(database: AsyncClient, character: Character) -> Character | None:

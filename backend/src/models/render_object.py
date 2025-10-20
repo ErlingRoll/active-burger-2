@@ -42,3 +42,9 @@ class RenderObject(BaseModel):
             solid=self.solid,
             object_id=self.object_id
         )
+
+    def prep_db(self) -> dict:
+        data = self.to_render_object().model_dump()
+        del data["id"]
+        del data["created_at"]
+        return data

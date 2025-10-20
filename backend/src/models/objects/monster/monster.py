@@ -1,6 +1,6 @@
 
 from src.models import Entity
-from src.models.objects.drop_table import Lootable, LootTable, LootTableItem
+from src.models.objects.loot_table import Lootable, LootTable, LootTableItem
 
 
 class Monster(Entity, Lootable):

@@ -1,4 +1,4 @@
-export type Item = {
+export interface Item {
     id: string
     created_at: string
     item_id: string
@@ -10,6 +10,9 @@ export type Item = {
     stackable: boolean
     count: number
     character_id: string
+}
+
+export interface Equipment extends Item {
     base_mods: { [key: string]: number }
     mods: { [key: string]: number }
 }

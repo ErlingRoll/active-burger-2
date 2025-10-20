@@ -6,24 +6,20 @@ from src.generators.item import generate_item
 from src.models import Item
 
 
-async def get_item_by_id(database: AsyncClient, id: str) -> Item:
+async def get_item_by_id(database: AsyncClient, id: str) -> Item | None:
     response = await database.table("item").select("*").eq("id", id).execute()
     return generate_item(**response.data[0]) if response.data else None
 
 
-async def create_item(database: AsyncClient, item: Item) -> Item:
-    data = item.model_dump()
-    del data["id"]  # Remove id if present, as it will be auto-generated
-    del data["created_at"]  # Remove created_at if present, as it will be auto-generated
+async def create_item(database: AsyncClient, item: Item) -> Item | None:
+    data = item.prep_db()
     response = await database.table("item").insert(data).execute()
     return generate_item(**response.data[0]) if response.data else None
 
 
-async def update_item(database: AsyncClient, item: Item) -> Item:
-    data = item.model_dump()
-    item_id = data.pop("id", None)
-    if not item_id:
-        raise ValueError("Item ID is required for update")
+async def update_item(database: AsyncClient, item: Item) -> Item | None:
+    item_id = item.id
+    data = item.prep_db()
     response = await database.table("item").update(data).eq("id", item_id).execute()
     return generate_item(**response.data[0]) if response.data else None
 

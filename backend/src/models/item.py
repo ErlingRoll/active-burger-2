@@ -28,3 +28,30 @@ class Item(BaseModel):
 
     async def use(self, *args, **kwargs) -> UseResult:
         return UseResult(success=False, log=[f"Item [{self.name}] cannot be used."])
+
+    def to_item(self):
+        # Remove all other fields except those needed for rendering
+
+        return Item(
+            id=self.id,
+            item_id=self.item_id,
+            character_id=self.character_id,
+            name=self.name,
+            description=self.description,
+            texture=self.texture,
+            value=self.value,
+            type=self.type,
+            stackable=self.stackable,
+            count=self.count,
+            consumable=self.consumable,
+            base_mods=self.base_mods,
+            mods=self.mods,
+            equipable=self.equipable,
+            equip_slot=self.equip_slot
+        )
+
+    def prep_db(self) -> dict:
+        data = self.to_item().model_dump()
+        del data["id"]
+        del data["created_at"]
+        return data

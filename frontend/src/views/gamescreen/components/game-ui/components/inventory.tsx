@@ -27,9 +27,9 @@ const Inventory = () => {
                                     onClick={() => gameActions.useItem({ id: item.id })}
                                 >
                                     <img
-                                        src={textures[`/src/assets/textures/item/${item.texture}.png`]}
+                                        src={textures[`/src/assets/textures/${item.texture}.png`]}
                                         alt={item.name}
-                                        className="w-full h-full object-cover"
+                                        className="h-full"
                                     />
                                     {item.stackable && (
                                         <div className="absolute bottom-0 left-0 bg-light/70 text-dark rounded">

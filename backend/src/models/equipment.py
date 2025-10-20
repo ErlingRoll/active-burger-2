@@ -11,7 +11,7 @@ class EquipSlot(Enum):
     PICKAXE = "pickaxe"
 
 
-class Equipment(BaseModel):
+class EquipmentSlot(BaseModel):
     id: Optional[str] = None
     created_at: Optional[str] = None
     character_id: Optional[str] = None
@@ -19,3 +19,13 @@ class Equipment(BaseModel):
 
     item_id: Optional[str] = None
     item: Optional[Item] = None
+
+
+class Equipment(Item):
+    type: str = "equipment"
+    stackable: bool = False
+    count: int = 1
+    equipable: bool = True
+    base_mods: dict[str, int] = {}
+    mods: dict[str, int] = {}
+    durability: int = 100
