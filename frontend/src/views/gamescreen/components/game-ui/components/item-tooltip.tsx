@@ -9,7 +9,6 @@ const ItemTooltip = ({ item, namespace, place }: { item: Item | Equipment; names
 
     useEffect(() => {
         const _item = item as Item & Equipment
-        if (!_item.base_mods || !_item.mods) return
         const baseMods = Object.entries(_item.base_mods || {}).map(([key, value]) => ({ [key]: value }))
         const mods = Object.entries(_item.mods || {}).map(([key, value]) => ({ [key]: value }))
         setBaseMods(baseMods)

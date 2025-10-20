@@ -32,7 +32,30 @@ class Toothpick(Weapon):
     name: str = "Toothpick"
     description: str = "You COULD play golf with this."
     texture: str = "item/weapon/toothpick"
-    value: int = 5
+    value: int = 10
     base_mods: dict[str, int] = {
         WeaponMod.PHYSICAL_DAMAGE.value: weapon_mod_value[WeaponMod.PHYSICAL_DAMAGE.value][9],
+    }
+
+
+class PoolNoodle(Weapon):
+    item_id: str = "pool_noodle"
+    name: str = "Pool Noodle"
+    description: str = "It's a bit soggy, but it packs a punch!"
+    texture: str = "item/weapon/pool_noodle"
+    value: int = 50
+    base_mods: dict[str, int] = {
+        WeaponMod.PHYSICAL_DAMAGE.value: weapon_mod_value[WeaponMod.PHYSICAL_DAMAGE.value][7],
+    }
+
+
+class FryingPan(Weapon):
+    item_id: str = "frying_pan"
+    name: str = "Frying Pan"
+    description: str = "Perfect for cooking up a storm... or bashing heads."
+    texture: str = "item/weapon/frying_pan"
+    value: int = 300
+    base_mods: dict[str, int] = {
+        WeaponMod.PHYSICAL_DAMAGE.value: weapon_mod_value[WeaponMod.PHYSICAL_DAMAGE.value][7],
+        WeaponMod.FIRE_DAMAGE.value: weapon_mod_value[WeaponMod.FIRE_DAMAGE.value][8],
     }

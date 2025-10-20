@@ -12,7 +12,12 @@ const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eage
 
 const shopTabs = ["Sell", "Buy"]
 
-const shopItems: Partial<Equipment>[] = [TOOLS["pickaxe"], WEAPONS["toothpick"]]
+const shopItems: Partial<Equipment>[] = [
+    TOOLS["pickaxe"],
+    WEAPONS["toothpick"],
+    WEAPONS["pool_noodle"],
+    WEAPONS["frying_pan"],
+]
 
 const Shop = () => {
     const [tab, setTab] = useState<number>(0)
