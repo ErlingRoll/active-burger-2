@@ -1,6 +1,4 @@
-import json
-import asyncio
-from traceback import print_exc
+from asyncio import create_task
 from typing import List
 from pydantic import BaseModel, ConfigDict
 
@@ -57,7 +55,7 @@ class ConnectionManager(BaseModel):
             if not ws.closed:
                 try:
                     pass
-                    asyncio.create_task(ws.send_json(event.model_dump()))
+                    create_task(ws.send_json(event.model_dump()))
                 except Exception as e:
                     print(f"Error sending to connection {connection_id}: {e}")
             else:

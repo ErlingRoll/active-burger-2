@@ -62,6 +62,21 @@ const GameGrid = ({
         div.className = "h-full flex flex-col items-center"
         cell.appendChild(div)
 
+        // Add Name
+        if (obj.name_visible) {
+            const nameContainer = document.createElement("div")
+            const nameTagHeightHolder = document.createElement("p")
+            nameTagHeightHolder.innerHTML = "&nbsp;"
+            nameTagHeightHolder.className = "text-transparent text-[0.7rem] user-select-none select-none"
+            nameContainer.appendChild(nameTagHeightHolder)
+            const nameTag = document.createElement("p")
+            nameTag.className =
+                "absolute top-0 left-1/2 transform -translate-x-1/2 text-[0.7rem] text-blue-100 drop-shadow-[0.1px_0.3px_1px_rgb(0,0,0)] font-bold whitespace-nowrap z-10"
+            nameTag.innerText = obj.name
+            nameContainer.appendChild(nameTag)
+            div.appendChild(nameContainer)
+        }
+
         // Add HP bar
         if (obj.max_hp! != null && obj.current_hp != null && obj.type !== "character" && obj.current_hp < obj.max_hp) {
             const hpBarContainer = document.createElement("div")
@@ -73,22 +88,6 @@ const GameGrid = ({
             hpBar.style.width = hpPercent + "%"
             hpBarContainer.appendChild(hpBar)
             div.appendChild(hpBarContainer)
-        }
-
-        // Add Name
-        if (obj.name_visible) {
-            const nameContainer = document.createElement("div")
-            const nameTagHeightHolder = document.createElement("p")
-            nameTagHeightHolder.innerHTML = "&nbsp;"
-            nameTagHeightHolder.className = "text-transparent text-[0.7rem] user-select-none select-none"
-            nameContainer.appendChild(nameTagHeightHolder)
-
-            const nameTag = document.createElement("p")
-            nameTag.className =
-                "absolute top-0 left-1/2 transform -translate-x-1/2 text-[0.7rem] text-blue-100 drop-shadow-[0.1px_0.3px_1px_rgb(0,0,0)] font-bold whitespace-nowrap"
-            nameTag.innerText = obj.name
-            nameContainer.appendChild(nameTag)
-            div.appendChild(nameContainer)
         }
 
         if (obj.texture) {
