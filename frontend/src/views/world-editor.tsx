@@ -317,7 +317,6 @@ const WorldEditor = () => {
             <GameGrid
                 center={camera}
                 onCellClick={(pos) => handleCellClick(pos.x, pos.y)}
-                renderDistance={31}
                 hoverHighlight={true}
                 showSelectedCell={false}
             />

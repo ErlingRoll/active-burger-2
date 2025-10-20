@@ -9,7 +9,8 @@ const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eage
 
 type GameGridProps = {
     center?: { x: number; y: number; zoom: number }
-    renderDistance?: number
+    renderWidth?: number
+    renderHeight?: number
     hoverHighlight?: boolean
     showSelectedCell?: boolean
     onCellClick?: ({ x, y }: { x: number; y: number }) => void
@@ -17,7 +18,8 @@ type GameGridProps = {
 
 const GameGrid = ({
     center,
-    renderDistance = 21,
+    renderWidth = 31,
+    renderHeight = 21,
     hoverHighlight = false,
     showSelectedCell = true,
     onCellClick,
@@ -102,10 +104,10 @@ const GameGrid = ({
 
     function drawObjects(objects: { [id: string]: RenderObject & Entity & Character }) {
         const _center = camera()
-        const pos_list: { x: number; y: number }[] = Array.from({ length: renderDistance * renderDistance }).map(
+        const pos_list: { x: number; y: number }[] = Array.from({ length: renderWidth * renderHeight }).map(
             (_, index) => {
-                const wx = (index % renderDistance) + _center.x - Math.floor(renderDistance / 2)
-                const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + _center.y
+                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2)
+                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y - 1
                 return { x: wx, y: wy }
             }
         )
@@ -126,10 +128,10 @@ const GameGrid = ({
 
     function drawTerrain(terrainData: { [pos: string]: Terrain[] }) {
         const _center = camera()
-        const pos_list: { x: number; y: number }[] = Array.from({ length: renderDistance * renderDistance }).map(
+        const pos_list: { x: number; y: number }[] = Array.from({ length: renderWidth * renderWidth }).map(
             (_, index) => {
-                const wx = (index % renderDistance) + _center.x - Math.floor(renderDistance / 2)
-                const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + _center.y
+                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2)
+                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y - 1
                 return { x: wx, y: wy }
             }
         )
@@ -183,14 +185,14 @@ const GameGrid = ({
             id="game-grid"
             className={`grid auto-rows-[64px] gap-0 border border-gray-100/30`}
             style={{
-                gridTemplateColumns: `repeat(${renderDistance}, ${64 * camera().zoom}px)`,
-                gridTemplateRows: `repeat(${renderDistance}, ${64 * camera().zoom}px)`,
+                gridTemplateColumns: `repeat(${renderWidth}, ${64 * camera().zoom}px)`,
+                gridTemplateRows: `repeat(${renderHeight}, ${64 * camera().zoom}px)`,
             }}
         >
-            {Array.from({ length: renderDistance * renderDistance }).map((_, index) => {
+            {Array.from({ length: renderWidth * renderHeight }).map((_, index) => {
                 const _center = camera()
-                const wx = (index % renderDistance) + _center.x - Math.floor(renderDistance / 2)
-                const wy = Math.floor(renderDistance / 2) - Math.floor(index / renderDistance) + _center.y
+                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2)
+                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y - 1
                 return (
                     <div key={index} className={`relative`}>
                         {showGrid && (
