@@ -3,6 +3,7 @@ from src.models.render_object import RenderObject
 
 
 class TerrainObject(RenderObject):
+    type: str = "terrain"
     name_visible: bool = False
     solid: bool = True
 

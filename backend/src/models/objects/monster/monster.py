@@ -4,6 +4,7 @@ from src.models.objects.loot_table import Lootable, LootTable, LootTableItem
 
 
 class Monster(Entity, Lootable):
+    type: str = "monster"
     solid: bool = True
     name_visible: bool = True
 

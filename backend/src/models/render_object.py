@@ -19,6 +19,7 @@ class RenderObject(BaseModel):
     solid: bool = False
     object_id: Optional[str] = None
 
+    db_type: str = "object"
     model_config = ConfigDict(extra="allow")
 
     def to_dict(self):
@@ -40,11 +41,12 @@ class RenderObject(BaseModel):
             height=self.height,
             width=self.width,
             solid=self.solid,
-            object_id=self.object_id
+            object_id=self.object_id,
         )
 
     def prep_db(self) -> dict:
         data = self.to_render_object().model_dump()
         del data["id"]
         del data["created_at"]
+        del data["db_type"]
         return data

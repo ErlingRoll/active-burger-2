@@ -21,13 +21,14 @@ async def get_objects(database: AsyncClient):
 
 
 async def create_object(database: AsyncClient, object: RenderObject) -> RenderObject | None:
-    data = object.to_render_object().model_dump()
-    data.pop("id")
-    data.pop("created_at")
-    object_type = data.get("type")
-    if object_type is None:
+    db_type = object.db_type
+    if db_type is None:
         raise ValueError("object.type is required to create an object in the database")
-    response = await database.table(object_type).insert(data).execute()
+
+    data = object.prep_db()
+    print("Creating object in database:", data)
+
+    response = await database.table(db_type).insert(data).execute()
     return RenderObject(**response.data[0]) if response.data else None
 
 

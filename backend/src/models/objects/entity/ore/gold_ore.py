@@ -5,7 +5,7 @@ from src.models.objects.loot_table import LootTable, LootTableItem, Lootable
 
 
 class Ore(Entity, Lootable):
-    type: str = "entity"
+    type: str = "ore"
     solid: bool = True
     name_visible: bool = False
 

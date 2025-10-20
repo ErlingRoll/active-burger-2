@@ -5,6 +5,7 @@ class Entity(RenderObject):
     type: str = "entity"
     max_hp: int
     current_hp: int
+    db_type: str = "entity"
 
     def damage(self, amount: int):
         self.current_hp -= amount
