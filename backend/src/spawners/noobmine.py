@@ -7,7 +7,7 @@ class NoobmineEntry(Spawner):
     start_y: int = -4
     end_x: int = 15
     end_y: int = 4
-    safe_radius: int = 2
+    safe_radius: int = 1
     spawn_table: SpawnTable = SpawnTable(items=[
         SpawnTableItem(object_id="gold_ore", chance=0.5),
     ])

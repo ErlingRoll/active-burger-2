@@ -1,18 +1,20 @@
 import { PlacesType, Tooltip } from "react-tooltip"
-import { Item } from "../../../../../models/item"
+import { Equipment, Item } from "../../../../../models/item"
 import { RiCopperCoinFill } from "react-icons/ri"
 import { useEffect, useState } from "react"
 
-const ItemTooltip = ({ item, namespace, place }: { item: Item; namespace: string; place?: PlacesType }) => {
+const ItemTooltip = ({ item, namespace, place }: { item: Item & Equipment; namespace: string; place?: PlacesType }) => {
     const [baseMods, setBaseMods] = useState<{ [key: string]: number }[]>()
     const [mods, setMods] = useState<{ [key: string]: number }[]>()
 
     useEffect(() => {
+        if (!item.base_mods || !item.mods) return
         const baseMods = Object.entries(item.base_mods || {}).map(([key, value]) => ({ [key]: value }))
         const mods = Object.entries(item.mods || {}).map(([key, value]) => ({ [key]: value }))
         setBaseMods(baseMods)
         setMods(mods)
     }, [item])
+
     return (
         <div className="absolute z-210">
             <Tooltip className="pointer-events-none" anchorSelect={`#${namespace}-item-${item.id}`} place={place}>

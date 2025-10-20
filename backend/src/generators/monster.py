@@ -1,5 +1,5 @@
 
-from src.models.objects.monster.monster import KaratePanda
+from src.models.objects.monster.monster import KaratePanda, Monster
 from src.models.render_object import RenderObject
 
 
@@ -8,7 +8,7 @@ object_map = {
 }
 
 
-def generate_monster(object_id, **kwargs) -> RenderObject:
+def generate_monster(object_id, **kwargs) -> Monster:
     # Note that this "object_id" is the type identifier, not the unique instance ID
 
     object_class = object_map.get(object_id)
