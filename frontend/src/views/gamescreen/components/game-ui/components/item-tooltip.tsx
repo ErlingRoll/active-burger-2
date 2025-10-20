@@ -3,14 +3,15 @@ import { Equipment, Item } from "../../../../../models/item"
 import { RiCopperCoinFill } from "react-icons/ri"
 import { useEffect, useState } from "react"
 
-const ItemTooltip = ({ item, namespace, place }: { item: Item & Equipment; namespace: string; place?: PlacesType }) => {
+const ItemTooltip = ({ item, namespace, place }: { item: Item | Equipment; namespace: string; place?: PlacesType }) => {
     const [baseMods, setBaseMods] = useState<{ [key: string]: number }[]>()
     const [mods, setMods] = useState<{ [key: string]: number }[]>()
 
     useEffect(() => {
-        if (!item.base_mods || !item.mods) return
-        const baseMods = Object.entries(item.base_mods || {}).map(([key, value]) => ({ [key]: value }))
-        const mods = Object.entries(item.mods || {}).map(([key, value]) => ({ [key]: value }))
+        const _item = item as Item & Equipment
+        if (!_item.base_mods || !_item.mods) return
+        const baseMods = Object.entries(_item.base_mods || {}).map(([key, value]) => ({ [key]: value }))
+        const mods = Object.entries(_item.mods || {}).map(([key, value]) => ({ [key]: value }))
         setBaseMods(baseMods)
         setMods(mods)
     }, [item])
