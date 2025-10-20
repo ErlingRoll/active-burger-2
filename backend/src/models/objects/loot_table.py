@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from random import random, randint
 from src.generators.item import generate_item
@@ -8,8 +8,8 @@ from src.models.item import Item
 class LootTableItem(BaseModel):
     item_id: str
     chance: float  # 0.0 to 1.0
-    amount: int  # Alyways drop this amount
-    random_amount: int  # Additionally drop up to this amount
+    amount: int  # Always drop this amount
+    random_amount: Optional[int] = 0  # Additionally drop up to this amount
 
 
 class LootTable(BaseModel):
@@ -19,8 +19,9 @@ class LootTable(BaseModel):
         dropped_items = []
         for item in self.items:
             roll = random()
+            random_amount = randint(0, item.random_amount if item.random_amount else 0)
             if roll <= item.chance:
-                total_amount = item.amount + randint(0, item.random_amount)
+                total_amount = item.amount + randint(0, random_amount)
                 item = generate_item(item_id=item.item_id, count=total_amount)
                 dropped_items.append(item)
 

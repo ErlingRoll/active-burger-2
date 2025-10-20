@@ -69,7 +69,7 @@ class Spawner(BaseModel, GameTickerInterface):
             if obj.type in ["character"]:
                 has_space = False
                 break
-            if obj.solid and obj.type not in ["object"]:
+            if obj.solid and obj.type not in ["object", "terrain"]:
                 has_space = False
                 break
 

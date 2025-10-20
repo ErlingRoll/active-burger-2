@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from "react"
 import { GamestateContext } from "../contexts/gamestate-context"
 import { Character, Entity, RenderObject } from "../models/object"
 import { CharacterContext } from "../contexts/character-context"
-import { UIContext } from "../contexts/ui-context"
 import { PlayerContext } from "../contexts/player-context"
 import { TERRAIN_OBJECTS } from "../game/objects"
 import { TERRAIN } from "../game/terrain"
@@ -22,7 +21,6 @@ const WorldEditor = () => {
 
     const { gamestate, terrain } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
-    const { showGrid } = useContext(UIContext)
     const { gameActions } = useContext(PlayerContext)
 
     const renderDistance = 31 // Number of cells to render around the player
@@ -261,15 +259,17 @@ const WorldEditor = () => {
                                     <div
                                         key={obj.object_id}
                                         className={
-                                            `w-full flex items-center gap-2 px-4 py-2 border-2 rounded cursor-pointer border-primary text-light font-bold ` +
+                                            `w-full flex items-center gap-2 px-2 pr-4 py-2 border-2 rounded cursor-pointer border-primary text-light font-bold ` +
                                             (brush?.id === obj.object_id && "bg-primary")
                                         }
                                         onClick={() => changeBrush({ id: obj.object_id, type: "object" })}
                                     >
-                                        <img
-                                            src={textures[`/src/assets/textures/${obj.texture}.png`]}
-                                            className="h-10 w-10 rounded"
-                                        />
+                                        <div className="h-10 w-10 rounded center-col">
+                                            <img
+                                                src={textures[`/src/assets/textures/${obj.texture}.png`]}
+                                                className="h-full"
+                                            />
+                                        </div>
                                         {obj.name}
                                     </div>
                                 ))}
@@ -288,7 +288,7 @@ const WorldEditor = () => {
                                     <div
                                         key={obj.game_id}
                                         className={
-                                            `w-full flex items-center gap-2 px-4 py-2 border-2 rounded cursor-pointer border-primary text-light font-bold ` +
+                                            `w-full flex items-center gap-2 px-2 pr-4 py-2 border-2 rounded cursor-pointer border-primary text-light font-bold ` +
                                             (brush?.id === obj.game_id && "bg-primary")
                                         }
                                         onClick={() => changeBrush({ id: obj.game_id, type: "terrain" })}

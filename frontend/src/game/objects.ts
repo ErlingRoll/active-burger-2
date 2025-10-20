@@ -21,4 +21,9 @@ export const TERRAIN_OBJECTS: { [object_id: string]: Partial<RenderObject> } = {
         object_id: "shopkeeper",
         texture: "npcs/shopkeeper",
     },
+    crafting_bench: {
+        name: "Crafting Bench",
+        object_id: "crafting_bench",
+        texture: "misc/crafting_bench",
+    },
 }

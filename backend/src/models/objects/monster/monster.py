@@ -30,10 +30,9 @@ class KaratePanda(Monster):
     loot_table: LootTable = LootTable(
         items=[
             LootTableItem(
-                item_id="gold_ore",
-                chance=1.0,
+                item_id="chaos_orb",
+                chance=0.5,
                 amount=1,
-                random_amount=2,
             )
         ]
     )
