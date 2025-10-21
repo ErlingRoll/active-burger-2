@@ -36,7 +36,7 @@ const GameGrid = ({
         return center || { x: player.x, y: player.y, zoom: 1 }
     }
 
-    function drawObjectCell(obj: RenderObject & Entity & Character, cell: HTMLElement, z?: number) {
+    function drawObjectCell(obj: RenderObject & Entity & Character, cell: HTMLElement) {
         cell.innerHTML = ""
 
         // Obj container
@@ -72,7 +72,7 @@ const GameGrid = ({
             div.appendChild(hpBarContainer)
         }
 
-        if (obj.texture) {
+        if (obj.type !== "character" && obj.texture) {
             const imgContainer = document.createElement("div")
             imgContainer.className = "w-full flex-1 flex"
             imgContainer.style.backgroundImage = `url('${
@@ -119,10 +119,10 @@ const GameGrid = ({
             cell.innerHTML = ""
             const pos_objects: (RenderObject & Entity & Character)[] = objects[`${pos.x}_${pos.y}`] as any
             if (!pos_objects) continue
-            pos_objects.forEach((obj, index) => {
-                drawObjectCell(obj, cell, index)
-                if (obj.id === character.id) return
-            })
+            for (const obj of pos_objects) {
+                drawObjectCell(obj, cell)
+                if (obj.id === character.id) break
+            }
         }
     }
 
