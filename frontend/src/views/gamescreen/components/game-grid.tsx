@@ -38,12 +38,10 @@ const GameGrid = ({
 
     function drawObjectCell(obj: RenderObject & Entity & Character, cell: HTMLElement, z?: number) {
         cell.innerHTML = ""
-        z = obj.id === character.id ? 100 : z || 10
 
         // Obj container
         const div = document.createElement("div")
-        div.id = `object-${obj.id}`
-        div.className = "absolute top-0 left-0 h-full w-full flex flex-col items-center " + `z-[${z}]`
+        div.className = "absolute top-0 left-0 h-full w-full flex flex-col items-center"
         cell.appendChild(div)
 
         // Add Name
@@ -123,6 +121,7 @@ const GameGrid = ({
             if (!pos_objects) continue
             pos_objects.forEach((obj, index) => {
                 drawObjectCell(obj, cell, index)
+                if (obj.id === character.id) return
             })
         }
     }
