@@ -36,7 +36,7 @@ const CraftingBench = () => {
 
     if (!item) {
         return (
-            <div className="relative bg-dark/90 text-light rounded pointer-events-auto px-4 pb-4 pt-2">
+            <div className="relative bg-dark/95 text-light rounded pointer-events-auto px-4 pb-4 pt-2">
                 <div className="absolute top-0 right-0">
                     <div
                         className="absolute bottom-2 right-0 bg-danger rounded p-1 cursor-pointer hover:scale-105"
@@ -79,7 +79,7 @@ const CraftingBench = () => {
     }
 
     return (
-        <div className="relative bg-dark/90 text-light rounded pointer-events-auto p-4 grid grid-cols-2 gap-4">
+        <div className="relative bg-dark/95 text-light rounded pointer-events-auto p-4 grid grid-cols-2 gap-4">
             <div className="absolute top-0 right-0">
                 <div
                     className="absolute bottom-2 right-0 bg-danger rounded p-1 cursor-pointer hover:scale-105"

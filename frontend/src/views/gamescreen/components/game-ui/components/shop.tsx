@@ -23,7 +23,7 @@ const Shop = () => {
     const [tab, setTab] = useState<number>(0)
 
     const { gameActions } = useContext(PlayerContext)
-    const { items, character } = useContext(CharacterContext)
+    const { items } = useContext(CharacterContext)
     const { setShopOpen } = useContext(UIContext)
 
     const tabName = useMemo(() => {
@@ -31,7 +31,7 @@ const Shop = () => {
     }, [tab])
 
     return (
-        <div className="min-w-48 min-h-[50vh] min-h-32 bg-dark/90 text-light overflow-hidden rounded pointer-events-auto">
+        <div className="relative min-w-48 min-h-[50vh] bg-dark/95 text-light overflow-hidden rounded pointer-events-auto">
             <div className="flex flex-row items-stretch justify-between">
                 {shopTabs.map((t, i) => (
                     <button
