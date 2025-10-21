@@ -31,7 +31,7 @@ const Shop = () => {
     }, [tab])
 
     return (
-        <div className="min-w-48 h-[50vh] min-h-32 bg-dark/90 text-light overflow-hidden rounded pointer-events-auto">
+        <div className="min-w-48 min-h-[50vh] min-h-32 bg-dark/90 text-light overflow-hidden rounded pointer-events-auto">
             <div className="flex flex-row items-stretch justify-between">
                 {shopTabs.map((t, i) => (
                     <button
@@ -52,9 +52,9 @@ const Shop = () => {
                     Close
                 </button>
             </div>
-            <div className="p-4">
+            <div className="p-4 max-h-[70vh] overflow-y-auto">
                 {tabName === "Sell" && (
-                    <div className="grid grid-cols-6 gap-4 items-center">
+                    <div className="grid grid-cols-[repeat(6,minmax(0,auto))] gap-4 items-center">
                         {items.map((item) => (
                             <Fragment key={item.id}>
                                 <ItemTooltip item={item} namespace="shop" />
@@ -74,13 +74,13 @@ const Shop = () => {
                                     <p className="font-bold text-lg">{item.value}</p>
                                 </div>
                                 <button
-                                    className="bg-primary text-light font-bold rounded py-2"
+                                    className="bg-primary text-light font-bold rounded px-4 py-2"
                                     onClick={() => gameActions.sell({ item_id: item.id, count: 1 })}
                                 >
                                     Sell
                                 </button>
                                 <button
-                                    className="bg-primary text-light font-bold rounded py-2 whitespace-nowrap"
+                                    className="bg-primary text-light font-bold rounded px-4 py-2 whitespace-nowrap"
                                     onClick={() => gameActions.sell({ item_id: item.id, count: 10 })}
                                 >
                                     Sell x10
@@ -90,7 +90,7 @@ const Shop = () => {
                     </div>
                 )}
                 {tabName === "Buy" && (
-                    <div className="grid grid-cols-5 gap-4 items-center">
+                    <div className="grid grid-cols-[repeat(5,minmax(0,auto))] gap-4 items-center">
                         {shopItems.map((item: Item, index) => (
                             <Fragment key={index}>
                                 <ItemTooltip item={{ id: item.item_id + "-" + index, ...item }} namespace="shop" />
@@ -112,7 +112,7 @@ const Shop = () => {
                                     <p className="font-bold text-lg">{item.value * 2}</p>
                                 </div>
                                 <button
-                                    className="bg-primary text-light font-bold rounded px-2 py-1"
+                                    className="bg-primary text-light font-bold rounded px-4 py-1"
                                     onClick={() => gameActions.buy({ item_id: item.item_id!, count: 1 })}
                                 >
                                     Buy

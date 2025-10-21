@@ -7,43 +7,33 @@ const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eage
 
 type ItemInfoProps = {
     itemId: string
+    item?: Item | Equipment
     showImg?: boolean
     onImgClick?: () => void
 }
 
-const ItemInfo = ({ itemId, showImg, onImgClick }: ItemInfoProps) => {
-    const [item, setItem] = useState<Item>(null)
+const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
+    const [_item, setItem] = useState<Item>(null)
     const [baseMods, setBaseMods] = useState<{ [key: string]: number }[]>()
     const [mods, setMods] = useState<{ [key: string]: number }[]>()
 
     const { items, itemMap } = useContext(CharacterContext)
 
-    function getTotalItemCount(itemId: string): { count: number; itemId: string | null } {
-        let usingItemId = null
-        let total = 0
-        items.forEach((i) => {
-            if (i.count > 0 && i.item_id === itemId) {
-                total += i.count
-                usingItemId = i.id
-            }
-        })
-        return { count: total, itemId: usingItemId }
-    }
-
     useEffect(() => {
-        if (!item) return
-        const baseMods = Object.entries(item.base_mods || {}).map(([key, value]) => ({ [key]: value }))
-        const mods = Object.entries(item.mods || {}).map(([key, value]) => ({ [key]: value }))
+        if (!_item) return
+        const baseMods = Object.entries(_item.base_mods || {}).map(([key, value]) => ({ [key]: value }))
+        const mods = Object.entries(_item.mods || {}).map(([key, value]) => ({ [key]: value }))
         setBaseMods(baseMods)
         setMods(mods)
-    }, [item])
+    }, [_item])
 
     useEffect(() => {
-        if (!itemId || !itemMap) return
-        setItem(itemMap[itemId])
-    }, [itemId, items])
+        if (!itemMap) return
+        if (itemId) return setItem(itemMap[itemId])
+        if (item) return setItem(item)
+    }, [itemId, item, items])
 
-    if (!item) {
+    if (!_item) {
         return <div>Loading item...</div>
     }
 
@@ -52,31 +42,29 @@ const ItemInfo = ({ itemId, showImg, onImgClick }: ItemInfoProps) => {
             <div className="flex items-center mb-1">
                 {showImg && (
                     <div
-                        id={`inventory-item-${item.id}`}
-                        data-tooltip-place="top-end"
                         className="relative w-10 h-10 mr-4 bg-blue-100 border border-gray-400 rounded-sm center-col cursor-pointer hover:border-primary"
-                        title={item.name}
+                        title={_item.name}
                         onClick={() => onImgClick && onImgClick()}
                     >
                         <img
-                            src={textures[`/src/assets/textures/${item.texture}.png`]}
-                            alt={item.name}
+                            src={textures[`/src/assets/textures/${_item.texture}.png`]}
+                            alt={_item.name}
                             className="h-full"
                         />
                     </div>
                 )}
                 <div>
-                    <p className="font-bold text-2xl">{item.name}</p>
-                    <p className={`capitalize text-sm text-${item.rarity} dark-shadow font-bold -mt-1`}>
-                        {item.rarity}
+                    <p className="font-bold text-2xl">{_item.name}</p>
+                    <p className={`capitalize text-sm text-${_item.rarity} dark-shadow font-bold -mt-1`}>
+                        {_item.rarity}
                     </p>
                 </div>
             </div>
             <div className="flex flex-row items-center gap-1">
                 <RiCopperCoinFill color="gold" className="" />
-                <p className="font-bold text-lg">{item.value}</p>
+                <p className="font-bold text-lg">{_item.value}</p>
             </div>
-            {item.equipable && (
+            {_item.equipable && (
                 <div className="w-fit center-col items-start! mt-1">
                     {baseMods && baseMods.length ? (
                         <div className="text-gray-300">
@@ -120,7 +108,7 @@ const ItemInfo = ({ itemId, showImg, onImgClick }: ItemInfoProps) => {
                     )}
                 </div>
             )}
-            {item.description && <p className="text-sm mt-2">{item.description}</p>}
+            {_item.description && <p className="text-sm mt-2">{_item.description}</p>}
         </div>
     )
 }
