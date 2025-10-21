@@ -10,18 +10,19 @@ class Weapon(Equipment):
     equip_slot: str = EquipSlot.WEAPON.value
 
     def roll_hit(self) -> DamageHit:
-        total_physical = self.base_mods.get(WeaponMod.PHYSICAL_DAMAGE.value, 0) + self.mods.get(WeaponMod.PHYSICAL_DAMAGE.value, 0)
-        total_fire = self.base_mods.get(WeaponMod.FIRE_DAMAGE.value, 0) + self.mods.get(WeaponMod.FIRE_DAMAGE.value, 0)
-        total_cold = self.base_mods.get(WeaponMod.COLD_DAMAGE.value, 0) + self.mods.get(WeaponMod.COLD_DAMAGE.value, 0)
-        total_lightning = self.base_mods.get(WeaponMod.LIGHTNING_DAMAGE.value, 0) + self.mods.get(WeaponMod.LIGHTNING_DAMAGE.value, 0)
+        total_physical = self.get_mod_value(WeaponMod.PHYSICAL_DAMAGE.value)
+        total_fire = self.get_mod_value(WeaponMod.FIRE_DAMAGE.value)
+        total_cold = self.get_mod_value(WeaponMod.COLD_DAMAGE.value)
+        total_lightning = self.get_mod_value(WeaponMod.LIGHTNING_DAMAGE.value)
 
-        luck = self.base_mods.get(WeaponMod.LUCK.value, 0) + self.mods.get(WeaponMod.LUCK.value, 0)
+        luck = self.get_mod_value(WeaponMod.LUCK.value)
+        repeat = self.get_mod_value(WeaponMod.REPEAT.value) + 1
 
         hit = DamageHit(
-            physical=roll(total_physical, 0, luck),
-            fire=roll(total_fire, 0, luck),
-            cold=roll(total_cold, 0, luck),
-            lightning=roll(total_lightning, 0, luck)
+            physical=roll(total_physical, 0, luck) * repeat,
+            fire=roll(total_fire, 0, luck) * repeat,
+            cold=roll(total_cold, 0, luck) * repeat,
+            lightning=roll(total_lightning, 0, luck) * repeat,
         )
 
         return hit

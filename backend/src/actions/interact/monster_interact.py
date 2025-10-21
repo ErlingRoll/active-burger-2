@@ -1,6 +1,7 @@
 from asyncio import gather
 from typing import List
 from aiohttp.web import Request, WebSocketResponse
+from src.models.items.mods import WeaponMod
 from src.generators.monster import generate_monster
 from src.models.damage_hit import DamageHit
 from src.models.items.weapon import Weapon
@@ -52,10 +53,15 @@ async def monster_interact(request: Request, ws: WebSocketResponse, account: Acc
 
     gather(db_delete_object(database, monster.id), gamestate.delete_object(monster.id))
 
-    loot: List[Item] = monster.roll_loot()
+    loot: List[Item] = monster.roll_loot(fortune=weapon.get_mod_value(WeaponMod.FORTUNE.value))
+
     log_message = f"You defeated {monster.name} and received: "
     for item in loot:
         log_message += f"{item.name} x{item.count}, "
+
+    if len(loot) == 0:
+        log_message += "Nothing"
+
     log_message = log_message.rstrip(", ")
 
     loot_payload = GiveLootPayload(items=loot, log=[log_message])

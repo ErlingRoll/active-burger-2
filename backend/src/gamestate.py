@@ -1,5 +1,6 @@
 from asyncio import gather
 from datetime import datetime
+from queue import Queue
 from typing import Dict, List
 from pydantic import BaseModel, ConfigDict
 from supabase import AsyncClient
@@ -8,26 +9,42 @@ from src.database.terrain import db_get_terrain
 from src.connection_manager import ConnectionManager, GameEvent
 from src.database.character import get_character_data_by_id, get_characters
 from src.database.object import get_objects
-from src.models.account import Account
-from src.models.render_object import RenderObject
-from src.models.character import Character, CharacterData
-from src.models.terrain.terrain import Terrain
+from src.models import Account, Character, CharacterData, RenderObject, Terrain
+
+
+class ChatMessage(BaseModel):
+    account_id: str
+    character_id: str
+    message: str
+    timestamp: datetime = datetime.now()
 
 
 class Gamestate(BaseModel):
     start_datetime: datetime = datetime.now()
-    characters: dict[str, Character] = {}
-    objects: dict[str, RenderObject] = {}
-    terrain: dict[str, Terrain] = {}
     database: AsyncClient
     connection_manager: ConnectionManager
     model_config = ConfigDict(extra="allow", arbitrary_types_allowed=True)
+
+    characters: dict[str, Character] = {}
+    objects: dict[str, RenderObject] = {}
+    terrain: dict[str, Terrain] = {}
+    chat: Queue[ChatMessage] = Queue(maxsize=30)
 
     async def fetch_gamestate(self):
         object_res = get_objects(self.database)
         character_res = get_characters(self.database)
         terrain_res = db_get_terrain(self.database)
         self.objects, self.characters, self.terrain = await gather(object_res, character_res, terrain_res)
+
+    async def publish_chat(self):
+        event = GameEvent(
+            event="chat_update",
+            payload={
+                "server_datetime": datetime.now().isoformat(),
+                "messages": [msg.model_dump() for msg in list(self.chat.queue)]
+            }
+        )
+        await self.connection_manager.broadcast(event)
 
     async def publish_character(self, account: Account, character_id: str | None = None, character_data: CharacterData | None = None):
         if not character_id and not character_data:

@@ -42,6 +42,19 @@ class Item(BaseModel):
     def add_mod(self, mod_id: str, value: int):
         self.mods[mod_id] = value
 
+    def get_all_mods(self):
+        total_mods = self.base_mods.copy()
+        for mod_id, value in self.mods.items():
+            if mod_id in total_mods:
+                total_mods[mod_id] += value
+            else:
+                total_mods[mod_id] = value
+        return total_mods
+
+    def get_mod_value(self, mod_id: str, default=0) -> int:
+        all_mods = self.get_all_mods()
+        return all_mods.get(mod_id, default)
+
     def to_item(self):
         # Only DB model fields
         return Item(

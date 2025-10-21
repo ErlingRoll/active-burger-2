@@ -16,9 +16,10 @@ class ToolMod(Enum):
 
 tool_mod_value = {
     ToolMod.EFFICIENCY.value: [200, 170, 150, 100, 70, 40, 20, 12, 8, 5],
-    ToolMod.FORTUNE.value: [10, 8, 7, 6, 5, 4, 3, 2, 1, 1],
+    ToolMod.FORTUNE.value: [10, 7, 5, 4, 3, 3, 2, 2, 1, 1],
     ToolMod.REPEAT.value: [10, 5, 4, 3, 2, 2, 2, 1, 1, 1],
     ToolMod.LUCK.value: [7, 6, 5, 4, 3, 2, 2, 1, 1, 1]
+
 }
 
 
@@ -29,6 +30,7 @@ class WeaponMod(Enum):
     LIGHTNING_DAMAGE = "lightning_damage"
     REPEAT = "repeat"
     LUCK = "luck"
+    FORTUNE = "fortune"
 
 
 weapon_mod_value = {
@@ -37,7 +39,9 @@ weapon_mod_value = {
     WeaponMod.COLD_DAMAGE.value: [80, 60, 40, 25, 15, 10, 7, 5, 3, 2],
     WeaponMod.LIGHTNING_DAMAGE.value: [80, 60, 40, 25, 15, 10, 7, 5, 3, 2],
     WeaponMod.REPEAT.value: [10, 5, 4, 3, 2, 2, 2, 1, 1, 1],
-    WeaponMod.LUCK.value: [7, 6, 5, 4, 3, 2, 2, 1, 1, 1]
+    WeaponMod.LUCK.value: [7, 6, 5, 4, 3, 2, 2, 1, 1, 1],
+    WeaponMod.FORTUNE.value: [10, 7, 5, 4, 3, 3, 2, 2, 1, 1],
+
 }
 
 item_mods = {

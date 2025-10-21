@@ -1,6 +1,7 @@
 from asyncio import gather
 from typing import List
 from aiohttp.web import Request, WebSocketResponse
+from src.models.items.mods import ToolMod
 from src.models.items.tools import Tool
 from src.database.equipment import get_equipment_item
 from src.database.object import db_delete_object
@@ -38,7 +39,7 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
     del _ore_defaults['object_id']
     ore: Ore = generate_object(object_id=object.object_id, **_ore_defaults)  # type: ignore
 
-    damage = pickaxe.get_efficiency()
+    damage = pickaxe.get_mod_value(ToolMod.EFFICIENCY.value)
     ore.damage(damage)
 
     await gamestate.update_object(ore)
@@ -52,7 +53,11 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
     # Ore is mined
     gather(db_delete_object(database, ore.id), gamestate.delete_object(ore.id))
 
-    loot: List[Item] = ore.roll_loot()
+    loot: List[Item] = ore.roll_loot(
+        luck=pickaxe.get_mod_value(ToolMod.LUCK.value),
+        fortune=pickaxe.get_mod_value(ToolMod.FORTUNE.value)
+    )
+
     log_message = f"You mined {ore.name} and received: "
     for item in loot:
         log_message += f"{item.name} x{item.count}, "

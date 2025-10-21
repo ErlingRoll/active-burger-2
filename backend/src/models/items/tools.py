@@ -6,9 +6,6 @@ from src.models.equipment import EquipSlot, Equipment
 class Tool(Equipment):
     type: str = "tool"
 
-    def get_efficiency(self) -> int:
-        return self.base_mods.get(ToolMod.EFFICIENCY.value, 0)
-
 
 class Pickaxe(Tool):
     item_id: str = "pickaxe"

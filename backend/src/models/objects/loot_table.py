@@ -1,6 +1,7 @@
 from typing import List, Optional
 from pydantic import BaseModel
-from random import random, randint
+from random import randint
+from src.generators.dice import roll, roll_chance
 from src.generators.item import generate_item
 from src.models.item import Item
 
@@ -15,13 +16,14 @@ class LootTableItem(BaseModel):
 class LootTable(BaseModel):
     items: List[LootTableItem]
 
-    def roll_loot(self) -> List[Item]:
+    def roll_loot(self, luck=0, fortune=0) -> List[Item]:
         dropped_items = []
         for item in self.items:
-            roll = random()
+            loot_chance_roll = roll_chance(luck=luck)
             random_amount = randint(0, item.random_amount if item.random_amount else 0)
-            if roll <= item.chance:
-                total_amount = item.amount + randint(0, random_amount)
+            if loot_chance_roll <= item.chance:
+                total_amount = item.amount + roll(random_amount, min_value=0, luck=-1)
+                total_amount = total_amount * (1 + fortune)
                 item = generate_item(item_id=item.item_id, count=total_amount)
                 dropped_items.append(item)
 
@@ -31,5 +33,5 @@ class LootTable(BaseModel):
 class Lootable(BaseModel):
     loot_table: LootTable
 
-    def roll_loot(self) -> List[Item]:
+    def roll_loot(self, luck=0, fortune=0) -> List[Item]:
         raise NotImplementedError("roll_loot must be implemented by subclasses")

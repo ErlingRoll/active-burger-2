@@ -14,5 +14,5 @@ class Monster(Entity, Lootable):
         if self.current_hp < 0:
             self.current_hp = 0
 
-    def roll_loot(self):
-        return self.loot_table.roll_loot()
+    def roll_loot(self, fortune: int = 0):
+        return self.loot_table.roll_loot(fortune=fortune)

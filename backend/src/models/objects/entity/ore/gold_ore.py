@@ -9,7 +9,7 @@ class Ore(Entity, Lootable):
     solid: bool = True
     name_visible: bool = False
 
-    def roll_loot(self):
+    def roll_loot(self, luck=0, fortune=0):
         raise NotImplementedError("roll_loot must be implemented by subclasses")
 
 
@@ -31,5 +31,5 @@ class GoldOre(Ore):
         ]
     )
 
-    def roll_loot(self):
-        return self.loot_table.roll_loot()
+    def roll_loot(self, luck=0, fortune=0):
+        return self.loot_table.roll_loot(luck=luck, fortune=fortune)
