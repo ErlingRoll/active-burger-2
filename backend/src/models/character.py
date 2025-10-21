@@ -9,7 +9,7 @@ class Character(Entity):
     direction: str = "right"
     gold: int = 100
     name_visible: bool = True
-    solid: bool = True
+    solid: bool = False
 
     model_config = ConfigDict(extra="allow")
 

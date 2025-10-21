@@ -36,13 +36,14 @@ const GameGrid = ({
         return center || { x: player.x, y: player.y, zoom: 1 }
     }
 
-    function drawObjectCell(obj: RenderObject & Entity & Character, cell: HTMLElement) {
+    function drawObjectCell(obj: RenderObject & Entity & Character, cell: HTMLElement, z?: number) {
         cell.innerHTML = ""
+        z = obj.id === character.id ? 100 : z || 10
 
         // Obj container
         const div = document.createElement("div")
         div.id = `object-${obj.id}`
-        div.className = "h-full w-full flex flex-col items-center"
+        div.className = "absolute top-0 left-0 h-full w-full flex flex-col items-center " + `z-[${z}]`
         cell.appendChild(div)
 
         // Add Name
@@ -120,8 +121,8 @@ const GameGrid = ({
             cell.innerHTML = ""
             const pos_objects: (RenderObject & Entity & Character)[] = objects[`${pos.x}_${pos.y}`] as any
             if (!pos_objects) continue
-            pos_objects.forEach((obj) => {
-                drawObjectCell(obj, cell)
+            pos_objects.forEach((obj, index) => {
+                drawObjectCell(obj, cell, index)
             })
         }
     }
@@ -174,11 +175,11 @@ const GameGrid = ({
 
     useEffect(() => {
         drawTerrain(terrain)
-    }, [terrain, gamestate])
+    }, [terrain, gamestate, center])
 
     useEffect(() => {
         drawObjects(gamestate.position_objects as any)
-    }, [gamestate])
+    }, [gamestate, center])
 
     return (
         <div
