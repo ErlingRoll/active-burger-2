@@ -1,6 +1,7 @@
 from asyncio import create_task, gather
 from pydantic import BaseModel
 
+from src.gamestate import Gamestate
 from src.generators.item import generate_item
 from src.actions.action import ActionRequest
 from src.connection_manager import GameEvent
@@ -10,8 +11,8 @@ from src.models import Currency, Equipment
 
 
 class ApplyCurrencyPayload(BaseModel):
-    currency_id: str
-    equipment_id: str
+    currency_id: str | None
+    equipment_id: str | None
 
 
 async def handle_item_consumption(database, item, count=1, consume=False):
@@ -28,8 +29,16 @@ async def handle_item_consumption(database, item, count=1, consume=False):
 
 async def apply_currency(action: ActionRequest):
     database = action.request.app['database']
+    gamestate: Gamestate = action.request.app['gamestate']
 
     payload = ApplyCurrencyPayload(**action.payload)
+
+    if payload.currency_id is None or payload.equipment_id is None:
+        event = GameEvent(
+            event="log",
+            payload={"error": "Invalid payload for applying currency"},
+        )
+        return await action.ws.send_json(event.model_dump())
 
     currency_req = get_item_by_id(database, payload.currency_id)
     equipment_req = get_item_by_id(database, payload.equipment_id)
@@ -46,4 +55,18 @@ async def apply_currency(action: ActionRequest):
     currency: Currency = generate_item(**currency_res.model_dump())
     equipment: Equipment = generate_item(**equipment_res.model_dump())
 
+    apply_check = currency.apply_check(equipment)
+
+    if not apply_check.success:
+        event = GameEvent(
+            event="log",
+            log=[f"Failed to apply {currency.name}: {apply_check.message}"],
+        )
+        return create_task(action.ws.send_json(event.model_dump()))
+
     modified_equipment = currency.apply_to(equipment)
+
+    await update_item(database, modified_equipment)
+
+    # await handle_item_consumption(database, currency, count=1, consume=True)
+    create_task(gamestate.publish_character(action.account, character_id=modified_equipment.character_id))

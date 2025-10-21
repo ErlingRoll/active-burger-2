@@ -39,6 +39,9 @@ class Item(BaseModel):
     async def use(self, *args, **kwargs) -> UseResult:
         return UseResult(success=False, log=[f"Item [{self.name}] cannot be used."])
 
+    def add_mod(self, mod_id: str, value: int):
+        self.mods[mod_id] = value
+
     def to_item(self):
         # Only DB model fields
         return Item(

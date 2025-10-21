@@ -10,7 +10,7 @@ const Inventory = () => {
     const { gameActions } = useContext(PlayerContext)
 
     return (
-        <div className="px-3 py-1 bg-dark/90 text-light rounded flex flex-col items-center pointer-events-auto">
+        <div className="p-4 pt-2 bg-dark/90 text-light rounded flex flex-col items-center pointer-events-auto">
             <div className="center-col items-start!">
                 <p className="w-full font-bold text-lg mb-2">Inventory</p>
                 <div className="min-h-48">

@@ -12,12 +12,11 @@ export interface Item {
     character_id: string
     rarity: string
     equipable?: boolean
-}
-
-export interface Equipment extends Item {
     base_mods: { [key: string]: number }
     mods: { [key: string]: number }
 }
+
+export interface Equipment extends Item {}
 
 export enum EquipSlot {
     WEAPON = "weapon",

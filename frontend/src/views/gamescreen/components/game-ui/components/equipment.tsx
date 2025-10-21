@@ -10,8 +10,8 @@ const Equipment = () => {
     const { equipment } = useContext(CharacterContext)
 
     return (
-        <div id="equipment" className="px-3 py-2 bg-dark/90 text-light rounded pointer-events-auto">
-            <div className="grid grid-cols-2 items-center gap-2">
+        <div id="equipment" className="p-4 bg-dark/90 text-light rounded pointer-events-auto">
+            <div className="grid grid-cols-[repeat(2,minmax(0,auto))] items-center gap-2">
                 {Object.entries(equipment).map(([slot, item]) => (
                     <Fragment key={slot}>
                         <p className="font-bold text-md capitalize">{slot}:</p>

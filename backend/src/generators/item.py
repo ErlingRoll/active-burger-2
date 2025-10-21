@@ -1,5 +1,6 @@
 from src.models.item import Item
-from src.models.items import Burger, GoldOre, Pickaxe, ChaosOrb, AlchemyOrb
+from src.models.items import Burger, GoldOre, Pickaxe
+from src.models.items.currency import ChaosOrb, AlchemyOrb, ScouringOrb
 from src.models.items.weapon import Toothpick, FryingPan, PoolNoodle
 
 food_map = {
@@ -23,6 +24,7 @@ tool_map = {
 currency_map = {
     "chaos_orb": ChaosOrb,
     "alchemy_orb": AlchemyOrb,
+    "scouring_orb": ScouringOrb
 }
 
 item_map = {**food_map, **weapon_map, **resource_map, **tool_map, **currency_map}

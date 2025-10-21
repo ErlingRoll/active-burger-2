@@ -1,5 +1,5 @@
 
-from src.models.objects.monster.monster import KaratePanda, Monster
+from src.models.objects.monster import KaratePanda, Monster
 from src.models.render_object import RenderObject
 
 
