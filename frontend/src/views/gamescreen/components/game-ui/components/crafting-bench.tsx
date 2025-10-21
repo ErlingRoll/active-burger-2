@@ -89,7 +89,7 @@ const CraftingBench = () => {
                 </div>
             </div>
             <ItemInfo itemId={item.id} showImg={true} onImgClick={() => selectEquipment(null)} />
-            <div className="center-col gap-4">
+            <div className="center-col gap-4 max-h-[70vh] overflow-y-auto">
                 {CRAFTING_CURRENCY.map((currency) => {
                     const itemCount = getTotalItemCount(currency.item_id)
                     return (

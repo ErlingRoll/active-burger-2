@@ -26,7 +26,16 @@ class KaratePanda(Monster):
                 item_id="scouring_orb",
                 chance=1,
                 amount=1,
-                random_amount=1,
+            ),
+            LootTableItem(
+                item_id="transmutation_orb",
+                chance=1,
+                amount=1,
+            ),
+            LootTableItem(
+                item_id="alteration_orb",
+                chance=1,
+                amount=1,
             ),
         ]
     )

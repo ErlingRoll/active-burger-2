@@ -11,19 +11,19 @@ if TYPE_CHECKING:
     from src.models import Equipment
 
 
-class ChaosOrb(Currency):
-    item_id: str = "chaos_orb"
-    name: str = "Chaos Orb"
-    description: str = "Use at crafting bench to upgrade a common item to a rare item"
-    texture: str = "item/currency/chaos_orb"
+class AlterationOrb(Currency):
+    item_id: str = "alteration_orb"
+    name: str = "Alteration Orb"
+    description: str = "Use at crafting bench to re-roll mods of uncommon equipment"
+    texture: str = "item/currency/alteration_orb"
     value: int = 20
-    rarity: Rarity = Rarity.RARE
+    rarity: Rarity = Rarity.UNCOMMON
 
     def apply_check(self, equipment: Equipment) -> ApplyCheckResult:
-        check = equipment.rarity == Rarity.RARE
+        check = equipment.rarity == Rarity.UNCOMMON
         return ApplyCheckResult(
             success=check,
-            message="Item is not rare" if not check else "",
+            message="Item is not uncommon rarity" if not check else "",
         )
 
     def apply_to(self, equipment: Equipment) -> Equipment:
@@ -31,7 +31,7 @@ class ChaosOrb(Currency):
         if type_mods is None:
             return equipment
 
-        new_mod_count = roll(max_value=4, min_value=3, luck=-1)
+        new_mod_count = roll(max_value=2, min_value=1, luck=-1)
 
         mod_ids = sample(type_mods["mods"], new_mod_count)
         mod_values = type_mods["values"]
@@ -43,6 +43,6 @@ class ChaosOrb(Currency):
             tier = roll(max_value=len(values), min_value=1, luck=-2, reverse=True) - 1
             equipment.add_mod(mod_id, values[tier])
 
-        equipment.rarity = Rarity.RARE
+        equipment.rarity = Rarity.UNCOMMON
 
         return equipment

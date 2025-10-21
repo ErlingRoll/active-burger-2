@@ -67,7 +67,9 @@ const ItemInfo = ({ itemId, showImg, onImgClick }: ItemInfoProps) => {
                 )}
                 <div>
                     <p className="font-bold text-2xl">{item.name}</p>
-                    <p className={`capitalize text-sm text-${item.rarity} font-bold -mt-1`}>{item.rarity}</p>
+                    <p className={`capitalize text-sm text-${item.rarity} dark-shadow font-bold -mt-1`}>
+                        {item.rarity}
+                    </p>
                 </div>
             </div>
             <div className="flex flex-row items-center gap-1">
