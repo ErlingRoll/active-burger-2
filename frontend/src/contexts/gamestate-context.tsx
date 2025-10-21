@@ -83,14 +83,14 @@ export const GameProvider = ({ children }: { children: any }) => {
     function notifyLoot(payload: any) {
         const items: Item[] = payload.items
         const toast_component = (
-            <div>
+            <div className="flex flex-col items-start gap-1">
                 <p className="font-bold mb-1">Loot Dropped!</p>
                 {items.map((item, index: number) => (
                     <div key={index} className="flex items-center">
                         <p className="mr-2">
                             <b>{item.count}</b>x
                         </p>
-                        <div className="h-8 w-8 center-col">
+                        <div className="h-8 w-8 center-col mr-1">
                             <img
                                 src={textures[`/src/assets/textures/${item.texture}.png`]}
                                 className="h-full object-fit"
@@ -101,13 +101,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 ))}
             </div>
         )
-        toast(toast_component, {
-            position: "top-center",
-            autoClose: 5000,
-            hideProgressBar: true,
-            closeOnClick: true,
-            pauseOnHover: true,
-        })
+        toast(toast_component)
     }
 
     function on_event(event: string, payload: any, log: string[] | null) {

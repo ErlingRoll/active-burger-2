@@ -18,14 +18,14 @@ const GameUI = ({ selectedCell }: { selectedCell: { x: number; y: number } | nul
             <ToastContainer
                 position="top-center"
                 autoClose={5000}
-                hideProgressBar={false}
+                hideProgressBar={true}
                 newestOnTop={false}
-                closeOnClick={false}
+                closeOnClick={true}
+                closeButton={false}
                 rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
                 theme="dark"
+                className={"cursor-pointer pointer-events-auto"}
+                toastClassName={"bg-dark! border-2 border-primary"}
             />
             {shopOpen && <Shop />}
             {craftingBenchOpen && <CraftingBench />}
