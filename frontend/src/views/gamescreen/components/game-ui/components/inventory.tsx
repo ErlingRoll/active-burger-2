@@ -22,8 +22,7 @@ const Inventory = () => {
                                     key={index}
                                     id={`inventory-item-${item.id}`}
                                     data-tooltip-place="top-end"
-                                    className="relative w-12 h-12 bg-blue-100 border border-gray-400 rounded-sm flex justify-center items-center cursor-pointer hover:border-blue-600"
-                                    title={item.name}
+                                    className={`relative w-12 h-12 bg-light border-2 rounded-sm flex justify-center items-center cursor-pointer hover:border-primary`}
                                     onClick={() => gameActions.useItem({ id: item.id })}
                                 >
                                     <img

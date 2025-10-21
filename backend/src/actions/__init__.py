@@ -4,7 +4,8 @@ from .login import login
 from .move import move
 from .admin.object import place_object, delete_object
 from .admin.item import give_item
-from .admin.terrain import *
+from .admin.terrain import place_terrain, delete_terrain
 from .interact.interact import interact
 from .shop import buy, sell
-from .equip import *
+from .equip import equip_item, unequip_item
+from .apply_currency import apply_currency

@@ -88,6 +88,14 @@ class GameActions {
         this.send(action)
     }
 
+    applyCurrency({ currency_id, equipment_id }: { currency_id: string; equipment_id: string }) {
+        const action = {
+            action: "apply_currency",
+            payload: { currency_id, equipment_id },
+        }
+        this.send(action)
+    }
+
     // --- Admin Actions ---
     placeTerrain({ game_id, x, y, properties }: { game_id: string; properties: object; x: number; y: number }) {
         const action = {

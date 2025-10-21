@@ -31,8 +31,13 @@ class KaratePanda(Monster):
         items=[
             LootTableItem(
                 item_id="chaos_orb",
-                chance=0.5,
+                chance=1,
                 amount=1,
-            )
+            ),
+            LootTableItem(
+                item_id="alchemy_orb",
+                chance=1,
+                amount=1,
+            ),
         ]
     )

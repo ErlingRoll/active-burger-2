@@ -1,5 +1,4 @@
 from asyncio import create_task
-from aiohttp.web import WebSocketResponse
 from pydantic import BaseModel
 
 from src.actions.action import ActionRequest
@@ -8,7 +7,7 @@ from src.actions.equip import equip_item
 from src.gamestate import Gamestate
 from src.database.item import create_item, delete_item, get_item_by_id, update_item
 
-from src.models import Account, Character, CharacterData, Item, UseResult
+from src.models import CharacterData, Item, UseResult
 
 
 class UseItemPayload(BaseModel):

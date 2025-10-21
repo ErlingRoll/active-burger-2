@@ -24,7 +24,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     const { account } = useContext(UserContext)
     const { character } = useContext(CharacterContext)
     const { gameCon, gamestate, reconnect } = useContext(GamestateContext)
-    const { setShopOpen } = useContext(UIContext)
+    const { shopOpen, setShopOpen, craftingBenchOpen, setCraftingBenchOpen } = useContext(UIContext)
 
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
@@ -34,8 +34,13 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     const gameActions = useRef(new GameActions(reconnect))
 
     function localInteract(object: RenderObject) {
-        if (object.object_id === "shopkeeper") {
-            setShopOpen(true)
+        switch (object.object_id) {
+            case "crafting_bench":
+                setCraftingBenchOpen(true)
+                break
+            case "shopkeeper":
+                setShopOpen(true)
+                break
         }
     }
 
@@ -68,6 +73,10 @@ export const PlayerProvider = ({ children }: { children: any }) => {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            if (shopOpen || craftingBenchOpen) {
+                setShopOpen(false)
+                setCraftingBenchOpen(false)
+            }
             if (!gamestate || !character) return
             const urlPaths = window.location.pathname.split("/")
             const mainPath = urlPaths[1].toLocaleLowerCase()
@@ -114,7 +123,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
         }
         window.addEventListener("keydown", handleKeyDown)
         return () => window.removeEventListener("keydown", handleKeyDown)
-    }, [gamestate, character, gameActions, selectedCell, lastMoveRepeat])
+    }, [gamestate, character, gameActions, selectedCell, lastMoveRepeat, shopOpen, craftingBenchOpen])
 
     return (
         <PlayerContext.Provider

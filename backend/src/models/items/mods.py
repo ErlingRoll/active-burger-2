@@ -2,6 +2,11 @@
 from enum import Enum
 
 
+class ItemModType(Enum):
+    TOOL = "tool"
+    WEAPON = "weapon"
+
+
 class ToolMod(Enum):
     EFFICIENCY = "efficiency"
     FORTUNE = "fortune"
@@ -29,4 +34,15 @@ weapon_mod_value = {
     WeaponMod.LIGHTNING_DAMAGE.value: [80, 60, 40, 25, 15, 10, 7, 5, 3, 2],
     WeaponMod.REPEAT.value: [10, 5, 4, 3, 2, 2, 2, 1, 1, 1],
     WeaponMod.LUCK.value: [7, 6, 5, 4, 3, 2, 2, 1, 1, 1]
+}
+
+item_mods = {
+    ItemModType.TOOL.value: {
+        "mods": [enum.value for enum in ToolMod],
+        "values": tool_mod_value,
+    },
+    ItemModType.WEAPON.value: {
+        "mods": [enum.value for enum in WeaponMod],
+        "values": weapon_mod_value,
+    },
 }

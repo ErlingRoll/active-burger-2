@@ -20,6 +20,7 @@ const ItemTooltip = ({ item, namespace, place }: { item: Item | Equipment; names
             <Tooltip className="pointer-events-none" anchorSelect={`#${namespace}-item-${item.id}`} place={place}>
                 <div className="flex flex-col">
                     <p className="font-bold text-lg">{item.name}</p>
+                    <p className={`capitalize text-sm -mt-1 dark-shadow text-${item.rarity}`}>{item.rarity}</p>
                     <div className="flex flex-row items-center gap-1">
                         <RiCopperCoinFill color="gold" className="" />
                         <p className="font-bold text-lg">{item.value}</p>

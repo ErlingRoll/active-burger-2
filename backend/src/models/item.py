@@ -56,7 +56,8 @@ class Item(BaseModel):
             base_mods=self.base_mods,
             mods=self.mods,
             equipable=self.equipable,
-            equip_slot=self.equip_slot
+            equip_slot=self.equip_slot,
+            rarity=self.rarity,
         )
 
     def prep_db(self) -> dict:
