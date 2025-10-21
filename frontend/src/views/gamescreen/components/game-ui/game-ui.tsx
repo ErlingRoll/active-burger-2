@@ -16,8 +16,9 @@ const GameUI = ({ selectedCell }: { selectedCell: { x: number; y: number } | nul
     return (
         <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none z-200 pointer-events-none">
             <ToastContainer
-                position="top-center"
-                autoClose={5000}
+                position="top-right"
+                limit={5}
+                autoClose={3000}
                 hideProgressBar={true}
                 newestOnTop={false}
                 closeOnClick={true}

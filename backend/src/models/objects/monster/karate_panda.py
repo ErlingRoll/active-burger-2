@@ -13,32 +13,32 @@ class KaratePanda(Monster):
     loot_table: LootTable = LootTable(
         items=[
             LootTableItem(
-                item_id="chaos_orb",
-                chance=0.1,
-                amount=1,
-                random_amount=2
-            ),
-            LootTableItem(
-                item_id="alchemy_orb",
-                chance=0.1,
-                amount=1,
-                random_amount=2
-            ),
-            LootTableItem(
                 item_id="scouring_orb",
-                chance=0.1,
+                chance=0.2,
                 amount=1,
                 random_amount=2
             ),
             LootTableItem(
                 item_id="transmutation_orb",
-                chance=0.1,
+                chance=0.5,
                 amount=1,
                 random_amount=2
             ),
             LootTableItem(
                 item_id="alteration_orb",
-                chance=0.1,
+                chance=0.5,
+                amount=1,
+                random_amount=2
+            ),
+            LootTableItem(
+                item_id="alchemy_orb",
+                chance=0.2,
+                amount=1,
+                random_amount=2
+            ),
+            LootTableItem(
+                item_id="chaos_orb",
+                chance=0.2,
                 amount=1,
                 random_amount=2
             ),
