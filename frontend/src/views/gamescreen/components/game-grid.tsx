@@ -207,7 +207,7 @@ const GameGrid = ({
                             id={cellName(wx, wy)}
                             className="absolute top-0 left-0 w-full h-full flex flex-row items-center justify-around"
                         />
-                        <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-20" />
+                        <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-10" />
                         {showSelectedCell && selectedCell && selectedCell.x === wx && selectedCell.y === wy && (
                             <div className="absolute top-0 left-0 w-full h-full border-2 border-dashed border-primary" />
                         )}

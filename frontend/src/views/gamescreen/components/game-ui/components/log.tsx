@@ -23,7 +23,7 @@ const Log = () => {
     }
 
     return (
-        <div className="bg-dark/90 min-h-64 center-col text-light rounded select-text pointer-events-auto justify-between!">
+        <div className="bg-dark/90 min-h-64 center-col text-light rounded select-text pointer-events-auto justify-between! overflow-hidden">
             <div className="w-full flex flex-row items-stretch justify-between">
                 {tabs.map((t, i) => (
                     <button
