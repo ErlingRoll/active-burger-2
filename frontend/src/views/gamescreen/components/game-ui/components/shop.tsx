@@ -44,7 +44,7 @@ const Shop = () => {
                         {t}
                     </button>
                 ))}
-                <div className="min-w-24 flex-grow bg-light" />
+                <div className="min-w-24 grow bg-light" />
                 <button
                     className="text-lg font-bold px-4 cursor-pointer rounded-none! bg-danger text-light"
                     onClick={() => setShopOpen(false)}

@@ -1,7 +1,6 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useState } from "react"
 import { GamestateContext } from "../../contexts/gamestate-context"
 import { FaTimes } from "react-icons/fa"
-import { CharacterContext } from "../../contexts/character-context"
 import { UIContext } from "../../contexts/ui-context"
 import GameUI from "./components/game-ui/game-ui"
 import { PlayerContext } from "../../contexts/player-context"

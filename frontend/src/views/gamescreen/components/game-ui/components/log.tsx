@@ -1,18 +1,72 @@
-import { useContext } from "react"
+import { useContext, useMemo, useState } from "react"
 import { GamestateContext } from "../../../../../contexts/gamestate-context"
+import { PlayerContext } from "../../../../../contexts/player-context"
+
+const tabs = ["Chat", "Game"]
 
 const Log = () => {
-    const { log } = useContext(GamestateContext)
+    const [tab, setTab] = useState<number>(0)
+    const [message, setMessage] = useState<string>("")
+
+    const { log, chatMessages } = useContext(GamestateContext)
+    const { gameActions } = useContext(PlayerContext)
+
+    const tabName = useMemo(() => {
+        return tabs[tab]
+    }, [tab])
+
+    function sendMessage() {
+        const _message = message.trim()
+        if (!_message) return
+        gameActions.sendChatMessage({ message: _message })
+        setMessage("")
+    }
 
     return (
-        <div className="bg-dark/90 text-light rounded p-2 select-text pointer-events-auto">
-            <div className="flex flex-col-reverse gap-1 min-h-38 max-h-64 min-w-[25vw] w-64 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200">
-                {log.map((msg, index) => (
-                    <div key={index} className="bg-primary/30 rounded py-[1px] px-[0.3rem]">
-                        {msg}
-                    </div>
+        <div className="bg-dark/90 min-h-64 center-col text-light rounded select-text pointer-events-auto justify-between!">
+            <div className="w-full flex flex-row items-stretch justify-between">
+                {tabs.map((t, i) => (
+                    <button
+                        key={t}
+                        className={`inline h-full text-lg font-bold px-4 rounded-none! ${
+                            tab !== i && "bg-light text-dark"
+                        }`}
+                        onClick={() => setTab(i)}
+                    >
+                        {t}
+                    </button>
                 ))}
+                <div className="min-w-24 grow bg-light" />
             </div>
+            {tabName === "Chat" && (
+                <div>
+                    <div className="flex flex-col-reverse gap-1 min-h-38 max-h-64 min-w-64 w-[30vw] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 p-2 pb-0">
+                        {chatMessages.map((msg, index) => (
+                            <div key={index} className="bg-light/20 rounded-xs py-[1px] px-[0.3rem]">
+                                [{new Date(msg.timestamp).toLocaleTimeString("no")}] {msg.character_name}: {msg.message}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="p-2">
+                        <input
+                            type="text"
+                            className="w-full box-border bg-light/80 text-dark p-1 outline-none rounded"
+                            value={message}
+                            onChange={(e) => setMessage(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                        />
+                    </div>
+                </div>
+            )}
+            {tabName === "Game" && (
+                <div className="flex flex-col-reverse gap-1 min-h-38 max-h-64 min-w-64 w-[30vw] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 p-2">
+                    {log.map((msg, index) => (
+                        <div key={index} className="bg-light/20 rounded-xs py-[1px] px-[0.3rem]">
+                            {msg}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     )
 }

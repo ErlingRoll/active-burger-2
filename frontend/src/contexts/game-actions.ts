@@ -96,6 +96,14 @@ class GameActions {
         this.send(action)
     }
 
+    sendChatMessage({ message }: { message: string }) {
+        const action = {
+            action: "send_chat_message",
+            payload: { message },
+        }
+        this.send(action)
+    }
+
     // --- Admin Actions ---
     placeTerrain({ game_id, x, y, properties }: { game_id: string; properties: object; x: number; y: number }) {
         const action = {

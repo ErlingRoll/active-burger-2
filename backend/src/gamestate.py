@@ -1,8 +1,8 @@
 from asyncio import gather
+from collections import deque
 from datetime import datetime
-from queue import Queue
-from typing import Dict, List
-from pydantic import BaseModel, ConfigDict
+from typing import Deque, Dict, List
+from pydantic import BaseModel, ConfigDict, Field
 from supabase import AsyncClient
 
 from src.database.terrain import db_get_terrain
@@ -14,9 +14,11 @@ from src.models import Account, Character, CharacterData, RenderObject, Terrain
 
 class ChatMessage(BaseModel):
     account_id: str
+    account_name: str
     character_id: str
+    character_name: str
     message: str
-    timestamp: datetime = datetime.now()
+    timestamp: str = Field(default_factory=lambda: datetime.now().isoformat())
 
 
 class Gamestate(BaseModel):
@@ -28,7 +30,7 @@ class Gamestate(BaseModel):
     characters: dict[str, Character] = {}
     objects: dict[str, RenderObject] = {}
     terrain: dict[str, Terrain] = {}
-    chat: Queue[ChatMessage] = Queue(maxsize=30)
+    chat: Deque[ChatMessage] = deque(maxlen=50)
 
     async def fetch_gamestate(self):
         object_res = get_objects(self.database)
@@ -36,12 +38,15 @@ class Gamestate(BaseModel):
         terrain_res = db_get_terrain(self.database)
         self.objects, self.characters, self.terrain = await gather(object_res, character_res, terrain_res)
 
+    def send_chat_message(self, message: ChatMessage):
+        self.chat.appendleft(message)
+
     async def publish_chat(self):
         event = GameEvent(
             event="chat_update",
             payload={
                 "server_datetime": datetime.now().isoformat(),
-                "messages": [msg.model_dump() for msg in list(self.chat.queue)]
+                "messages": [msg.model_dump() for msg in list(self.chat)]
             }
         )
         await self.connection_manager.broadcast(event)

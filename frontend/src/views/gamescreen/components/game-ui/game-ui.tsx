@@ -8,12 +8,25 @@ import Log from "./components/log"
 import Shop from "./components/shop"
 import Equipment from "./components/equipment"
 import CraftingBench from "./components/crafting-bench"
+import { ToastContainer } from "react-toastify"
 
 const GameUI = ({ selectedCell }: { selectedCell: { x: number; y: number } | null }) => {
     const { shopOpen, craftingBenchOpen } = useContext(UIContext)
 
     return (
         <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none z-200 pointer-events-none">
+            <ToastContainer
+                position="top-center"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick={false}
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             {shopOpen && <Shop />}
             {craftingBenchOpen && <CraftingBench />}
             <div className="absolute bottom-0 left-0 m-4 gap-4 flex items-end z-200">

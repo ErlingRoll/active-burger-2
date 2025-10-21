@@ -1,8 +1,21 @@
-import React, { Dispatch, SetStateAction, createContext, useContext, useEffect } from "react"
+import React, { Dispatch, SetStateAction, createContext, useContext, useEffect, useState } from "react"
 import { UserContext } from "./user-context"
 import { RenderObject } from "../models/object"
 import { CharacterContext } from "./character-context"
 import { Terrain } from "../models/terrain"
+import { toast } from "react-toastify"
+import { Item } from "../models/item"
+
+const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
+
+export type ChatMessage = {
+    account_id: string
+    account_name: string
+    character_id: string
+    character_name: string
+    message: string
+    timestamp: string
+}
 
 export type Gamestate = {
     render_objects: { [key: string]: RenderObject }
@@ -20,7 +33,7 @@ type GamestateContextType = {
     setGamestate: Dispatch<SetStateAction<Gamestate | null>>
     logout: () => void
     log: string[]
-    setLog: Dispatch<SetStateAction<string[]>>
+    chatMessages: ChatMessage[]
     terrain: { [pos: string]: Terrain[] }
     reconnect: () => void
 }
@@ -32,19 +45,20 @@ export const GamestateContext = createContext<GamestateContextType>({
     setGamestate: (game: any) => {},
     logout: () => {},
     log: [],
-    setLog: (log: any) => {},
+    chatMessages: [],
     terrain: {},
     reconnect: () => {},
 })
 
 export const GameProvider = ({ children }: { children: any }) => {
-    const [gameCon, setGameCon] = React.useState<WebSocket | null>(null)
-    const [gamestate, setGamestate] = React.useState<Gamestate | null>(null)
-    const [terrain, setTerrain] = React.useState<{ [pos: string]: Terrain[] }>({})
-    const [log, setLog] = React.useState<string[]>([])
+    const [gameCon, setGameCon] = useState<WebSocket | null>(null)
+    const [gamestate, setGamestate] = useState<Gamestate | null>(null)
+    const [terrain, setTerrain] = useState<{ [pos: string]: Terrain[] }>({})
+    const [log, setLog] = useState<string[]>([])
+    const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
-    const [connecting, setConnecting] = React.useState<boolean>(false)
-    const [connectTimeout, setConnectTimeout] = React.useState(null)
+    const [connecting, setConnecting] = useState<boolean>(false)
+    const [connectTimeout, setConnectTimeout] = useState(null)
 
     const { user, setUser, setAccount } = useContext(UserContext)
     const { setCharacter } = useContext(CharacterContext)
@@ -64,6 +78,36 @@ export const GameProvider = ({ children }: { children: any }) => {
         setCharacter(null)
         setAccount(null)
         setUser(null)
+    }
+
+    function notifyLoot(payload: any) {
+        const items: Item[] = payload.items
+        const toast_component = (
+            <div>
+                <p className="font-bold mb-1">Loot Dropped!</p>
+                {items.map((item, index: number) => (
+                    <div key={index} className="flex items-center">
+                        <p className="mr-2">
+                            <b>{item.count}</b>x
+                        </p>
+                        <div className="h-8 w-8 center-col">
+                            <img
+                                src={textures[`/src/assets/textures/${item.texture}.png`]}
+                                className="h-full object-fit"
+                            />
+                        </div>
+                        <span className={`font-bold text-${item.rarity}`}>{item.name}</span>
+                    </div>
+                ))}
+            </div>
+        )
+        toast(toast_component, {
+            position: "top-center",
+            autoClose: 5000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+        })
     }
 
     function on_event(event: string, payload: any, log: string[] | null) {
@@ -87,6 +131,12 @@ export const GameProvider = ({ children }: { children: any }) => {
                 setCharacter(payload)
                 break
             case "log":
+                break
+            case "chat_update":
+                setChatMessages(payload.messages)
+                break
+            case "loot_drop":
+                notifyLoot(payload)
                 break
             default:
                 console.error("Unhandled WebSocket event:", event, payload, log)
@@ -174,7 +224,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 reconnect: connect,
                 logout,
                 log,
-                setLog,
+                chatMessages,
                 terrain,
             }}
         >

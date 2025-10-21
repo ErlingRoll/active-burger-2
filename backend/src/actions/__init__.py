@@ -9,3 +9,4 @@ from .interact.interact import interact
 from .shop import buy, sell
 from .equip import equip_item, unequip_item
 from .apply_currency import apply_currency
+from .chat import send_chat_message

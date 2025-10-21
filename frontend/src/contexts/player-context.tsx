@@ -73,6 +73,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            if (document.activeElement.tagName === "INPUT") return
             if (shopOpen || craftingBenchOpen) {
                 setShopOpen(false)
                 setCraftingBenchOpen(false)
