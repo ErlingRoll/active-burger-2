@@ -5,7 +5,7 @@ import { UserContext } from "./contexts/user-context"
 import Login from "./views/login/login"
 import { GamestateContext } from "./contexts/gamestate-context"
 import { CharacterContext } from "./contexts/character-context"
-import WorldEditor from "./views/world-editor"
+import WorldEditor from "./views/world-editor/world-editor"
 
 function Game() {
     const { account, admin } = useContext(UserContext)

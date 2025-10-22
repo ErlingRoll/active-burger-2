@@ -10,4 +10,6 @@ export interface Terrain {
     solid: boolean
     opacity: number
     rotation: number
+    variant: string
+    variants: string[]
 }

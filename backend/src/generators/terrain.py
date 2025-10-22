@@ -1,9 +1,10 @@
 
-from src.models.terrain.terrain import Terrain, Grass, Water
+from src.models.terrain.terrain import Terrain, Grass, Water, Sandstone
 
 terrain_map = {
     "grass": Grass,
-    "water": Water
+    "water": Water,
+    "sandstone": Sandstone
 }
 
 

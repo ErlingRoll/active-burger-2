@@ -9,6 +9,7 @@ export interface RenderObject {
     name_visible: boolean
     x: number
     y: number
+    z: number
     direction: string
     texture?: string
     width: number

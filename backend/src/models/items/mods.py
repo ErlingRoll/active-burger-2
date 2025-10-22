@@ -19,7 +19,6 @@ tool_mod_value = {
     ToolMod.FORTUNE.value: [10, 7, 5, 4, 3, 3, 2, 2, 1, 1],
     ToolMod.REPEAT.value: [10, 5, 4, 3, 2, 2, 2, 1, 1, 1],
     ToolMod.LUCK.value: [7, 6, 5, 4, 3, 2, 2, 1, 1, 1]
-
 }
 
 

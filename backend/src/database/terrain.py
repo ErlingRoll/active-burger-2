@@ -1,6 +1,5 @@
-from asyncio import gather
-from typing import Dict, List
-from postgrest import APIResponse
+from typing import Dict
+from postgrest import APIError, APIResponse
 from supabase import AsyncClient
 
 from src.models import Terrain
@@ -20,12 +19,10 @@ async def db_get_terrain(database: AsyncClient) -> Dict[str, Terrain]:
 
 
 async def db_create_terrain(database: AsyncClient, terrain: Terrain) -> Terrain | None:
-    data = terrain.model_dump()
-    data.pop("id", None)
-    data.pop("created_at", None)
+    data = terrain.prep_db()
     try:
         response = await database.table("terrain").insert(data).execute()
-    except Exception as e:
+    except APIError as e:
         print(f"Error inserting terrain: {e}")
         return None
     return Terrain(**response.data[0]) if response.data else None

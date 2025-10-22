@@ -28,10 +28,13 @@ class ConnectionManager(BaseModel):
         print(f"Account map updated. Total mapped accounts: {len(self.connections_account_map)}")
 
     def clean_connections_account_map(self):
+        closed_connections = []
         for account_id, ws in self.connections_account_map.items():
             if ws.closed:
-                del self.connections_account_map[account_id]
-                print(f"Removed closed connection for account {account_id}")
+                closed_connections.append(account_id)
+        for account_id in closed_connections:
+            del self.connections_account_map[account_id]
+            print(f"Removed closed connection for account {account_id}")
 
     def remove_connection(self, connection_id):
         if connection_id in self.connections:

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo } from "react"
+import { useContext, useEffect, useMemo, PointerEvent, MouseEvent } from "react"
 import { GamestateContext } from "../../../contexts/gamestate-context"
 import { CharacterContext } from "../../../contexts/character-context"
 import { UIContext } from "../../../contexts/ui-context"
@@ -13,7 +13,9 @@ type GameGridProps = {
     renderHeight?: number
     hoverHighlight?: boolean
     showSelectedCell?: boolean
-    onCellClick?: ({ x, y }: { x: number; y: number }) => void
+    onCellClick?: ({ x, y, event }: { x: number; y: number; event: MouseEvent }) => void
+    onCellEnter?: ({ x, y, event }: { x: number; y: number; event: PointerEvent }) => void
+    onCellLeave?: ({ x, y, event }: { x: number; y: number; event: PointerEvent }) => void
 }
 
 const GameGrid = ({
@@ -23,6 +25,8 @@ const GameGrid = ({
     hoverHighlight = false,
     showSelectedCell = true,
     onCellClick,
+    onCellEnter,
+    onCellLeave,
 }: GameGridProps) => {
     const { gamestate, terrain } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
@@ -147,7 +151,7 @@ const GameGrid = ({
             terrains.forEach((terrain) => {
                 const img = document.createElement("img")
                 img.src = textures[`/src/assets/textures/${terrain.texture}.png`] as string
-                img.className = "w-full h-full"
+                img.className = `absolute left-0 top-0 w-full h-full z-[${terrain.z}]`
                 img.style.zIndex = terrain.z.toString()
                 tCell.appendChild(img)
             })
@@ -194,7 +198,12 @@ const GameGrid = ({
                 const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2)
                 const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y - 1
                 return (
-                    <div key={index} className={`relative`}>
+                    <div
+                        key={index}
+                        className={`relative`}
+                        onPointerEnter={(event) => onCellEnter && onCellEnter({ x: wx, y: wy, event: event })}
+                        onPointerLeave={(event) => onCellLeave && onCellLeave({ x: wx, y: wy, event: event })}
+                    >
                         {showGrid && (
                             <p className="absolute bottom-0 left-0 ml-[1px] text-[0.8rem] text-light drop-shadow-[0.1px_0.3px_1px_rgb(0,0,0)] z-1000 pointer-events-none">{`${wx}, ${wy}`}</p>
                         )}
@@ -215,7 +224,7 @@ const GameGrid = ({
                             className={`absolute top-0 left-0 w-full h-full z-110 border-orange-300 border-dashed ${
                                 hoverHighlight && "cursor-pointer hover:border-2"
                             }`}
-                            onClick={() => onCellClick && onCellClick({ x: wx, y: wy })}
+                            onClick={(event) => onCellClick && onCellClick({ x: wx, y: wy, event: event })}
                         />
                     </div>
                 )
