@@ -11,8 +11,8 @@ class RenderObject(BaseModel):
     type: Optional[str] = "object"
     name: str
     name_visible: bool = True
-    x: int
-    y: int
+    x: int = 0
+    y: int = 0
     texture: Optional[str] = None
     height: Optional[int] = None  # in pixels
     width: Optional[int] = None  # in pixels
