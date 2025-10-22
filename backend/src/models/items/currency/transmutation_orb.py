@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 class TransmutationOrb(Currency):
     item_id: str = "transmutation_orb"
     name: str = "Transmutation Orb"
-    description: str = "Use at crafting bench to upgrade a common item to a rare item"
+    description: str = "Use at crafting bench to upgrade a common item to an uncommon item"
     texture: str = "item/currency/transmutation_orb"
     value: int = 10
     rarity: Rarity = Rarity.UNCOMMON
