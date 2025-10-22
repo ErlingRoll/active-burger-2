@@ -12,6 +12,7 @@ export interface RenderObject {
     z: number
     direction: string
     texture?: string
+    ext?: string
     width: number
     height: number
     solid: boolean

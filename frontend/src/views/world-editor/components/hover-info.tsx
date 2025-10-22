@@ -1,4 +1,3 @@
-import { useEffect } from "react"
 import { Terrain } from "../../../models/terrain"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
@@ -9,10 +8,6 @@ type HoverInfoProps = {
 
 const HoverInfo = ({ terrains }: HoverInfoProps) => {
     if (terrains.length === 0) return null
-
-    useEffect(() => {
-        console.log("HoverInfo terrains:", terrains)
-    }, [terrains])
 
     return (
         <div className="absolute top-0 right-0 m-4 p-2 bg-dark/90 text-light rounded">

@@ -22,7 +22,7 @@ async def game_loop(app, database, connection_manager, gamestate: Gamestate):
     while True:
         start_time = get_event_loop().time()
 
-        await game_tick(tickers)
+        # await game_tick(tickers)
 
         await gamestate.publish_gamestate()
 

@@ -4,7 +4,7 @@ import { RenderObject } from "../../models/object"
 import { CharacterContext } from "../../contexts/character-context"
 import { PlayerContext } from "../../contexts/player-context"
 import { TERRAIN_OBJECTS } from "../../game/objects"
-import { TERRAIN } from "../../game/terrain"
+import { TERRAIN, TERRAIN_COLORS } from "../../game/terrain"
 import { Terrain } from "../../models/terrain"
 import Settings from "../gamescreen/components/game-ui/components/settings"
 import GameGrid from "../gamescreen/components/game-grid"
@@ -13,7 +13,8 @@ import HoverInfo from "./components/hover-info"
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const WorldEditor = () => {
-    const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 0.8 }) // x and y will be set to center on player
+    const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 2, step: 3 }) // x and y will be set to center on player
+    const [renderSize, setRenderSize] = useState<{ width: number; height: number }>({ width: 41, height: 29 })
     const [hoveringCell, setHoveringCell] = useState<{ x: number; y: number } | null>(null)
     const [hoveringTerrain, setHoveringTerrain] = useState<Terrain[]>([])
     const [brush, setBrush] = useState<{ id: string; type: "terrain" | "object"; object: RenderObject | any } | null>(
@@ -29,8 +30,6 @@ const WorldEditor = () => {
     const { character } = useContext(CharacterContext)
     const { gameActions } = useContext(PlayerContext)
 
-    const cameraStep = 1
-
     // Camera movement
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -44,19 +43,19 @@ const WorldEditor = () => {
             switch (input) {
                 case "arrowup":
                 case "w":
-                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y + cameraStep }))
+                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y + oldCamera.step }))
                     break
                 case "arrowdown":
                 case "s":
-                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y - cameraStep }))
+                    setCamera((oldCamera) => ({ ...oldCamera, y: oldCamera.y - oldCamera.step }))
                     break
                 case "arrowleft":
                 case "a":
-                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x - cameraStep }))
+                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x - oldCamera.step }))
                     break
                 case "arrowright":
                 case "d":
-                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x + cameraStep }))
+                    setCamera((oldCamera) => ({ ...oldCamera, x: oldCamera.x + oldCamera.step }))
                     break
                 default:
                     gameInput = false
@@ -119,11 +118,12 @@ const WorldEditor = () => {
         }
 
         if (brush.type === "terrain") {
-            const terrain = structuredClone(TERRAIN[brush.id])
+            let terrain = structuredClone(TERRAIN[brush.id])
+            if (!terrain) terrain = structuredClone(TERRAIN_COLORS[brush.id])
             terrain.z = brushZ
             terrain.texture = terrain.texture + (selectedVariant ? `_${selectedVariant}` : "")
             gameActions.placeTerrain({
-                game_id: brush.id,
+                game_id: terrain.game_id,
                 properties: terrain,
                 x: pos.x,
                 y: pos.y,
@@ -149,7 +149,91 @@ const WorldEditor = () => {
         >
             <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none z-200 pointer-events-none">
                 <HoverInfo terrains={hoveringTerrain} />
-                <div className="absolute flex flex-col items-end p-4 bottom-0 right-0 z-200 gap-4 pointer-events-none">
+                <div className="absolute flex items-end p-4 bottom-0 right-0 z-200 gap-4 pointer-events-none">
+                    <div className="bg-dark/90 text-light rounded p-2 pointer-events-auto flex flex-col gap-2">
+                        <div className="flex items-center justify-between gap-2 font-bold">
+                            <p>X</p>
+                            <input
+                                type="number"
+                                className="bg-dark border-2 border-primary rounded px-2 py-1 w-20 text-light"
+                                value={camera.x}
+                                onChange={(e) => {
+                                    let value = parseInt(e.target.value)
+                                    if (isNaN(value)) return
+                                    setCamera({ ...camera, x: value })
+                                }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between gap-2 font-bold">
+                            <p>Y</p>
+                            <input
+                                type="number"
+                                className="bg-dark border-2 border-primary rounded px-2 py-1 w-20 text-light"
+                                value={camera.y}
+                                onChange={(e) => {
+                                    let value = parseInt(e.target.value)
+                                    if (isNaN(value)) return
+                                    setCamera({ ...camera, y: value })
+                                }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between gap-2 font-bold">
+                            <p>Camera step</p>
+                            <input
+                                type="number"
+                                className="bg-dark border-2 border-primary rounded px-2 py-1 w-20 text-light"
+                                value={camera.step}
+                                onChange={(e) => {
+                                    let value = parseInt(e.target.value)
+                                    if (isNaN(value) || value <= 1) return
+                                    if (value > 20) value = 20
+                                    setCamera({ ...camera, step: value })
+                                }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between gap-2 font-bold">
+                            <p>Zoom</p>
+                            <input
+                                type="number"
+                                className="bg-dark border-2 border-primary rounded px-2 py-1 w-20 text-light"
+                                value={camera.zoom}
+                                onChange={(e) => {
+                                    let value = parseFloat(e.target.value)
+                                    if (isNaN(value) || value <= 0.2) return
+                                    if (value > 5) value = 5
+                                    setCamera({ ...camera, zoom: value })
+                                }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between gap-2 font-bold">
+                            <p>Width</p>
+                            <input
+                                type="number"
+                                className="bg-dark border-2 border-primary rounded px-2 py-1 w-20 text-light"
+                                value={renderSize.width}
+                                onChange={(e) => {
+                                    let value = parseInt(e.target.value)
+                                    if (isNaN(value) || value < 0) return
+                                    if (value > 41) value = 41
+                                    setRenderSize({ ...renderSize, width: value })
+                                }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between gap-2 font-bold">
+                            <p>Height</p>
+                            <input
+                                type="number"
+                                className="bg-dark border-2 border-primary rounded px-2 py-1 w-20 text-light"
+                                value={renderSize.height}
+                                onChange={(e) => {
+                                    let value = parseInt(e.target.value)
+                                    if (isNaN(value) || value < 0) return
+                                    if (value > 41) value = 41
+                                    setRenderSize({ ...renderSize, height: value })
+                                }}
+                            />
+                        </div>
+                    </div>
                     <Settings />
                 </div>
             </div>
@@ -169,7 +253,9 @@ const WorldEditor = () => {
                                     >
                                         <div className="h-8 w-8 rounded center-col">
                                             <img
-                                                src={textures[`/src/assets/textures/${obj.texture}.png`]}
+                                                src={
+                                                    textures[`/src/assets/textures/${obj.texture}.${obj.ext || "png"}`]
+                                                }
                                                 className="h-full"
                                             />
                                         </div>
@@ -197,7 +283,7 @@ const WorldEditor = () => {
                                         onClick={() => changeBrush({ id: obj.game_id, type: "terrain", object: obj })}
                                     >
                                         <img
-                                            src={textures[`/src/assets/textures/${obj.texture}.png`]}
+                                            src={textures[`/src/assets/textures/${obj.texture}.${obj.ext || "png"}`]}
                                             className="h-8 w-8 rounded"
                                         />
                                         {obj.name}
@@ -213,10 +299,30 @@ const WorldEditor = () => {
                                     Delete
                                 </button>
                             </div>
+                            <div className="center-col items-start! gap-2 text-sm">
+                                {Object.values(TERRAIN_COLORS).map((obj: Terrain, index) => (
+                                    <div
+                                        key={index}
+                                        className={
+                                            `w-full flex items-center gap-2 p-1 border-2 rounded cursor-pointer border-primary text-light font-bold ` +
+                                            (brush?.id === obj.game_id && "bg-primary")
+                                        }
+                                        onClick={() =>
+                                            changeBrush({ id: obj.name.toLowerCase(), type: "terrain", object: obj })
+                                        }
+                                    >
+                                        <img
+                                            src={textures[`/src/assets/textures/${obj.texture}.${obj.ext || "png"}`]}
+                                            className="h-8 w-8 rounded"
+                                        />
+                                        {obj.name}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                     {brush && brush.id != "delete" && (
-                        <div className="text-light grid grid-cols-[repeat(2,minmax(0,auto))] items-end gap-4 pointer-events-auto">
+                        <div className="text-light grid grid-cols-[repeat(3,minmax(0,auto))] items-end gap-4 pointer-events-auto">
                             <div className="center-col gap-2 bg-dark/90 rounded p-2">
                                 {Array.from({ length: 8 }).map((_, index) => (
                                     <button
@@ -230,6 +336,22 @@ const WorldEditor = () => {
                                         z: {7 - index}
                                     </button>
                                 ))}
+                            </div>
+                            <div className="center-col gap-2 bg-dark/90 rounded p-2">
+                                {[13, 12, 11].map((value) => {
+                                    return (
+                                        <button
+                                            key={value}
+                                            className={
+                                                "border-2 border-primary px-4 py-1 font-bold" +
+                                                (brushZ === value ? " bg-primary" : "")
+                                            }
+                                            onClick={() => setBrushZ(value)}
+                                        >
+                                            z: {value}
+                                        </button>
+                                    )
+                                })}
                             </div>
                             <div className="flex flex-col items-start justify-end gap-2 text-sm bg-dark/90 rounded p-2">
                                 {brush.object.variants && (
@@ -247,7 +369,9 @@ const WorldEditor = () => {
                                                     <img
                                                         src={
                                                             textures[
-                                                                `/src/assets/textures/${brush.object.texture}_${variant}.png`
+                                                                `/src/assets/textures/${
+                                                                    brush.object.texture
+                                                                }_${variant}.${brush.object.ext || "png"}`
                                                             ]
                                                         }
                                                         className="h-8 w-8 rounded"
@@ -265,7 +389,13 @@ const WorldEditor = () => {
                                 >
                                     <div className={"w-8 h-8 center-col mr-2"}>
                                         <img
-                                            src={textures[`/src/assets/textures/${brush.object.texture}.png`]}
+                                            src={
+                                                textures[
+                                                    `/src/assets/textures/${brush.object.texture}.${
+                                                        brush.object.ext || "png"
+                                                    }`
+                                                ]
+                                            }
                                             className="h-8 w-8 rounded"
                                         />
                                     </div>
@@ -277,7 +407,9 @@ const WorldEditor = () => {
                 </div>
             </div>
             <GameGrid
-                center={camera}
+                center={{ ...camera, zoom: 1 / camera.zoom }}
+                renderWidth={renderSize.width}
+                renderHeight={renderSize.height}
                 hoverHighlight={true}
                 showSelectedCell={false}
                 onCellClick={(pos) => handleCellClick(pos)}

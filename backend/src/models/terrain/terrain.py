@@ -14,6 +14,7 @@ class Terrain(BaseModel):
     solid: bool = False
     opacity: float = 1.0
     rotation: int = 0
+    ext: Optional[str] = None
 
     def to_db_model(self) -> "Terrain":
         return Terrain.model_construct(**self.model_dump())
@@ -24,6 +25,14 @@ class Terrain(BaseModel):
         for key in remove_keys:
             data.pop(key, None)
         return data
+
+
+class Color(Terrain):
+    name: str = "Color"
+    game_id: str = "color"
+    texture: str = "terrain/color"
+    z: int = 0
+    solid: bool = False
 
 
 class Grass(Terrain):
@@ -38,6 +47,31 @@ class Water(Terrain):
     name: str = "Water"
     game_id: str = "water"
     texture: str = "terrain/water"
+    z: int = 0
+    solid: bool = True
+
+
+class WaterWave(Terrain):
+    name: str = "Water Wave"
+    game_id: str = "water_wave"
+    texture: str = "terrain/water_wave"
+    z: int = 0
+    solid: bool = True
+    ext: str = "gif"
+
+
+class Rock(Terrain):
+    name: str = "Rock"
+    game_id: str = "rock"
+    texture: str = "terrain/rock"
+    z: int = 0
+    solid: bool = True
+
+
+class Bush(Terrain):
+    name: str = "Bush"
+    game_id: str = "bush"
+    texture: str = "terrain/bush"
     z: int = 0
     solid: bool = True
 

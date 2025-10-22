@@ -150,7 +150,7 @@ const GameGrid = ({
             if (!terrains) continue
             terrains.forEach((terrain) => {
                 const img = document.createElement("img")
-                img.src = textures[`/src/assets/textures/${terrain.texture}.png`] as string
+                img.src = textures[`/src/assets/textures/${terrain.texture}.${terrain.ext || "png"}`] as string
                 img.className = `absolute left-0 top-0 w-full h-full z-[${terrain.z}]`
                 img.style.zIndex = terrain.z.toString()
                 tCell.appendChild(img)
@@ -214,7 +214,7 @@ const GameGrid = ({
                         <div className="absolute top-0 left-0 w-full h-full" id={terrainCellName(wx, wy)} />
                         <div
                             id={cellName(wx, wy)}
-                            className="absolute top-0 left-0 w-full h-full flex flex-row items-center justify-around"
+                            className="absolute top-0 left-0 w-full h-full flex flex-row items-center justify-around z-10"
                         />
                         <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-10" />
                         {showSelectedCell && selectedCell && selectedCell.x === wx && selectedCell.y === wy && (
