@@ -30,6 +30,17 @@ const WorldEditor = () => {
     const { character } = useContext(CharacterContext)
     const { gameActions } = useContext(PlayerContext)
 
+    // Load camera from localStorage
+    useEffect(() => {
+        const savedCamera = localStorage.getItem("worldEditorCamera")
+        if (savedCamera) setCamera(JSON.parse(savedCamera))
+    }, [])
+
+    // Save camera to localStorage
+    useEffect(() => {
+        localStorage.setItem("worldEditorCamera", JSON.stringify(camera))
+    }, [camera])
+
     // Camera movement
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -322,8 +333,8 @@ const WorldEditor = () => {
                         </div>
                     </div>
                     {brush && brush.id != "delete" && (
-                        <div className="text-light grid grid-cols-[repeat(3,minmax(0,auto))] items-end gap-4 pointer-events-auto">
-                            <div className="center-col gap-2 bg-dark/90 rounded p-2">
+                        <div className="text-light grid grid-cols-[repeat(3,minmax(0,auto))] items-end gap-4 pointer-events-none">
+                            <div className="center-col gap-2 bg-dark/90 rounded p-2 pointer-events-auto">
                                 {Array.from({ length: 8 }).map((_, index) => (
                                     <button
                                         key={index}
@@ -337,7 +348,7 @@ const WorldEditor = () => {
                                     </button>
                                 ))}
                             </div>
-                            <div className="center-col gap-2 bg-dark/90 rounded p-2">
+                            <div className="center-col gap-2 bg-dark/90 rounded p-2 pointer-events-auto">
                                 {[13, 12, 11].map((value) => {
                                     return (
                                         <button
@@ -353,7 +364,7 @@ const WorldEditor = () => {
                                     )
                                 })}
                             </div>
-                            <div className="flex flex-col items-start justify-end gap-2 text-sm bg-dark/90 rounded p-2">
+                            <div className="flex flex-col items-start justify-end gap-2 text-sm bg-dark/90 rounded p-2 pointer-events-auto">
                                 {brush.object.variants && (
                                     <div className="grid grid-cols-3 gap-1">
                                         {brush.object.variants.map((variant: string) => (
@@ -383,9 +394,10 @@ const WorldEditor = () => {
                                 )}
                                 <div
                                     className={
-                                        " flex items-center justify-start border-2 border-primary rounded p-1 " +
+                                        " flex items-center justify-start border-2 border-primary rounded cursor-pointer p-1 " +
                                         (selectedVariant == null ? "bg-primary!" : "")
                                     }
+                                    onClick={() => setSelectedVariant(null)}
                                 >
                                     <div className={"w-8 h-8 center-col mr-2"}>
                                         <img
