@@ -10,6 +10,8 @@ class Character(Entity):
     gold: int = 100
     name_visible: bool = True
     solid: bool = False
+    max_hp: int = 100
+    current_hp: int = 100
 
     model_config = ConfigDict(extra="allow")
 
