@@ -36,7 +36,7 @@ async def buy(action: ActionRequest):
             'message': f'Item {item.name} has no value.'
         })
 
-    total_price = item.value * payload.count
+    total_price = item.value * payload.count * 2  # Buying is more expensive than selling
 
     if character_data.gold < total_price:
         event = GameEvent(
