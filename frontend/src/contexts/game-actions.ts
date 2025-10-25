@@ -115,10 +115,24 @@ class GameActions {
         this.send(action)
     }
 
-    placeTerrain({ game_id, x, y, properties }: { game_id: string; properties: object; x: number; y: number }) {
+    placeTerrain({
+        game_id,
+        properties,
+        x,
+        y,
+        z,
+        realm,
+    }: {
+        game_id: string
+        properties: object
+        x: number
+        y: number
+        z: number
+        realm: Realm
+    }) {
         const action = {
             action: "place_terrain",
-            payload: { properties: { game_id, x, y, ...properties } },
+            payload: { properties: { game_id, x, y, z, ...properties, realm } },
         }
         this.send(action)
     }
@@ -131,10 +145,22 @@ class GameActions {
         this.send(action)
     }
 
-    placeObject({ object_id, properties, x, y }: { object_id: string; properties: object; x: number; y: number }) {
+    placeObject({
+        object_id,
+        properties,
+        x,
+        y,
+        realm,
+    }: {
+        object_id: string
+        properties: object
+        x: number
+        y: number
+        realm: Realm
+    }) {
         const action = {
             action: "place_object",
-            payload: { properties: { object_id, x, y, ...properties } },
+            payload: { properties: { object_id, x, y, ...properties, realm } },
         }
         this.send(action)
     }

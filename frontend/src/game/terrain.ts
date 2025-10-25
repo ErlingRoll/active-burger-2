@@ -1,6 +1,12 @@
 import { Terrain } from "../models/terrain"
 
 export const TERRAIN: { [game_id: string]: Partial<Terrain> } = {
+    wood_post: {
+        name: "Wood Post",
+        game_id: "wood_post",
+        texture: "terrain/wood_post",
+        solid: true,
+    },
     rock: {
         name: "Rock",
         game_id: "rock",

@@ -14,6 +14,7 @@ type GameGridProps = {
     hoverHighlight?: boolean
     showSelectedCell?: boolean
     onCellClick?: ({ x, y, event }: { x: number; y: number; event: MouseEvent }) => void
+    onCellDown?: ({ x, y, event }: { x: number; y: number; event: PointerEvent }) => void
     onCellEnter?: ({ x, y, event }: { x: number; y: number; event: PointerEvent }) => void
     onCellLeave?: ({ x, y, event }: { x: number; y: number; event: PointerEvent }) => void
     editMode?: boolean
@@ -26,6 +27,7 @@ const GameGrid = ({
     hoverHighlight = false,
     showSelectedCell = true,
     onCellClick,
+    onCellDown,
     onCellEnter,
     onCellLeave,
     editMode = false,
@@ -152,13 +154,16 @@ const GameGrid = ({
             tCell.innerHTML = ""
             const terrains = terrainData[`${pos.x}_${pos.y}`]
             if (!terrains) continue
+            const tImgContainer = document.createElement("div")
+            tImgContainer.className = "absolute top-0 left-0 h-full w-full flex flex-col items-center"
             terrains.forEach((terrain) => {
                 const img = document.createElement("img")
                 img.src = textures[`/src/assets/textures/${terrain.texture}.${terrain.ext || "png"}`] as string
-                img.className = `absolute left-0 top-0 w-full h-full z-[${terrain.z}]`
+                img.className = `absolute top-0 h-full z-[${terrain.z}]`
                 img.style.zIndex = terrain.z.toString()
-                tCell.appendChild(img)
+                tImgContainer.appendChild(img)
             })
+            tCell.appendChild(tImgContainer)
         }
     }
 
@@ -208,6 +213,7 @@ const GameGrid = ({
                     <div
                         key={index}
                         className={`relative`}
+                        onPointerDown={(event) => onCellDown && onCellDown({ x: wx, y: wy, event: event })}
                         onPointerEnter={(event) => onCellEnter && onCellEnter({ x: wx, y: wy, event: event })}
                         onPointerLeave={(event) => onCellLeave && onCellLeave({ x: wx, y: wy, event: event })}
                     >

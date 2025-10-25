@@ -137,23 +137,29 @@ const WorldEditor = () => {
         if (brush.type === "object") {
             gameActions.placeObject({
                 object_id: brush.id,
-                properties: { realm: realm, ...brush.object, ...objectProps, props: objectProps },
+                properties: { ...brush.object, ...objectProps, props: objectProps },
                 x: pos.x,
                 y: pos.y,
+                realm: realm,
             })
         }
 
         if (brush.type === "terrain") {
             let terrain = structuredClone(TERRAIN[brush.id])
             if (!terrain) terrain = structuredClone(TERRAIN_COLORS[brush.id])
-            terrain.z = brushZ
-            terrain.texture = terrain.texture + (selectedVariant ? `_${selectedVariant}` : "")
-            terrain.realm = realm
             gameActions.placeTerrain({
                 game_id: terrain.game_id,
-                properties: { ...terrain, ...brush.object, ...objectProps, props: objectProps },
+                properties: {
+                    ...terrain,
+                    ...brush.object,
+                    ...objectProps,
+                    props: objectProps,
+                    texture: terrain.texture + (selectedVariant ? `_${selectedVariant}` : ""),
+                },
                 x: pos.x,
                 y: pos.y,
+                z: brushZ,
+                realm: realm,
             })
         }
     }
@@ -480,6 +486,7 @@ const WorldEditor = () => {
                 hoverHighlight={true}
                 showSelectedCell={false}
                 onCellClick={(pos) => handleCellClick(pos)}
+                onCellDown={(pos) => handleCellClick(pos)}
                 onCellEnter={(pos) => handleCellEnter(pos)}
             />
         </div>
