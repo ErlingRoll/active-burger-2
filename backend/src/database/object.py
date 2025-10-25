@@ -1,6 +1,7 @@
 from asyncio import gather
 from supabase import AsyncClient
 
+from src.generators.object import generate_object
 from src.models.render_object import RenderObject
 
 
@@ -17,7 +18,7 @@ async def get_objects(database: AsyncClient):
     objects += object_response.data if object_response and object_response.data else []
     objects += entity_response.data if entity_response and entity_response.data else []
 
-    return {obj["id"]: RenderObject(**obj) for obj in objects}
+    return {obj["id"]: generate_object(**obj) for obj in objects}
 
 
 async def create_object(database: AsyncClient, object: RenderObject) -> RenderObject | None:
@@ -32,5 +33,6 @@ async def create_object(database: AsyncClient, object: RenderObject) -> RenderOb
 
 
 async def db_delete_object(database: AsyncClient, object_id: str):
+    print(f"Deleting object with ID: {object_id}")
     response = await database.table("object").delete().eq("id", object_id).execute()
     return response.data[0] if response.data else None

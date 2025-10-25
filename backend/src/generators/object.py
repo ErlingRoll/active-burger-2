@@ -1,4 +1,5 @@
 
+from src.models.objects.misc.teleporter import Teleporter
 from src.models.npcs.npcs import Shopkeeper
 from src.models.objects.terrain import Rock, Bush
 from src.models.render_object import RenderObject
@@ -11,6 +12,7 @@ object_map = {
     "gold_ore": GoldOre,
     "shopkeeper": Shopkeeper,
     "crafting_bench": CraftingBench,
+    "teleporter": Teleporter,
 }
 
 

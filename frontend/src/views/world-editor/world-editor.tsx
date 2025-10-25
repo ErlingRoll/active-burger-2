@@ -6,11 +6,14 @@ import { PlayerContext } from "../../contexts/player-context"
 import { TERRAIN_OBJECTS } from "../../game/objects"
 import { TERRAIN, TERRAIN_COLORS } from "../../game/terrain"
 import { Terrain } from "../../models/terrain"
+import { Realm } from "../../game/world"
+
 import Settings from "../gamescreen/components/game-ui/components/settings"
 import GameGrid from "../gamescreen/components/game-grid"
-import HoverInfo from "./components/hover-info"
-import { Realm, realmValue } from "../../game/world"
 import Select from "react-select"
+import HoverInfo from "./components/hover-info"
+import ObjectConfig from "./components/object-config"
+import { ToastContainer } from "react-toastify"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -24,6 +27,7 @@ const WorldEditor = () => {
     )
     const [brushZ, setBrushZ] = useState<number>(0)
     const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
+    const [objectProps, setObjectProps] = useState<{ [key: string]: any }>({})
 
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
     const moveRepeatDelay = 100 // milliseconds
@@ -52,6 +56,7 @@ const WorldEditor = () => {
     // Camera movement
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            if (document.activeElement.tagName === "INPUT") return
             if (event.repeat) {
                 if (Date.now() - lastMoveRepeat < moveRepeatDelay) return
             }
@@ -108,6 +113,7 @@ const WorldEditor = () => {
         if (brush?.id === id && brush?.type === type) return setBrush(null)
         setSelectedVariant(null)
         setBrush({ id, type, object })
+        setObjectProps({})
     }
 
     function handleCellClick(pos: { x: number; y: number }) {
@@ -131,9 +137,7 @@ const WorldEditor = () => {
         if (brush.type === "object") {
             gameActions.placeObject({
                 object_id: brush.id,
-                properties: {
-                    realm: realm,
-                },
+                properties: { realm: realm, ...brush.object, props: objectProps },
                 x: pos.x,
                 y: pos.y,
             })
@@ -147,7 +151,7 @@ const WorldEditor = () => {
             terrain.realm = realm
             gameActions.placeTerrain({
                 game_id: terrain.game_id,
-                properties: terrain,
+                properties: { ...terrain, ...brush.object, ...objectProps, props: objectProps },
                 x: pos.x,
                 y: pos.y,
             })
@@ -170,6 +174,20 @@ const WorldEditor = () => {
                 backgroundRepeat: "repeat",
             }}
         >
+            <ToastContainer
+                position="top-right"
+                limit={5}
+                autoClose={60000}
+                hideProgressBar={true}
+                newestOnTop={true}
+                closeOnClick={true}
+                closeButton={false}
+                pauseOnHover={true}
+                rtl={false}
+                theme="dark"
+                className={"cursor-pointer pointer-events-auto"}
+                toastClassName={"bg-dark! border-2 border-primary"}
+            />
             <div className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none z-200 pointer-events-none">
                 <HoverInfo terrains={hoveringTerrain} />
                 <div className="absolute flex items-end p-4 bottom-0 right-0 z-200 gap-4 pointer-events-none">
@@ -259,8 +277,8 @@ const WorldEditor = () => {
                         <div className="flex items-center justify-between gap-2 font-bold">
                             <p>Realm</p>
                             <Select<{ value: Realm; label: string }>
-                                className="w-full border-2 text-dark! border-primary rounded text-sm capitalize"
-                                value={realm ? { value: realm, label: realm.replaceAll("_", " ") } : null}
+                                className="w-full border-2 text-dark! border-primary rounded text-sm"
+                                value={realm ? { value: realm, label: realm } : null}
                                 onChange={(opt) => {
                                     if (!opt) return
                                     setRealm(opt.value)
@@ -268,7 +286,7 @@ const WorldEditor = () => {
                                 }}
                                 options={Object.values(Realm).map((realm) => ({
                                     value: realm,
-                                    label: realm.replaceAll("_", " "),
+                                    label: realm,
                                 }))}
                                 menuPlacement="auto"
                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
@@ -421,6 +439,12 @@ const WorldEditor = () => {
                                             </div>
                                         ))}
                                     </div>
+                                )}
+                                {brush.id === "teleporter" && (
+                                    <ObjectConfig
+                                        propKeys={["name", "target_x", "target_y", "target_realm"]}
+                                        onChange={setObjectProps}
+                                    />
                                 )}
                                 <div
                                     className={

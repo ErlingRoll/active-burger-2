@@ -40,6 +40,7 @@ const GameGrid = ({
     function camera() {
         if (editMode && center) return center
         const player = gamestate.render_objects[character.id]
+        if (!player) return
         return center || { x: player.x, y: player.y, zoom: 1 }
     }
 
@@ -165,6 +166,7 @@ const GameGrid = ({
         if (editMode) return null
         if (!character || !gamestate) return
         const player = gamestate.render_objects[character.id]
+        if (!player) return
         const x = player.x
         const y = player.y
 

@@ -1,6 +1,7 @@
 from aiohttp.web import Request, WebSocketResponse
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
+from src.connection_manager import GameEvent
 from src.actions.action import ActionRequest
 from src.gamestate import Gamestate
 from src.database.account import get_account_by_discord_id, create_account
@@ -13,17 +14,23 @@ from src.generators.object import generate_object
 
 
 class PlaceObjectPayload(BaseModel):
-    object_id: str
-    x: int
-    y: int
+    properties: dict
 
 
 async def place_object(action: ActionRequest):
     database = action.request.app["database"]
     gamestate: Gamestate = action.request.app["gamestate"]
-    payload = PlaceObjectPayload(**action.payload)
 
-    new_object = generate_object(payload.object_id, x=payload.x, y=payload.y)
+    payload = PlaceObjectPayload(**action.payload)
+    new_object = None
+    try:
+        new_object = generate_object(**payload.properties)
+    except ValidationError as e:
+        event = GameEvent(
+            event="log",
+            payload={"error": f"Invalid object properties: {e.errors()}"}
+        )
+        return await action.ws.send_json(event.model_dump())
 
     object = await create_object(database, new_object)
 

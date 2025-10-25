@@ -17,6 +17,7 @@ export interface RenderObject {
     height: number
     solid: boolean
     gold: number
+    realm: string
 }
 
 export interface Entity extends RenderObject {

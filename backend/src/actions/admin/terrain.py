@@ -28,8 +28,8 @@ async def place_terrain(action: ActionRequest):
 
     if not terrain:
         event = GameEvent(
-            event="log",
-            payload={"error": "Failed to create terrain in database."}
+            event="error",
+            payload={"message": "Failed to create terrain in database."}
         )
         await action.ws.send_json(event.model_dump())
         return

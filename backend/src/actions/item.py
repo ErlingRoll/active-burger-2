@@ -54,7 +54,7 @@ async def use_item(action: ActionRequest):
     if item.equipable:
         return create_task(equip_item(equip_action_request))
 
-    character_state = gamestate.get_character(action.character.id)
+    character_state = gamestate.get_character_state(action.character.id)
 
     result: UseResult = await item.use(character=character_state, gamestate=gamestate, database=database, ws=ws)
 

@@ -127,6 +127,11 @@ export const GameProvider = ({ children }: { children: any }) => {
                 setCharacter(payload)
                 break
             case "log":
+                console.log("Log event:", payload)
+                const error = payload.error
+                if (error) {
+                    toast.error(`Error: ${error}`)
+                }
                 break
             case "chat_update":
                 setChatMessages(payload.messages)

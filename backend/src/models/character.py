@@ -12,6 +12,7 @@ class Character(Entity):
     solid: bool = False
     max_hp: int = 100
     current_hp: int = 100
+    props: Dict = {}
 
     model_config = ConfigDict(extra="allow")
 
@@ -32,7 +33,8 @@ class Character(Entity):
             texture=self.texture,
             type=self.type,
             object_id=self.object_id,
-            gold=self.gold
+            gold=self.gold,
+            realm=self.realm,
         )
 
     def db_prep(self) -> dict:
@@ -42,6 +44,7 @@ class Character(Entity):
         del data["height"]
         del data["width"]
         del data["db_type"]
+        del data["props"]
         return data
 
 

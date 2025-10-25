@@ -96,7 +96,7 @@ class Gamestate(BaseModel):
             )
             return await self.connection_manager.send(account.id, event)
 
-        for _connection_id, ws in self.connection_manager.connections.items():
+        for account_id, ws in self.connection_manager.connections_account_map.items():
             data = self.position_terrain(ws.realm)
             event = GameEvent(
                 event="terrain_update",
@@ -117,7 +117,7 @@ class Gamestate(BaseModel):
             )
             return await self.connection_manager.send(account.id, event)
 
-        for _connection_id, ws in self.connection_manager.connections.items():
+        for account_id, ws in self.connection_manager.connections_account_map.items():
             gamestate = self.get_gamestate(realm=ws.realm)
             event = GameEvent(
                 event="gamestate_update",
@@ -136,11 +136,22 @@ class Gamestate(BaseModel):
         self.characters[character.id] = character
         return await self.publish_gamestate()
 
-    def get_character(self, character_id: str) -> Character | None:
+    def get_character_state(self, character_id: str) -> Character | None:
         obj = self.characters.get(character_id)
         if isinstance(obj, Character):
             return obj
         return None
+
+    def set_realm(self, character_id: str, realm: str):
+        character = self.get_character_state(character_id)
+        if not character:
+            return
+        character.realm = realm
+
+        ws = self.connection_manager.connections_account_map.get(character.account_id)
+        # print(f"Setting realm for account {character.account_id} to {realm}, ws: {ws is not None}")
+        if ws:
+            ws.realm = realm
 
     async def add_object(self, obj: RenderObject, skip_publish=False):
         if obj.id in self.objects:
@@ -198,6 +209,7 @@ class Gamestate(BaseModel):
 
         return render_objects
 
+    # Get objects grouped by position key. Position key is in format "x_y"
     def position_objects(self, realm=None, dict=False):
         position_objects = {}
         render_objects = self.render_objects(realm=realm)

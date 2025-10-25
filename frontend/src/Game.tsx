@@ -1,16 +1,18 @@
 import "./App.css"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 import Gamescreen from "./views/gamescreen/gamescreen"
 import { UserContext } from "./contexts/user-context"
 import Login from "./views/login/login"
 import { GamestateContext } from "./contexts/gamestate-context"
 import { CharacterContext } from "./contexts/character-context"
 import WorldEditor from "./views/world-editor/world-editor"
+import { PlayerContext } from "./contexts/player-context"
 
 function Game() {
     const { account, admin } = useContext(UserContext)
     const { character } = useContext(CharacterContext)
     const { gameCon, gamestate } = useContext(GamestateContext)
+    const { gameActions } = useContext(PlayerContext)
 
     const urlPaths = window.location.pathname.split("/")
     const mainPath = urlPaths[1].toLocaleLowerCase()
@@ -21,6 +23,16 @@ function Game() {
 
     if (admin && mainPath === "edit") {
         return <WorldEditor />
+    }
+
+    if (!gamestate.render_objects[character.id]) {
+        return (
+            <div className="absolute top-0 left-0 w-full h-full center-col text-light font-bold">
+                <p className="mb-2">Loading game...</p>
+                <p>If this takes too long, please try refreshing the page.</p>
+                <p>If that doesn't work contact Erling</p>
+            </div>
+        )
     }
 
     return <Gamescreen />

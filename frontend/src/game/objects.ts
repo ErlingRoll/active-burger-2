@@ -6,6 +6,11 @@ export const TERRAIN_OBJECTS: { [object_id: string]: Partial<RenderObject> } = {
         object_id: "gold_ore",
         texture: "terrain/ore/gold",
     },
+    teleporter: {
+        name: "Teleporter",
+        object_id: "teleporter",
+        texture: "misc/teleporter",
+    },
     shopkeeper: {
         name: "Shopkeeper",
         object_id: "shopkeeper",
