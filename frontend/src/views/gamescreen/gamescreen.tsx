@@ -65,11 +65,10 @@ const Gamescreen = () => {
                                         onClick={() =>
                                             gameActions.placeObject({
                                                 object_id: item.object_id,
-                                                properties: {
-                                                    realm: Realm.BOB_VALLEY,
-                                                },
+                                                properties: {},
                                                 x: adminCell.x,
                                                 y: adminCell.y,
+                                                realm: Realm.BOB_VALLEY,
                                             })
                                         }
                                     >
