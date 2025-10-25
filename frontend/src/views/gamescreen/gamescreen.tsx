@@ -5,6 +5,7 @@ import { UIContext } from "../../contexts/ui-context"
 import GameUI from "./components/game-ui/game-ui"
 import { PlayerContext } from "../../contexts/player-context"
 import GameGrid from "./components/game-grid"
+import { Realm } from "../../game/world"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -64,6 +65,9 @@ const Gamescreen = () => {
                                         onClick={() =>
                                             gameActions.placeObject({
                                                 object_id: item.object_id,
+                                                properties: {
+                                                    realm: Realm.BOB_VALLEY,
+                                                },
                                                 x: adminCell.x,
                                                 y: adminCell.y,
                                             })
