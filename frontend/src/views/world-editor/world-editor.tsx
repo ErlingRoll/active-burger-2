@@ -114,6 +114,7 @@ const WorldEditor = () => {
         setSelectedVariant(null)
         setBrush({ id, type, object })
         setObjectProps({})
+        setBrushZ(0)
     }
 
     function handleCellClick(pos: { x: number; y: number }) {

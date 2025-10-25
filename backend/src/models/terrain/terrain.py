@@ -73,6 +73,13 @@ class Rock(Terrain):
     solid: bool = True
 
 
+class RockFloor(Terrain):
+    name: str = "Rock Floor"
+    game_id: str = "rock_floor"
+    texture: str = "terrain/rock_floor"
+    solid: bool = True
+
+
 class Bush(Terrain):
     name: str = "Bush"
     game_id: str = "bush"

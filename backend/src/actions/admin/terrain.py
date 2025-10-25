@@ -47,8 +47,8 @@ async def delete_terrain(action: ActionRequest):
 
     if not terrain:
         event = GameEvent(
-            event="log",
-            payload={"error": "Terrain not found."}
+            event="error",
+            payload={"message": "Terrain not found."}
         )
         return await action.ws.send_json(event.model_dump())
 

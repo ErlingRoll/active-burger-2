@@ -32,6 +32,12 @@ export const TERRAIN: { [game_id: string]: Partial<Terrain> } = {
         solid: true,
         ext: "gif",
     },
+    rock_floor: {
+        name: "Rock Floor",
+        game_id: "rock_floor",
+        texture: "terrain/rock_floor",
+        solid: false,
+    },
     sandstone: {
         name: "Sandstone",
         game_id: "sandstone",

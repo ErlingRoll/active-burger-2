@@ -1,5 +1,5 @@
 
-from src.models.terrain.terrain import Bush, Color, Rock, Terrain, Grass, Water, Sandstone, WaterWave, WoodPost
+from src.models.terrain.terrain import Bush, Color, Rock, Terrain, Grass, Water, Sandstone, WaterWave, WoodPost, RockFloor
 
 terrain_map = {
     "color": Color,
@@ -9,6 +9,7 @@ terrain_map = {
     "water_wave": WaterWave,
     "sandstone": Sandstone,
     "rock": Rock,
+    "rock_floor": RockFloor,
     "bush": Bush,
 }
 
