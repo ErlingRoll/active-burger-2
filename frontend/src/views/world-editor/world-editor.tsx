@@ -137,7 +137,7 @@ const WorldEditor = () => {
         if (brush.type === "object") {
             gameActions.placeObject({
                 object_id: brush.id,
-                properties: { realm: realm, ...brush.object, props: objectProps },
+                properties: { realm: realm, ...brush.object, ...objectProps, props: objectProps },
                 x: pos.x,
                 y: pos.y,
             })

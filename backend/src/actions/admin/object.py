@@ -32,11 +32,23 @@ async def place_object(action: ActionRequest):
         )
         return await action.ws.send_json(event.model_dump())
 
-    object = await create_object(database, new_object)
+    render_object = await create_object(database, new_object)
+
+    if not render_object:
+        event = GameEvent(
+            event="error",
+            payload={"message": "Failed to create object in database."}
+        )
+        return await action.ws.send_json(event.model_dump())
+
+    object = generate_object(**render_object.model_dump())
 
     if not object:
-        await action.ws.send_str("Error: Failed to create object.")
-        return
+        event = GameEvent(
+            event="error",
+            payload={"message": "Failed to create object game object."}
+        )
+        return await action.ws.send_json(event.model_dump())
 
     await gamestate.add_object(object)
 

@@ -33,6 +33,5 @@ async def create_object(database: AsyncClient, object: RenderObject) -> RenderOb
 
 
 async def db_delete_object(database: AsyncClient, object_id: str):
-    print(f"Deleting object with ID: {object_id}")
     response = await database.table("object").delete().eq("id", object_id).execute()
     return response.data[0] if response.data else None

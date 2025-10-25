@@ -149,10 +149,14 @@ export const GameProvider = ({ children }: { children: any }) => {
         const character = data.character
         setAccount(account)
         setCharacter(character)
-        setRealm(character.realm)
-
         const loginMessage = `Logged in as ${account.name} (${character ? character.name : "no character"})`
         setLog((prevLog) => [loginMessage, ...prevLog])
+
+        const urlPaths = window.location.pathname.split("/")
+        const mainPath = urlPaths[1].toLocaleLowerCase()
+        if (mainPath === "edit") return
+
+        setRealm(character.realm)
     }
 
     useEffect(() => {
