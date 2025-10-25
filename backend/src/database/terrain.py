@@ -28,6 +28,5 @@ async def db_create_terrain(database: AsyncClient, terrain: Terrain) -> Terrain 
     return Terrain(**response.data[0]) if response.data else None
 
 
-async def db_delete_terrain(database: AsyncClient, terrain_id: str) -> Terrain | None:
-    response = await database.table("terrain").delete().eq("id", terrain_id).execute()
-    return Terrain(**response.data[0]) if response.data else None
+async def db_delete_terrain(database: AsyncClient, terrain_id: str):
+    await database.table("terrain").delete().eq("id", terrain_id).execute()

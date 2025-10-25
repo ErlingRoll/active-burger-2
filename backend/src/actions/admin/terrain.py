@@ -52,12 +52,12 @@ async def delete_terrain(action: ActionRequest):
         )
         return await action.ws.send_json(event.model_dump())
 
-    deleted = await db_delete_terrain(database, terrain_id)
-
-    if not deleted:
+    try:
+        await db_delete_terrain(database, terrain_id)
+    except Exception as e:
         event = GameEvent(
             event="log",
-            payload={"error": "Failed to delete terrain from database."}
+            payload={"error": f"Error deleting terrain from database: {e}"}
         )
         return await action.ws.send_json(event.model_dump())
 
