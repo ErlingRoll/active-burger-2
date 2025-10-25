@@ -1,4 +1,5 @@
 
+from src.generators.monster import generate_monster
 from src.models.objects.misc.teleporter import Teleporter
 from src.models.npcs.npcs import Shopkeeper
 from src.models.objects.terrain import Rock, Bush
@@ -20,7 +21,13 @@ def generate_object(object_id, **kwargs) -> RenderObject:
     # Note that this "object_id" is the type identifier, not the unique instance ID
 
     object_class = object_map.get(object_id)
+
+    if not object_class:
+        object_class = generate_monster(object_id, **kwargs)
+        if object_class:
+            return object_class  # type: ignore
+
     if object_class:
-        return object_class(**kwargs)
+        return object_class(**kwargs)  # type: ignore
     else:
         raise ValueError(f"Unknown object_id: {object_id}")

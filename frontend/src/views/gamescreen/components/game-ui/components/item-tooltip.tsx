@@ -1,7 +1,5 @@
 import { PlacesType, Tooltip } from "react-tooltip"
 import { Equipment, Item } from "../../../../../models/item"
-import { RiCopperCoinFill } from "react-icons/ri"
-import { useEffect, useState } from "react"
 import ItemInfo from "./item-info"
 
 const ItemTooltip = ({ item, namespace, place }: { item: Item | Equipment; namespace: string; place?: PlacesType }) => {

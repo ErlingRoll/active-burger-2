@@ -4,11 +4,11 @@ from src.spawners.spawner import SpawnTable, SpawnTableItem, Spawner
 
 
 class NoobmineEntry(Spawner):
-    start_x: int = 7
-    start_y: int = -4
-    end_x: int = 15
-    end_y: int = 4
-    realm: Realm = Realm.BOB_VALLEY
+    start_x: int = 6
+    start_y: int = -10
+    end_x: int = 21
+    end_y: int = 1
+    realm: Realm = Realm.ERLYVILLE
     safe_radius: int = 1
     spawn_table: SpawnTable = SpawnTable(items=[
         SpawnTableItem(object_id="gold_ore", chance=0.5),
@@ -16,11 +16,11 @@ class NoobmineEntry(Spawner):
 
 
 class NoobmineMonsters(Spawner):
-    start_x: int = 4
-    start_y: int = -13
-    end_x: int = 13
-    end_y: int = -10
-    realm: Realm = Realm.BOB_VALLEY
+    start_x: int = -5
+    start_y: int = -17
+    end_x: int = 1
+    end_y: int = -5
+    realm: Realm = Realm.ERLYVILLE
     object_type: Literal["object", "monster"] = "monster"
     safe_radius: int = 2
     spawn_table: SpawnTable = SpawnTable(items=[

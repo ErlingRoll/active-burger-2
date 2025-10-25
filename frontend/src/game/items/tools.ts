@@ -10,6 +10,7 @@ export const TOOLS: { [id: string]: Partial<Equipment> } = {
         value: 50,
         type: "tool",
         stackable: false,
+        equipable: true,
         base_mods: {
             efficiency: 5,
             fortune: 1,

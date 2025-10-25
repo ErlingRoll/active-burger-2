@@ -9,7 +9,7 @@ from src.generators.monster import generate_monster
 from src.generators.object import generate_object
 from src.models.render_object import RenderObject
 from src.connection_manager import ConnectionManager
-from src.interfaces.game_ticker import GameTickerInterface
+from src.tickers.game_ticker import GameTickerInterface
 from src.gamestate import Gamestate
 
 
@@ -59,6 +59,11 @@ class Spawner(BaseModel, GameTickerInterface):
 
     async def game_tick(self):
         random_position = self.random_position()
+
+        blocked_spawn = self.gamestate.is_pos_blocked(x=random_position[0], y=random_position[1], realm=self.realm)
+        if blocked_spawn:
+            return
+
         neighboring_objects: Dict[str, RenderObject] = self.gamestate.get_render_object_window(
             x_start=random_position[0] - self.safe_radius,
             y_start=random_position[1] - self.safe_radius,
@@ -85,9 +90,9 @@ class Spawner(BaseModel, GameTickerInterface):
         new_object = None
 
         if self.object_type == "object":
-            new_object = generate_object(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm)
+            new_object = generate_object(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm, props={})
         elif self.object_type == "monster":
-            new_object = generate_monster(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm)
+            new_object = generate_monster(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm, props={})
 
         if not new_object:
             raise ValueError(f"Could not generate object for id: {object_id}")

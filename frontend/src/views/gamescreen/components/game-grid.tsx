@@ -115,8 +115,8 @@ const GameGrid = ({
         const _center = camera()
         const pos_list: { x: number; y: number }[] = Array.from({ length: renderWidth * renderHeight }).map(
             (_, index) => {
-                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2)
-                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y - 1
+                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2) + 1
+                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y
                 return { x: wx, y: wy }
             }
         )
@@ -140,8 +140,8 @@ const GameGrid = ({
         const _center = camera()
         const pos_list: { x: number; y: number }[] = Array.from({ length: renderWidth * renderWidth }).map(
             (_, index) => {
-                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2)
-                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y - 1
+                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2) + 1
+                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y
                 return { x: wx, y: wy }
             }
         )

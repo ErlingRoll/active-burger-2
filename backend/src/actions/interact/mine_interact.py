@@ -29,6 +29,7 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
     if pickaxe is None:
         event = GameEvent(
             event="log",
+            payload={"error": "No pickaxe equipped"},
             log=["You need to equip a pickaxe to mine ore"],
         )
         return await ws.send_json(event.model_dump())

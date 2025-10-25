@@ -10,6 +10,7 @@ export const WEAPONS: { [object_id: string]: Partial<Equipment> } = {
         texture: "item/weapon/toothpick",
         count: 1,
         stackable: false,
+        equipable: true,
         value: 10,
         base_mods: {
             [WeaponMod.PHYSICAL_DAMAGE]: weaponModValue[WeaponMod.PHYSICAL_DAMAGE][9],
@@ -23,6 +24,7 @@ export const WEAPONS: { [object_id: string]: Partial<Equipment> } = {
         texture: "item/weapon/pool_noodle",
         count: 1,
         stackable: false,
+        equipable: true,
         value: 50,
         base_mods: {
             [WeaponMod.PHYSICAL_DAMAGE]: weaponModValue[WeaponMod.PHYSICAL_DAMAGE][7],
@@ -36,6 +38,7 @@ export const WEAPONS: { [object_id: string]: Partial<Equipment> } = {
         texture: "item/weapon/frying_pan",
         count: 1,
         stackable: false,
+        equipable: true,
         value: 300,
         base_mods: {
             [WeaponMod.PHYSICAL_DAMAGE]: weaponModValue[WeaponMod.PHYSICAL_DAMAGE][7],

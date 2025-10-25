@@ -28,8 +28,10 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
     }, [_item])
 
     useEffect(() => {
-        if (!itemMap) return
-        if (itemId) return setItem(itemMap[itemId])
+        if (itemId && itemMap) {
+            const inventoryItem = itemMap[itemId]
+            if (inventoryItem) return setItem(inventoryItem)
+        }
         if (item) return setItem(item)
     }, [itemId, item, items])
 

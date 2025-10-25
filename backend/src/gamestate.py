@@ -70,6 +70,22 @@ class Gamestate(BaseModel):
 
         await self.connection_manager.send(account.id, event)
 
+    def is_pos_blocked(self, x, y, realm) -> bool:
+        pos_key = f"{x}_{y}"
+        # Check terrain
+        cell_terrain = self.position_terrain(realm).get(pos_key, [])
+        for terrain in cell_terrain:
+            if terrain.solid:
+                return True
+
+        # Check objects
+        cell_objects = self.position_objects(realm).get(pos_key, [])
+        for obj in cell_objects:
+            if obj.solid:
+                return True
+
+        return False
+
     def position_terrain(self, realm, dict=False) -> Dict[str, List[Terrain]]:
         position_terrain = {}
         for terrain in self.terrain.values():

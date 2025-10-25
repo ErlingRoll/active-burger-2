@@ -30,6 +30,7 @@ async def monster_interact(request: Request, ws: WebSocketResponse, account: Acc
     if weapon is None:
         event = GameEvent(
             event="log",
+            payload={"error": "No weapon equipped"},
             log=["You need to equip a weapon to attack monsters"],
         )
         return await ws.send_json(event.model_dump())

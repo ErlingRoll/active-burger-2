@@ -68,5 +68,6 @@ async def apply_currency(action: ActionRequest):
 
     await update_item(database, modified_equipment)
 
-    # await handle_item_consumption(database, currency, count=1, consume=True)
+    await handle_item_consumption(database, currency, count=1, consume=True)
+
     create_task(gamestate.publish_character(action.account, character_id=modified_equipment.character_id))
