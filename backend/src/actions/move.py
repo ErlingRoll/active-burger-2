@@ -1,7 +1,6 @@
 from asyncio import create_task
 from pydantic import BaseModel
 
-from src.database.character import update_character
 from src.connection_manager import GameEvent
 from src.actions.action import ActionRequest
 from src.gamestate import Gamestate

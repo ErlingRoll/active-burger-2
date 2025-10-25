@@ -2,7 +2,7 @@ from aiohttp.web import Request, WebSocketResponse
 from src.actions.action import ActionRequest
 from .models import Account, Character
 
-from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact, unequip_item, sell, buy, place_terrain, delete_terrain, apply_currency, send_chat_message
+from .actions import get_character, use_item, login, move, place_object, delete_object, give_item, interact, unequip_item, sell, buy, place_terrain, delete_terrain, apply_currency, send_chat_message, set_realm
 
 
 async def handle_action(request: Request, ws: WebSocketResponse, data: dict, action: str):
@@ -27,6 +27,8 @@ async def handle_action(request: Request, ws: WebSocketResponse, data: dict, act
 
     if action == "get_character":
         await get_character(action_request)
+    elif action == "set_realm":
+        await set_realm(action_request)
     elif action == "move":
         await move(action_request)
     elif action == "use_item":

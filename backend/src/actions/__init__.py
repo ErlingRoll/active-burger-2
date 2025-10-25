@@ -1,3 +1,4 @@
+from .account import set_realm
 from .character import get_character
 from .item import use_item
 from .login import login

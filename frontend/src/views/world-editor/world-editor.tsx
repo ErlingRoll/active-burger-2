@@ -15,7 +15,7 @@ import Select from "react-select"
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const WorldEditor = () => {
-    const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 2, step: 3 }) // x and y will be set to center on player
+    const [camera, setCamera] = useState({ x: 0, y: 0, zoom: 2, step: 3, realm: null }) // x and y will be set to center on player
     const [renderSize, setRenderSize] = useState<{ width: number; height: number }>({ width: 41, height: 29 })
     const [hoveringCell, setHoveringCell] = useState<{ x: number; y: number } | null>(null)
     const [hoveringTerrain, setHoveringTerrain] = useState<Terrain[]>([])
@@ -24,19 +24,24 @@ const WorldEditor = () => {
     )
     const [brushZ, setBrushZ] = useState<number>(0)
     const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
-    const [selectedRealm, setSelectedRealm] = useState<Realm | null>(Realm.BOB_VALLEY)
 
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
     const moveRepeatDelay = 100 // milliseconds
 
-    const { gamestate, terrain } = useContext(GamestateContext)
+    const { gamestate, terrain, realm, setRealm } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
     const { gameActions } = useContext(PlayerContext)
 
     // Load camera from localStorage
     useEffect(() => {
         const savedCamera = localStorage.getItem("worldEditorCamera")
-        if (savedCamera) setCamera(JSON.parse(savedCamera))
+        if (savedCamera) {
+            const parsedCamera = JSON.parse(savedCamera)
+            setCamera(parsedCamera)
+            setTimeout(() => {
+                if (parsedCamera.realm) setRealm(parsedCamera.realm)
+            }, 500)
+        }
     }, [])
 
     // Save camera to localStorage
@@ -127,7 +132,7 @@ const WorldEditor = () => {
             gameActions.placeObject({
                 object_id: brush.id,
                 properties: {
-                    realm: selectedRealm,
+                    realm: realm,
                 },
                 x: pos.x,
                 y: pos.y,
@@ -139,7 +144,7 @@ const WorldEditor = () => {
             if (!terrain) terrain = structuredClone(TERRAIN_COLORS[brush.id])
             terrain.z = brushZ
             terrain.texture = terrain.texture + (selectedVariant ? `_${selectedVariant}` : "")
-            terrain.realm = selectedRealm
+            terrain.realm = realm
             gameActions.placeTerrain({
                 game_id: terrain.game_id,
                 properties: terrain,
@@ -254,16 +259,17 @@ const WorldEditor = () => {
                         <div className="flex items-center justify-between gap-2 font-bold">
                             <p>Realm</p>
                             <Select<{ value: Realm; label: string }>
-                                className="w-full border-2 border-primary rounded text-sm capitalize"
-                                value={
-                                    selectedRealm
-                                        ? { value: selectedRealm, label: selectedRealm.replaceAll("_", " ") }
-                                        : null
-                                }
+                                className="w-full border-2 text-dark! border-primary rounded text-sm capitalize"
+                                value={realm ? { value: realm, label: realm.replaceAll("_", " ") } : null}
                                 onChange={(opt) => {
-                                    if (opt) setSelectedRealm(opt.value)
+                                    if (!opt) return
+                                    setRealm(opt.value)
+                                    setCamera({ ...camera, realm: opt.value })
                                 }}
-                                options={[{ value: Realm.BOB_VALLEY, label: Realm.BOB_VALLEY.replaceAll("_", " ") }]}
+                                options={Object.values(Realm).map((realm) => ({
+                                    value: realm,
+                                    label: realm.replaceAll("_", " "),
+                                }))}
                                 menuPlacement="auto"
                                 components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                             />
@@ -443,6 +449,7 @@ const WorldEditor = () => {
                 </div>
             </div>
             <GameGrid
+                editMode={true}
                 center={{ ...camera, zoom: 1 / camera.zoom }}
                 renderWidth={renderSize.width}
                 renderHeight={renderSize.height}

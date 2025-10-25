@@ -23,7 +23,7 @@ export const PlayerContext = createContext<PlayerContextType>({
 export const PlayerProvider = ({ children }: { children: any }) => {
     const { account } = useContext(UserContext)
     const { character } = useContext(CharacterContext)
-    const { gameCon, gamestate, reconnect } = useContext(GamestateContext)
+    const { gameCon, gamestate, reconnect, realm } = useContext(GamestateContext)
     const { shopOpen, setShopOpen, craftingBenchOpen, setCraftingBenchOpen } = useContext(UIContext)
 
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
@@ -32,6 +32,12 @@ export const PlayerProvider = ({ children }: { children: any }) => {
 
     // Store gameactions in a ref so it doesn't get recreated on every render
     const gameActions = useRef(new GameActions(reconnect))
+
+    useEffect(() => {
+        if (realm) {
+            gameActions.current.setRealm({ realm })
+        }
+    }, [realm])
 
     function localInteract(object: RenderObject) {
         switch (object.object_id) {
@@ -47,6 +53,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     function getSelectedCell() {
         if (!character || !gamestate) return
         const player = gamestate.render_objects[character.id]
+        if (!player) return
         const x = player.x
         const y = player.y
 

@@ -16,6 +16,7 @@ type GameGridProps = {
     onCellClick?: ({ x, y, event }: { x: number; y: number; event: MouseEvent }) => void
     onCellEnter?: ({ x, y, event }: { x: number; y: number; event: PointerEvent }) => void
     onCellLeave?: ({ x, y, event }: { x: number; y: number; event: PointerEvent }) => void
+    editMode?: boolean
 }
 
 const GameGrid = ({
@@ -27,6 +28,7 @@ const GameGrid = ({
     onCellClick,
     onCellEnter,
     onCellLeave,
+    editMode = false,
 }: GameGridProps) => {
     const { gamestate, terrain } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
@@ -159,6 +161,7 @@ const GameGrid = ({
     }
 
     function getSelectedCell() {
+        if (editMode) return null
         if (!character || !gamestate) return
         const player = gamestate.render_objects[character.id]
         const x = player.x

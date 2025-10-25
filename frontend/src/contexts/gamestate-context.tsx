@@ -5,6 +5,7 @@ import { CharacterContext } from "./character-context"
 import { Terrain } from "../models/terrain"
 import { toast } from "react-toastify"
 import { Item } from "../models/item"
+import { Realm } from "../game/world"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -36,6 +37,8 @@ type GamestateContextType = {
     chatMessages: ChatMessage[]
     terrain: { [pos: string]: Terrain[] }
     reconnect: () => void
+    realm?: Realm
+    setRealm?: Dispatch<SetStateAction<Realm | null>>
 }
 
 export const GamestateContext = createContext<GamestateContextType>({
@@ -48,13 +51,15 @@ export const GamestateContext = createContext<GamestateContextType>({
     chatMessages: [],
     terrain: {},
     reconnect: () => {},
+    realm: null,
+    setRealm: (realm: Realm) => {},
 })
 
 export const GameProvider = ({ children }: { children: any }) => {
     const [gameCon, setGameCon] = useState<WebSocket | null>(null)
     const [gamestate, setGamestate] = useState<Gamestate | null>(null)
     const [terrain, setTerrain] = useState<{ [pos: string]: Terrain[] }>({})
-    const [realm, setRealm] = useState<string | null>(null)
+    const [realm, setRealm] = useState<Realm | null>(null)
     const [log, setLog] = useState<string[]>([])
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
@@ -143,6 +148,7 @@ export const GameProvider = ({ children }: { children: any }) => {
         const character = data.character
         setAccount(account)
         setCharacter(character)
+        setRealm(character.realm)
 
         const loginMessage = `Logged in as ${account.name} (${character ? character.name : "no character"})`
         setLog((prevLog) => [loginMessage, ...prevLog])
@@ -221,6 +227,8 @@ export const GameProvider = ({ children }: { children: any }) => {
                 log,
                 chatMessages,
                 terrain,
+                realm,
+                setRealm,
             }}
         >
             {children}

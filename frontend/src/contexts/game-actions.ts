@@ -1,3 +1,5 @@
+import { Realm } from "../game/world"
+
 class GameActions {
     account = null
     character = null
@@ -105,6 +107,14 @@ class GameActions {
     }
 
     // --- Admin Actions ---
+    setRealm({ realm }: { realm: Realm }) {
+        const action = {
+            action: "set_realm",
+            payload: { realm },
+        }
+        this.send(action)
+    }
+
     placeTerrain({ game_id, x, y, properties }: { game_id: string; properties: object; x: number; y: number }) {
         const action = {
             action: "place_terrain",
