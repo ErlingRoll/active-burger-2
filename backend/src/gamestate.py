@@ -70,7 +70,7 @@ class Gamestate(BaseModel):
 
         await self.connection_manager.send(account.id, event)
 
-    def position_terrain(self, realm) -> Dict[str, List[Terrain]]:
+    def position_terrain(self, realm, dict=False) -> Dict[str, List[Terrain]]:
         position_terrain = {}
         for terrain in self.terrain.values():
             if terrain.realm != realm:
@@ -78,7 +78,7 @@ class Gamestate(BaseModel):
             pos_key = f"{terrain.x}_{terrain.y}"
             if pos_key not in position_terrain:
                 position_terrain[pos_key] = []
-            position_terrain[pos_key].append(terrain.model_dump())
+            position_terrain[pos_key].append(terrain.model_dump() if dict else terrain)
         return position_terrain
 
     async def publish_terrain(self, account: Account | None = None):
@@ -89,7 +89,7 @@ class Gamestate(BaseModel):
             if not ws:
                 print(f"No active WebSocket for account {account.id}")
                 return
-            data = self.position_terrain(ws.realm)
+            data = self.position_terrain(ws.realm, dict=True)
             event = GameEvent(
                 event="terrain_update",
                 payload=data
@@ -97,7 +97,7 @@ class Gamestate(BaseModel):
             return await self.connection_manager.send(account.id, event)
 
         for account_id, ws in self.connection_manager.connections_account_map.items():
-            data = self.position_terrain(ws.realm)
+            data = self.position_terrain(ws.realm, )
             event = GameEvent(
                 event="terrain_update",
                 payload=data

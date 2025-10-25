@@ -35,8 +35,16 @@ async def move(action: ActionRequest):
         )
         return await action.ws.send_json(event.model_dump())
 
-    # Get objects at target position
     pos_key = f"{payload.x}_{payload.y}"
+
+    # Get terrain at target position
+    pos_terrain = gamestate.position_terrain(realm=character_state.realm)
+    terrain_at_pos = pos_terrain.get(pos_key, [])
+    for terrain in terrain_at_pos:
+        if terrain.solid:
+            return await gamestate.publish_gamestate()
+
+    # Get objects at target position
     pos_objects = gamestate.position_objects(realm=character_state.realm)
     objects_at_pos = pos_objects.get(pos_key, [])
 
