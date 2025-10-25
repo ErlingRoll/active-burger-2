@@ -3,6 +3,7 @@ from pydantic import BaseModel, ConfigDict
 from supabase import AsyncClient
 from typing import Dict, List, Literal
 from pydantic import BaseModel
+from src.generators.world import Realm
 from src.database.object import create_object
 from src.generators.monster import generate_monster
 from src.generators.object import generate_object
@@ -44,6 +45,7 @@ class Spawner(BaseModel, GameTickerInterface):
     start_y: int
     end_x: int
     end_y: int
+    realm: Realm
     object_type: Literal["object", "monster"] = "object"
     safe_radius: int = 1
     spawn_table: SpawnTable
@@ -83,9 +85,9 @@ class Spawner(BaseModel, GameTickerInterface):
         new_object = None
 
         if self.object_type == "object":
-            new_object = generate_object(object_id=object_id, x=random_position[0], y=random_position[1])
+            new_object = generate_object(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm)
         elif self.object_type == "monster":
-            new_object = generate_monster(object_id=object_id, x=random_position[0], y=random_position[1])
+            new_object = generate_monster(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm)
 
         if not new_object:
             raise ValueError(f"Could not generate object for id: {object_id}")

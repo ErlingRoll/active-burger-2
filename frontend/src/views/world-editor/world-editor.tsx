@@ -9,6 +9,8 @@ import { Terrain } from "../../models/terrain"
 import Settings from "../gamescreen/components/game-ui/components/settings"
 import GameGrid from "../gamescreen/components/game-grid"
 import HoverInfo from "./components/hover-info"
+import { Realm, realmValue } from "../../game/world"
+import Select from "react-select"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -22,6 +24,7 @@ const WorldEditor = () => {
     )
     const [brushZ, setBrushZ] = useState<number>(0)
     const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
+    const [selectedRealm, setSelectedRealm] = useState<Realm | null>(Realm.BOB_VALLEY)
 
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
     const moveRepeatDelay = 100 // milliseconds
@@ -123,6 +126,9 @@ const WorldEditor = () => {
         if (brush.type === "object") {
             gameActions.placeObject({
                 object_id: brush.id,
+                properties: {
+                    realm: selectedRealm,
+                },
                 x: pos.x,
                 y: pos.y,
             })
@@ -133,6 +139,7 @@ const WorldEditor = () => {
             if (!terrain) terrain = structuredClone(TERRAIN_COLORS[brush.id])
             terrain.z = brushZ
             terrain.texture = terrain.texture + (selectedVariant ? `_${selectedVariant}` : "")
+            terrain.realm = selectedRealm
             gameActions.placeTerrain({
                 game_id: terrain.game_id,
                 properties: terrain,
@@ -242,6 +249,23 @@ const WorldEditor = () => {
                                     if (value > 41) value = 41
                                     setRenderSize({ ...renderSize, height: value })
                                 }}
+                            />
+                        </div>
+                        <div className="flex items-center justify-between gap-2 font-bold">
+                            <p>Realm</p>
+                            <Select<{ value: Realm; label: string }>
+                                className="w-full border-2 border-primary rounded text-sm capitalize"
+                                value={
+                                    selectedRealm
+                                        ? { value: selectedRealm, label: selectedRealm.replaceAll("_", " ") }
+                                        : null
+                                }
+                                onChange={(opt) => {
+                                    if (opt) setSelectedRealm(opt.value)
+                                }}
+                                options={[{ value: Realm.BOB_VALLEY, label: Realm.BOB_VALLEY.replaceAll("_", " ") }]}
+                                menuPlacement="auto"
+                                components={{ DropdownIndicator: () => null, IndicatorSeparator: () => null }}
                             />
                         </div>
                     </div>

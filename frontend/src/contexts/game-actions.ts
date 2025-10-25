@@ -121,10 +121,10 @@ class GameActions {
         this.send(action)
     }
 
-    placeObject({ object_id, x, y }: { object_id: string; x: number; y: number }) {
+    placeObject({ object_id, properties, x, y }: { object_id: string; properties: object; x: number; y: number }) {
         const action = {
             action: "place_object",
-            payload: { object_id, x, y },
+            payload: { object_id, properties, x, y },
         }
         this.send(action)
     }

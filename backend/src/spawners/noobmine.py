@@ -1,4 +1,5 @@
 from realtime import Literal
+from src.generators.world import Realm
 from src.spawners.spawner import SpawnTable, SpawnTableItem, Spawner
 
 
@@ -7,6 +8,7 @@ class NoobmineEntry(Spawner):
     start_y: int = -4
     end_x: int = 15
     end_y: int = 4
+    realm: Realm = Realm.BOB_VALLEY
     safe_radius: int = 1
     spawn_table: SpawnTable = SpawnTable(items=[
         SpawnTableItem(object_id="gold_ore", chance=0.5),
@@ -18,6 +20,7 @@ class NoobmineMonsters(Spawner):
     start_y: int = -13
     end_x: int = 13
     end_y: int = -10
+    realm: Realm = Realm.BOB_VALLEY
     object_type: Literal["object", "monster"] = "monster"
     safe_radius: int = 2
     spawn_table: SpawnTable = SpawnTable(items=[

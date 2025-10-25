@@ -54,6 +54,7 @@ export const GameProvider = ({ children }: { children: any }) => {
     const [gameCon, setGameCon] = useState<WebSocket | null>(null)
     const [gamestate, setGamestate] = useState<Gamestate | null>(null)
     const [terrain, setTerrain] = useState<{ [pos: string]: Terrain[] }>({})
+    const [realm, setRealm] = useState<string | null>(null)
     const [log, setLog] = useState<string[]>([])
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 

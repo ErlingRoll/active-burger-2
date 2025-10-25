@@ -2,6 +2,8 @@ import json
 from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
+from src.generators.world import Realm
+
 
 class RenderObject(BaseModel):
     # Characters, Objects, NPCs, etc.
@@ -13,12 +15,13 @@ class RenderObject(BaseModel):
     name_visible: bool = True
     x: int = 0
     y: int = 0
+    realm: Optional[Realm] = None
     texture: Optional[str] = None
     height: Optional[int] = None  # in pixels
     width: Optional[int] = None  # in pixels
     solid: bool = False
     object_id: Optional[str] = None
-    model_config = ConfigDict(extra="allow")
+    model_config = ConfigDict(extra="allow", use_enum_values=True)
 
     # Non-DB fields
     db_type: str = "object"

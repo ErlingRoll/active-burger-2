@@ -1,5 +1,7 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
+
+from src.generators.world import Realm
 
 
 class Terrain(BaseModel):
@@ -11,10 +13,12 @@ class Terrain(BaseModel):
     x: int
     y: int
     z: int = 0
+    realm: Realm
     solid: bool = False
     opacity: float = 1.0
     rotation: int = 0
     ext: Optional[str] = None
+    model_config = ConfigDict(use_enum_values=True)
 
     def to_db_model(self) -> "Terrain":
         return Terrain.model_construct(**self.model_dump())

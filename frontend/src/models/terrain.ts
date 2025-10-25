@@ -1,3 +1,5 @@
+import { Realm } from "../game/world"
+
 export interface Terrain {
     id: string
     created_at: string
@@ -7,6 +9,7 @@ export interface Terrain {
     x: number
     y: number
     z: number
+    realm: Realm
     solid: boolean
     opacity: number
     rotation: number
