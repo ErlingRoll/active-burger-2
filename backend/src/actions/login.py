@@ -35,11 +35,12 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
         await ws.send_str("Error: Failed to create account.")
         return
 
-    # Save account_id in ws session for future reference
-    ws.account_id = account.id
-    connection_manager.update_account_map(account.id, ws)
-
     character: Character = await get_or_create_character(request, ws, account)
+
+    # Save connection info to websocket
+    connection_manager.update_account_map(account.id, ws)
+    ws.account_id = account.id
+    ws.realm = character.realm
 
     character_data: CharacterData = await get_character_data_by_id(database, character.id)
 

@@ -24,7 +24,7 @@ async def game_loop(app, database, connection_manager, gamestate: Gamestate):
 
         # await game_tick(tickers)
 
-        await gamestate.publish_gamestate()
+        # await gamestate.publish_gamestate()
 
         elapsed = get_event_loop().time() - start_time
         await sleep(max(0, TICK_RATE - elapsed))

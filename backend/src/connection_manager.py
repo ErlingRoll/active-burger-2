@@ -1,6 +1,7 @@
 from asyncio import create_task
-from typing import List
+from typing import Dict, List
 from pydantic import BaseModel, ConfigDict
+from aiohttp.web import WebSocketResponse
 
 
 class GameEvent(BaseModel):
@@ -13,8 +14,8 @@ class ConnectionManager(BaseModel):
 
     connection_counter: int = 0  # Total connections since server start
     connections: dict = {}
-    connections_account_map: dict = {}
-    model_config = ConfigDict(extra="allow")
+    connections_account_map: Dict[str, WebSocketResponse] = {}
+    model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
     def add_connection(self, ws):
         self.connection_counter += 1
@@ -50,6 +51,7 @@ class ConnectionManager(BaseModel):
 
         else:
             print(f"No active WebSocket for account {account_id}")
+            self.remove_connection(account_id)
 
     async def broadcast(self, event: GameEvent):
         # Broadcast event to all active WebSocket connections
@@ -57,7 +59,6 @@ class ConnectionManager(BaseModel):
         for connection_id, ws in self.connections.items():
             if not ws.closed:
                 try:
-                    pass
                     create_task(ws.send_json(event.model_dump()))
                 except Exception as e:
                     print(f"Error sending to connection {connection_id}: {e}")

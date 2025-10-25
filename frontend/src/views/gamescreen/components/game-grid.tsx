@@ -195,8 +195,8 @@ const GameGrid = ({
         >
             {Array.from({ length: renderWidth * renderHeight }).map((_, index) => {
                 const _center = camera()
-                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2)
-                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y - 1
+                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2) + 1
+                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y
                 return (
                     <div
                         key={index}

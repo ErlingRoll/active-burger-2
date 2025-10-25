@@ -30,6 +30,7 @@ class Gamestate(BaseModel):
     characters: dict[str, Character] = {}
     objects: dict[str, RenderObject] = {}
     terrain: dict[str, Terrain] = {}
+
     chat: Deque[ChatMessage] = deque(maxlen=50)
 
     async def fetch_gamestate(self):
@@ -69,9 +70,11 @@ class Gamestate(BaseModel):
 
         await self.connection_manager.send(account.id, event)
 
-    def position_terrain(self) -> Dict[str, List[Terrain]]:
+    def position_terrain(self, realm) -> Dict[str, List[Terrain]]:
         position_terrain = {}
         for terrain in self.terrain.values():
+            if terrain.realm != realm:
+                continue
             pos_key = f"{terrain.x}_{terrain.y}"
             if pos_key not in position_terrain:
                 position_terrain[pos_key] = []
@@ -80,30 +83,47 @@ class Gamestate(BaseModel):
 
     async def publish_terrain(self, account: Account | None = None):
         # Send full terrain data. Data is grouped by position key (x_y)
-        data = self.position_terrain()
-        event = GameEvent(
-            event="terrain_update",
-            payload=data
-        )
 
         if account:
-            await self.connection_manager.send(account.id, event)
-        else:
-            await self.connection_manager.broadcast(event)
+            ws = self.connection_manager.connections_account_map.get(account.id)
+            if not ws:
+                print(f"No active WebSocket for account {account.id}")
+                return
+            data = self.position_terrain(ws.realm)
+            event = GameEvent(
+                event="terrain_update",
+                payload=data
+            )
+            return await self.connection_manager.send(account.id, event)
+
+        for _connection_id, ws in self.connection_manager.connections.items():
+            data = self.position_terrain(ws.realm)
+            event = GameEvent(
+                event="gamestate_update",
+                payload=data
+            )
+            return await self.connection_manager.send(ws.account_id, event)
 
     async def publish_gamestate(self, account: Account | None = None):
-        gamestate = self.get_gamestate()
-        event = GameEvent(
-            event="gamestate_update",
-            payload=gamestate
-        )
-
         if account:
-            await self.connection_manager.send(account.id, event)
-        else:
-            await self.connection_manager.broadcast(event)
+            ws = self.connection_manager.connections_account_map.get(account.id)
+            if not ws:
+                print(f"No active WebSocket for account {account.id}")
+                return
+            gamestate = self.get_gamestate(realm=ws.realm)
+            event = GameEvent(
+                event="gamestate_update",
+                payload=gamestate
+            )
+            return await self.connection_manager.send(account.id, event)
 
-        return gamestate
+        for _connection_id, ws in self.connection_manager.connections.items():
+            gamestate = self.get_gamestate(realm=ws.realm)
+            event = GameEvent(
+                event="gamestate_update",
+                payload=gamestate
+            )
+            return await self.connection_manager.send(ws.account_id, event)
 
     async def add_terrain(self, terrain: Terrain):
         self.terrain[terrain.id] = terrain
@@ -167,17 +187,20 @@ class Gamestate(BaseModel):
     def get_render_object(self, object_id: str) -> RenderObject | None:
         return self.render_objects().get(object_id, None)
 
-    def render_objects(self, dict=False):
+    def render_objects(self, realm=None, dict=False):
         render_objects = {**self.characters, **self.objects}
+
+        if realm:
+            render_objects = {key: obj for key, obj in render_objects.items() if obj.realm == realm}
 
         if dict:
             return {key: obj.to_dict() for key, obj in render_objects.items()}
 
         return render_objects
 
-    def position_objects(self, dict=False):
+    def position_objects(self, realm=None, dict=False):
         position_objects = {}
-        render_objects = self.render_objects()
+        render_objects = self.render_objects(realm=realm)
         for obj in render_objects.values():
             pos_key = f"{obj.x}_{obj.y}"
             if pos_key not in position_objects:
@@ -185,10 +208,12 @@ class Gamestate(BaseModel):
             position_objects[pos_key].append(obj.to_dict() if dict else obj)
         return position_objects
 
-    def get_gamestate(self):
+    def get_gamestate(self, realm=None) -> dict:
+        if not realm:
+            print("Warning: Getting gamestate without realm filtering")
         return {
             "start_datetime": self.start_datetime.isoformat(),
             "server_datetime": datetime.now().isoformat(),
-            "render_objects": self.render_objects(dict=True),
-            "position_objects": self.position_objects(dict=True)
+            "render_objects": self.render_objects(realm=realm, dict=True),
+            "position_objects": self.position_objects(realm=realm, dict=True)
         }
