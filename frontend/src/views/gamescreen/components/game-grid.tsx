@@ -38,6 +38,7 @@ const GameGrid = ({
     const terrainCellName = (x: number, y: number) => `terrain-${x},${y}`
 
     function camera() {
+        if (editMode && center) return center
         const player = gamestate.render_objects[character.id]
         return center || { x: player.x, y: player.y, zoom: 1 }
     }
@@ -184,6 +185,7 @@ const GameGrid = ({
     }, [terrain, gamestate, center])
 
     useEffect(() => {
+        if (!gamestate.position_objects) return
         drawObjects(gamestate.position_objects as any)
     }, [gamestate, center])
 

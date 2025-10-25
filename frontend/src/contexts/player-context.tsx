@@ -51,7 +51,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     }
 
     function getSelectedCell() {
-        if (!character || !gamestate) return
+        if (!character || !gamestate || !gamestate.render_objects) return
         const player = gamestate.render_objects[character.id]
         if (!player) return
         const x = player.x

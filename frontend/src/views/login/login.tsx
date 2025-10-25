@@ -28,8 +28,6 @@ const Login = () => {
                 console.error("Error during token exchange:", error)
             })
             .then((data) => {
-                console.log("Access token data:", data)
-
                 // Store access token securely
                 localStorage.setItem("discordAccessToken", data.access_token)
                 localStorage.setItem("discordRefreshToken", data.refresh_token)
@@ -43,7 +41,6 @@ const Login = () => {
 
         fetchDiscordUser(token)
             .then((userData) => {
-                console.log("Discord user data:", userData)
                 localStorage.setItem("discordUser", JSON.stringify(userData))
                 setUser(userData)
                 window.history.replaceState({}, document.title, "/game")

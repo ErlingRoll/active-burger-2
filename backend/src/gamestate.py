@@ -99,7 +99,7 @@ class Gamestate(BaseModel):
         for _connection_id, ws in self.connection_manager.connections.items():
             data = self.position_terrain(ws.realm)
             event = GameEvent(
-                event="gamestate_update",
+                event="terrain_update",
                 payload=data
             )
             return await self.connection_manager.send(ws.account_id, event)
