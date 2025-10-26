@@ -136,7 +136,7 @@ const GameGrid = ({
             const pos_objects: (RenderObject & Entity & Character)[] = objects[`${pos.x}_${pos.y}`] as any
             if (!pos_objects) continue
             for (const obj of pos_objects) {
-                if (obj.id === character.id) continue
+                if (obj.id === character.id && !editMode) continue
                 drawObjectCell(obj, cell)
             }
         }
@@ -192,7 +192,7 @@ const GameGrid = ({
     const selectedCell = useMemo(() => getSelectedCell(), [character])
 
     useEffect(() => {
-        if (!character) return
+        if (!character || editMode) return
         drawPlayer()
     }, [character])
 

@@ -102,26 +102,27 @@ export const PlayerProvider = ({ children }: { children: any }) => {
 
         switch (direction) {
             case "up":
-                if (checkSolidTile({ x: character.x, y: character.y + 1, realm: character.realm })) return
+                if (checkSolidTile({ x: character.x, y: character.y + 1, realm: character.realm })) break
                 gameActions.current.move({ x: character.x, y: character.y + 1, direction: "up" })
                 character.y += 1
                 break
             case "down":
-                if (checkSolidTile({ x: character.x, y: character.y - 1, realm: character.realm })) return
+                if (checkSolidTile({ x: character.x, y: character.y - 1, realm: character.realm })) break
                 gameActions.current.move({ x: character.x, y: character.y - 1, direction: "down" })
                 character.y -= 1
                 break
             case "left":
-                if (checkSolidTile({ x: character.x - 1, y: character.y, realm: character.realm })) return
+                if (checkSolidTile({ x: character.x - 1, y: character.y, realm: character.realm })) break
                 gameActions.current.move({ x: character.x - 1, y: character.y, direction: "left" })
                 character.x -= 1
                 break
             case "right":
-                if (checkSolidTile({ x: character.x + 1, y: character.y, realm: character.realm })) return
+                if (checkSolidTile({ x: character.x + 1, y: character.y, realm: character.realm })) break
                 gameActions.current.move({ x: character.x + 1, y: character.y, direction: "right" })
                 character.x += 1
                 break
         }
+
         setCharacter({ ...character })
     }
 
