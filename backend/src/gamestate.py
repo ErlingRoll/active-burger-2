@@ -74,7 +74,7 @@ class Gamestate(BaseModel):
     def is_pos_blocked(self, x, y, realm) -> bool:
         pos_key = f"{x}_{y}"
         # Check terrain
-        cell_terrain = self.position_terrain(realm).get(pos_key, [])
+        cell_terrain = self.get_position_terrain(realm).get(pos_key, [])
         for terrain in cell_terrain:
             if terrain.solid:
                 return True
@@ -87,7 +87,7 @@ class Gamestate(BaseModel):
 
         return False
 
-    def position_terrain(self, realm, dict=False) -> Dict[str, List[Terrain]]:
+    def get_position_terrain(self, realm, dict=False) -> Dict[str, List[Terrain]]:
         position_terrain = {}
         for terrain in self.terrain.values():
             if terrain.realm != realm:
@@ -98,32 +98,33 @@ class Gamestate(BaseModel):
             position_terrain[pos_key].append(terrain.model_dump() if dict else terrain)
         return position_terrain
 
-    async def publish_terrain(self, account: Account | None = None):
+    async def publish_terrain(self, account: Account | None = None, realm: Realm | None = None):
         # Send full terrain data. Data is grouped by position key (x_y)
 
         if account:
             con = self.connection_manager.connections_account_map.get(account.id)
             if not con:
                 return print(f"Warning: No connection info for account {account.id} when publishing terrain")
-            data = self.position_terrain(con["realm"], dict=True)
+            data = self.get_position_terrain(realm=realm or con["realm"], dict=True)
             event = GameEvent(
                 event="terrain_update",
                 payload=data
             )
             return await self.connection_manager.send(account.id, event)
 
-        for account_id, con in self.connection_manager.connections_account_map.items():
-            data = self.position_terrain(con["realm"], dict=True)
+        for account_id, con in self.connection_manager.get_account_connections().items():
+            terrain = self.get_position_terrain(realm=realm or con["realm"], dict=True)
             event = GameEvent(
                 event="terrain_update",
-                payload=data
+                payload=terrain
             )
-            return await self.connection_manager.send(account_id, event)
+            await con["ws"].send_json(event.model_dump())
 
-    async def publish_gamestate(self, account: Account | None = None):
+    async def publish_gamestate(self, account: Account | None = None, realm: Realm | None = None):
+
         if account:
             con = self.connection_manager.connections_account_map.get(account.id)
-            gamestate = self.get_gamestate(realm=con["realm"])
+            gamestate = self.get_gamestate(realm=realm or con["realm"])
             event = GameEvent(
                 event="gamestate_update",
                 payload=gamestate
@@ -131,7 +132,7 @@ class Gamestate(BaseModel):
             return await self.connection_manager.send(account.id, event)
 
         for account_id, con in self.connection_manager.get_account_connections().items():
-            gamestate = self.get_gamestate(realm=con["realm"])
+            gamestate = self.get_gamestate(realm=realm or con["realm"])
             event = GameEvent(
                 event="gamestate_update",
                 payload=gamestate

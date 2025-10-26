@@ -44,7 +44,9 @@ class ConnectionManager(BaseModel):
     async def set_account_realm(self, account_id: str, realm: Realm):
         con = self.connections_account_map.get(account_id)
         if not con:
-            return print(f"[set_account_realm] No connection found for account {account_id}")
+            print(f"[set_account_realm] No connection found for account {account_id}")
+            self.connections_account_map[account_id] = {"ws": None, "connection_id": None, "realm": None}
+            con = self.connections_account_map.get(account_id)
 
         con["realm"] = realm
 

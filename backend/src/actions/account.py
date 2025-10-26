@@ -17,7 +17,7 @@ async def set_realm(action: ActionRequest):
 
     payload = SetRealmPayload(**action.payload)
 
-    connection_manager.set_account_realm(action.account.id, payload.realm)
+    await connection_manager.set_account_realm(action.account.id, payload.realm)
 
     realm_update_event = GameEvent(
         event="realm_update",
@@ -26,5 +26,5 @@ async def set_realm(action: ActionRequest):
 
     await action.ws.send_json(realm_update_event.model_dump())
 
-    create_task(gamestate.publish_gamestate(account=action.account))
-    create_task(gamestate.publish_terrain(account=action.account))
+    create_task(gamestate.publish_gamestate(account=action.account, realm=payload.realm))
+    create_task(gamestate.publish_terrain(account=action.account, realm=payload.realm))
