@@ -14,6 +14,7 @@ class GameEvent(BaseModel):
 
 class ConnectionInfo(BaseModel):
     ws: WebSocketResponse
+    connection_id: str
     realm: Realm
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
@@ -28,12 +29,13 @@ class ConnectionManager(BaseModel):
     def add_connection(self, ws):
         self.connection_counter += 1
         connection_id = self.connection_counter
-        self.connections[connection_id] = ws
+        self.connections[str(connection_id)] = ws
         return connection_id
 
     def update_account_map(self, account_id, ws, realm: Realm):
         self.connections_account_map[account_id] = {
             "ws": ws,
+            "connection_id": str(ws.id),
             "realm": realm
         }
         self.clean_connections_account_map()
@@ -73,7 +75,8 @@ class ConnectionManager(BaseModel):
 
     async def send(self, account_id, event: GameEvent):
         con = self.connections_account_map.get(account_id)
-        ws = con.get("ws", None) if con else None
+        ws = self.connections.get(con.get("connection_id")) if con else None
+
         if ws is not None and not ws.closed:
             try:
                 await ws.send_json(event.model_dump())

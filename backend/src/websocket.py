@@ -12,6 +12,7 @@ async def websocket_handler(request: Request):
     await ws.prepare(request)
 
     connection_id = connection_manager.add_connection(ws)
+    ws.id = str(connection_id)
 
     print(f"WebSocket connected: {request.remote}")
 

@@ -118,6 +118,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 on_login_success(payload)
                 break
             case "gamestate_update":
+                console.log("Received gamestate update", payload)
                 setGamestate(payload)
                 break
             case "terrain_update":
