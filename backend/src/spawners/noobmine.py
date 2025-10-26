@@ -24,5 +24,19 @@ class NoobmineMonsters(Spawner):
     object_type: Literal["object", "monster"] = "monster"
     safe_radius: int = 2
     spawn_table: SpawnTable = SpawnTable(items=[
+        SpawnTableItem(object_id="karate_panda", chance=0.7),
+    ])
+
+
+class NoobmineCenterMonsters(Spawner):
+    start_x: int = 3
+    start_y: int = -29
+    end_x: int = 16
+    end_y: int = -13
+    realm: Realm = Realm.ERLYVILLE
+    object_type: Literal["object", "monster"] = "monster"
+    safe_radius: int = 2
+    spawn_table: SpawnTable = SpawnTable(items=[
         SpawnTableItem(object_id="karate_panda", chance=0.5),
+        SpawnTableItem(object_id="vampire", chance=0.4),
     ])

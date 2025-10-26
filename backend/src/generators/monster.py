@@ -1,10 +1,11 @@
 
-from src.models.objects.monster import KaratePanda, Monster
+from src.models.objects.monster import Monster, KaratePanda, Vampire
 from src.models.render_object import RenderObject
 
 
 object_map = {
-    "karate_panda": KaratePanda
+    "karate_panda": KaratePanda,
+    "vampire": Vampire,
 }
 
 
