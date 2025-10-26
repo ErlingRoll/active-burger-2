@@ -87,6 +87,39 @@ class ConnectionManager(BaseModel):
             print(f"[send/{event.event}] No active WebSocket for account {account_id}")
             self.remove_connection(account_id)
 
+    async def broadcast_realmed_event(self, event: GameEvent, realmed_payload: dict):
+        # Broadcast event to all active WebSocket connections. Payload is diveded by realm.
+        inactive_connections = []
+        for connection_id, ws in self.connections.items():
+            if not ws.closed:
+                try:
+                    create_task(ws.send_json(event.model_dump()))
+                except Exception as e:
+                    print(f"Error sending to connection {connection_id}: {e}")
+            else:
+                inactive_connections.append(connection_id)
+        for connection_id in inactive_connections:
+            self.remove_connection(connection_id)
+        if inactive_connections:
+            print(f"Removed {len(inactive_connections)} inactive connections. Total connections: {len(self.connections)}")
+
+    def get_account_connections(self) -> dict[str, Any]:
+        active_connections = {}
+        inactive_connections = []
+        connection_id_account_id_map = {con["connection_id"]: {**con, "account_id": account_id} for account_id, con in self.connections_account_map.items()}
+        for connection_id, ws in self.connections.items():
+            if not ws.closed:
+                con = connection_id_account_id_map.get(connection_id, None)
+                if con is not None and con["account_id"]:
+                    active_connections[con["account_id"]] = con
+            else:
+                inactive_connections.append(connection_id)
+        for connection_id in inactive_connections:
+            self.remove_connection(connection_id)
+        if inactive_connections:
+            print(f"Removed {len(inactive_connections)} inactive connections. Total connections: {len(self.connections)}")
+        return active_connections
+
     async def broadcast(self, event: GameEvent):
         # Broadcast event to all active WebSocket connections
         inactive_connections = []
@@ -102,6 +135,3 @@ class ConnectionManager(BaseModel):
             self.remove_connection(connection_id)
         if inactive_connections:
             print(f"Removed {len(inactive_connections)} inactive connections. Total connections: {len(self.connections)}")
-        else:
-            # print(f"Broadcasted event to {len(self.connections)} connections.")
-            pass
