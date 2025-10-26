@@ -130,13 +130,20 @@ class Gamestate(BaseModel):
             )
             return await self.connection_manager.send(account.id, event)
 
-        for account_id, con in self.connection_manager.connections_account_map.items():
-            gamestate = self.get_gamestate(realm=con["realm"])
-            event = GameEvent(
-                event="gamestate_update",
-                payload=gamestate
-            )
-            return await self.connection_manager.send(account_id, event)
+        gamestate = self.get_gamestate()
+        event = GameEvent(
+            event="gamestate_update",
+            payload=gamestate
+        )
+        return await self.connection_manager.broadcast(event)
+
+        # for account_id, con in self.connection_manager.connections_account_map.items():
+        #     gamestate = self.get_gamestate(realm=con["realm"])
+        #     event = GameEvent(
+        #         event="gamestate_update",
+        #         payload=gamestate
+        #     )
+        #     return await self.connection_manager.send(account_id, event)
 
     async def add_terrain(self, terrain: Terrain):
         self.terrain[terrain.id] = terrain
