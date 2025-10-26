@@ -41,9 +41,8 @@ const GameGrid = ({
 
     function camera() {
         if (editMode && center) return center
-        const player = gamestate.render_objects[character.id]
-        if (!player) return
-        return center || { x: player.x, y: player.y, zoom: 1 }
+        if (!character) return
+        return center || { x: character.x, y: character.y, zoom: 1 }
     }
 
     function drawObjectCell(obj: RenderObject & Entity & Character, cell: HTMLElement) {
@@ -111,6 +110,13 @@ const GameGrid = ({
         }
     }
 
+    function drawPlayer() {
+        if (!character) return
+        const cell = document.getElementById("player-" + cellName(character.x, character.y))
+        if (!cell) return
+        drawObjectCell(character as any, cell)
+    }
+
     function drawObjects(objects: { [id: string]: RenderObject & Entity & Character }) {
         const _center = camera()
         const pos_list: { x: number; y: number }[] = Array.from({ length: renderWidth * renderHeight }).map(
@@ -130,8 +136,8 @@ const GameGrid = ({
             const pos_objects: (RenderObject & Entity & Character)[] = objects[`${pos.x}_${pos.y}`] as any
             if (!pos_objects) continue
             for (const obj of pos_objects) {
+                if (obj.id === character.id) continue
                 drawObjectCell(obj, cell)
-                if (obj.id === character.id) break
             }
         }
     }
@@ -170,10 +176,8 @@ const GameGrid = ({
     function getSelectedCell() {
         if (editMode) return null
         if (!character || !gamestate) return
-        const player = gamestate.render_objects[character.id]
-        if (!player) return
-        const x = player.x
-        const y = player.y
+        const x = character.x
+        const y = character.y
 
         const newPosMap = {
             up: { x: x, y: y + 1 },
@@ -182,19 +186,24 @@ const GameGrid = ({
             right: { x: x + 1, y: y },
         }
 
-        return newPosMap[player.direction]
+        return newPosMap[character.direction]
     }
 
-    const selectedCell = useMemo(() => getSelectedCell(), [gamestate])
+    const selectedCell = useMemo(() => getSelectedCell(), [character])
+
+    useEffect(() => {
+        if (!character) return
+        drawPlayer()
+    }, [character])
 
     useEffect(() => {
         drawTerrain(terrain)
-    }, [terrain, gamestate, center])
+    }, [character, terrain, gamestate, center])
 
     useEffect(() => {
         if (!gamestate.position_objects) return
         drawObjects(gamestate.position_objects as any)
-    }, [gamestate, center])
+    }, [character, gamestate, center])
 
     return (
         <div
@@ -227,6 +236,10 @@ const GameGrid = ({
                         <div className="absolute top-0 left-0 w-full h-full" id={terrainCellName(wx, wy)} />
                         <div
                             id={cellName(wx, wy)}
+                            className="absolute top-0 left-0 w-full h-full flex flex-row items-center justify-around z-10"
+                        />
+                        <div
+                            id={"player-" + cellName(wx, wy)}
                             className="absolute top-0 left-0 w-full h-full flex flex-row items-center justify-around z-10"
                         />
                         <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-10" />

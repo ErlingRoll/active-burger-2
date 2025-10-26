@@ -50,7 +50,17 @@ export const CharacterProvider = ({ children }: { children: any }) => {
     }, [character])
 
     return (
-        <CharacterContext.Provider value={{ character, setCharacter, items, setItems, itemMap, setItemMap, equipment }}>
+        <CharacterContext.Provider
+            value={{
+                character,
+                setCharacter,
+                items,
+                setItems,
+                itemMap,
+                setItemMap,
+                equipment,
+            }}
+        >
             {children}
         </CharacterContext.Provider>
     )

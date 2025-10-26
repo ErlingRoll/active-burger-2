@@ -1,3 +1,4 @@
+import { Realm } from "../game/world"
 import { Item } from "./item"
 
 export interface RenderObject {
@@ -17,7 +18,7 @@ export interface RenderObject {
     height: number
     solid: boolean
     gold: number
-    realm: string
+    realm: Realm
 }
 
 export interface Entity extends RenderObject {

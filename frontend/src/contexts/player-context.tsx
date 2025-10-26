@@ -5,6 +5,7 @@ import GameActions from "./game-actions"
 import { UserContext } from "./user-context"
 import { GamestateContext } from "./gamestate-context"
 import { CharacterContext } from "./character-context"
+import { Realm } from "../game/world"
 
 type PlayerContextType = {
     gameActions?: GameActions
@@ -22,11 +23,17 @@ export const PlayerContext = createContext<PlayerContextType>({
 
 export const PlayerProvider = ({ children }: { children: any }) => {
     const { account } = useContext(UserContext)
-    const { character } = useContext(CharacterContext)
-    const { gameCon, gamestate, reconnect, realm } = useContext(GamestateContext)
+    const { character, setCharacter } = useContext(CharacterContext)
+    const { gameCon, gamestate, terrain, reconnect, realm } = useContext(GamestateContext)
     const { shopOpen, setShopOpen, craftingBenchOpen, setCraftingBenchOpen } = useContext(UIContext)
 
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
+
+    const [lastAction, setLastAction] = useState<{ action: string; timestamp: number }>({
+        action: "",
+        timestamp: Date.now(),
+    })
+    const [nextActionAllowed, setNextActionAllowed] = useState<number>(Date.now())
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
     const moveRepeatDelay = 100 // milliseconds
 
@@ -52,10 +59,8 @@ export const PlayerProvider = ({ children }: { children: any }) => {
 
     function getSelectedCell() {
         if (!character || !gamestate || !gamestate.render_objects) return
-        const player = gamestate.render_objects[character.id]
-        if (!player) return
-        const x = player.x
-        const y = player.y
+        const x = character.x
+        const y = character.y
 
         const newPosMap = {
             up: { x: x, y: y + 1 },
@@ -64,13 +69,65 @@ export const PlayerProvider = ({ children }: { children: any }) => {
             right: { x: x + 1, y: y },
         }
 
-        const newPos = newPosMap[player.direction]
+        const newPos = newPosMap[character.direction]
         setSelectedCell(newPos)
+    }
+
+    function checkSolidTile({ x, y, realm }: { x: number; y: number; realm: Realm }) {
+        const posKey = x + "_" + y
+        let solid = false
+
+        const terrains = terrain[posKey] || []
+        for (const t of terrains) {
+            if (t.solid && t.realm === realm) {
+                solid = true
+                break
+            }
+        }
+
+        const objects = gamestate.position_objects[posKey] || []
+        for (const o of objects) {
+            if (o.solid && o.realm === realm) {
+                solid = true
+                break
+            }
+        }
+
+        return solid
+    }
+
+    function move({ direction }: { direction: "up" | "down" | "left" | "right" }) {
+        if (!character) return
+        character.direction = direction
+
+        switch (direction) {
+            case "up":
+                if (checkSolidTile({ x: character.x, y: character.y + 1, realm: character.realm })) return
+                gameActions.current.move({ x: character.x, y: character.y + 1, direction: "up" })
+                character.y += 1
+                break
+            case "down":
+                if (checkSolidTile({ x: character.x, y: character.y - 1, realm: character.realm })) return
+                gameActions.current.move({ x: character.x, y: character.y - 1, direction: "down" })
+                character.y -= 1
+                break
+            case "left":
+                if (checkSolidTile({ x: character.x - 1, y: character.y, realm: character.realm })) return
+                gameActions.current.move({ x: character.x - 1, y: character.y, direction: "left" })
+                character.x -= 1
+                break
+            case "right":
+                if (checkSolidTile({ x: character.x + 1, y: character.y, realm: character.realm })) return
+                gameActions.current.move({ x: character.x + 1, y: character.y, direction: "right" })
+                character.x += 1
+                break
+        }
+        setCharacter({ ...character })
     }
 
     useEffect(() => {
         getSelectedCell()
-    }, [gamestate])
+    }, [character])
 
     useEffect(() => {
         gameActions.current.account = account
@@ -94,25 +151,24 @@ export const PlayerProvider = ({ children }: { children: any }) => {
             }
             setLastMoveRepeat(Date.now())
 
-            const player = gamestate.render_objects[character.id]
             const input = event.key.toLowerCase()
             let gameInput = true
             switch (input) {
                 case "arrowup":
                 case "w":
-                    gameActions.current.move({ x: player.x, y: player.y + 1, direction: "up" })
+                    move({ direction: "up" })
                     break
                 case "arrowdown":
                 case "s":
-                    gameActions.current.move({ x: player.x, y: player.y - 1, direction: "down" })
+                    move({ direction: "down" })
                     break
                 case "arrowleft":
                 case "a":
-                    gameActions.current.move({ x: player.x - 1, y: player.y, direction: "left" })
+                    move({ direction: "left" })
                     break
                 case "arrowright":
                 case "d":
-                    gameActions.current.move({ x: player.x + 1, y: player.y, direction: "right" })
+                    move({ direction: "right" })
                     break
                 case "e":
                     if (!selectedCell) break

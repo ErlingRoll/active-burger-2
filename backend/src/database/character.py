@@ -12,6 +12,12 @@ async def update_character(database: AsyncClient, character: Character) -> Chara
     return CharacterData(**response.data[0]) if response.data else None
 
 
+async def update_character_pos(database: AsyncClient, character_id: str, x: int, y: int) -> Character | None:
+    data = {"x": x, "y": y}
+    response = await database.table("character").update(data).eq("id", character_id).execute()
+    return Character(**response.data[0]) if response.data else None
+
+
 async def create_character(database: AsyncClient, character: Character):
     data = character.db_prep()
     response = await database.table("character").insert(data).execute()

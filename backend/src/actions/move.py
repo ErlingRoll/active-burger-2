@@ -1,6 +1,7 @@
 from asyncio import create_task
 from pydantic import BaseModel
 
+from src.database.character import update_character, update_character_pos
 from src.models.objects.misc.teleporter import Teleporter
 from src.models.objects.steppable import Steppable
 from src.connection_manager import GameEvent
@@ -43,6 +44,8 @@ async def move(action: ActionRequest):
 
     character_state.x = payload.x
     character_state.y = payload.y
+
+    create_task(update_character_pos(database, character_state.id, character_state.x, character_state.y))
 
     await gamestate.publish_gamestate()
 
