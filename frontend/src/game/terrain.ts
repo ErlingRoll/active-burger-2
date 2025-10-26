@@ -17,7 +17,7 @@ export const TERRAIN: { [game_id: string]: Partial<Terrain> } = {
         name: "Bush",
         game_id: "bush",
         texture: "terrain/bush",
-        solid: false,
+        solid: true,
     },
     water: {
         name: "Water",
