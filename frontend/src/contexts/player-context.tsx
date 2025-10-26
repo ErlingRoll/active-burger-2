@@ -41,10 +41,9 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     const gameActions = useRef(new GameActions(reconnect))
 
     useEffect(() => {
-        if (realm) {
-            gameActions.current.setRealm({ realm })
-        }
-    }, [realm])
+        if (!account || !character || !realm) return
+        gameActions.current.setRealm({ realm, account, character })
+    }, [realm, account, character, gameActions])
 
     function localInteract(object: RenderObject) {
         switch (object.object_id) {

@@ -103,7 +103,7 @@ class Gamestate(BaseModel):
         if account:
             ws = self.connection_manager.connections_account_map.get(account.id)
             if not ws:
-                print(f"No active WebSocket for account {account.id}")
+                print(f"[publish_terrain] No active WebSocket for account {account.id}")
                 return
             data = self.position_terrain(ws.realm, dict=True)
             event = GameEvent(
@@ -124,7 +124,7 @@ class Gamestate(BaseModel):
         if account:
             ws = self.connection_manager.connections_account_map.get(account.id)
             if not ws:
-                print(f"No active WebSocket for account {account.id}")
+                print(f"[publish_gamestate] No active WebSocket for account {account.id}")
                 return
             gamestate = self.get_gamestate(realm=ws.realm)
             event = GameEvent(

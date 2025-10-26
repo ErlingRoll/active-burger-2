@@ -11,25 +11,24 @@ class GameActions {
         this.reconnect = reconnect
     }
 
-    ready() {
-        const ready = Boolean(
-            this.account && this.character && this.gameCon && this.gameCon.readyState === WebSocket.OPEN
-        )
+    ready(action: any, account?: any, character?: any) {
+        const hasIdentity = Boolean(account && character) || Boolean(this.account && this.character)
+        const ready = Boolean(hasIdentity && this.gameCon && this.gameCon.readyState === WebSocket.OPEN)
         if (!ready) {
-            console.error("GameActions not ready", {
-                account: this.account,
-                character: this.character,
+            console.error("GameActions not ready: " + action.action || "unknown", {
+                identity: hasIdentity,
                 gameCon: this.gameCon,
+                readyState: this.gameCon ? this.gameCon.readyState : "no connection",
             })
             this.reconnect()
         }
         return ready
     }
 
-    send(action: any) {
-        if (!this.ready()) return
-        action.account = this.account
-        action.character = this.character
+    send(action: any, account?: any, character?: any) {
+        if (!this.ready(action, account, character)) return
+        action.account = account || this.account
+        action.character = character || this.character
         this.gameCon.send(JSON.stringify(action))
     }
 
@@ -107,12 +106,12 @@ class GameActions {
     }
 
     // --- Admin Actions ---
-    setRealm({ realm }: { realm: Realm }) {
+    setRealm({ realm, account, character }: { realm: Realm; account?: any; character?: any }) {
         const action = {
             action: "set_realm",
             payload: { realm },
         }
-        this.send(action)
+        this.send(action, account, character)
     }
 
     placeTerrain({
