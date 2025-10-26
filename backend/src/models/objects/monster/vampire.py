@@ -7,7 +7,7 @@ class Vampire(Monster):
     object_id: str = "vampire"
     texture: str = "monster/vampire"
     max_hp: int = 120
-    current_hp: int = 100
+    current_hp: int = 120
     power: int = 14
     expDrop: int = 29
     loot_table: LootTable = LootTable(
