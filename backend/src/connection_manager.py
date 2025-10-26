@@ -50,7 +50,7 @@ class ConnectionManager(BaseModel):
                 print(f"Error sending to account {account_id}: {e}")
 
         else:
-            print(f"No active WebSocket for account {account_id}")
+            print(f"[send/{event.event}] No active WebSocket for account {account_id}")
             self.remove_connection(account_id)
 
     async def broadcast(self, event: GameEvent):

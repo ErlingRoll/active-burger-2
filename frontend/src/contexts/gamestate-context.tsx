@@ -208,6 +208,11 @@ export const GameProvider = ({ children }: { children: any }) => {
             console.log("WebSocket connection established")
             setGameCon(ws)
         }
+
+        // On fail to connect, try again in 5 seconds
+        ws.onclose = () => {
+            logout()
+        }
     }
 
     useEffect(() => {

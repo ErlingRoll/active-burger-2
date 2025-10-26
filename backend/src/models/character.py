@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Dict, Optional
+from src.generators.world import Realm
 from src.models import Entity, Item
 
 
@@ -12,6 +13,7 @@ class Character(Entity):
     solid: bool = False
     max_hp: int = 100
     current_hp: int = 100
+    realm: Realm = Realm.BOB_VALLEY
     props: Dict = {}
 
     model_config = ConfigDict(extra="allow")
