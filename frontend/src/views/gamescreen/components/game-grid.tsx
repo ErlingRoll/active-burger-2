@@ -22,8 +22,8 @@ type GameGridProps = {
 
 const GameGrid = ({
     center,
-    renderWidth = 31,
-    renderHeight = 25,
+    renderWidth = 25,
+    renderHeight = 21,
     hoverHighlight = false,
     showSelectedCell = true,
     onCellClick,
