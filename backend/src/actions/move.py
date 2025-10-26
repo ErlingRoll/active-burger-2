@@ -40,12 +40,13 @@ async def move(action: ActionRequest):
 
     blocked = gamestate.is_pos_blocked(x=payload.x, y=payload.y, realm=character_state.realm)
     if blocked:
+        create_task(update_character_pos(database, character_state.id, character_state.x, character_state.y, payload.direction))
         return await gamestate.publish_gamestate()
 
     character_state.x = payload.x
     character_state.y = payload.y
 
-    create_task(update_character_pos(database, character_state.id, character_state.x, character_state.y))
+    create_task(update_character_pos(database, character_state.id, character_state.x, character_state.y, payload.direction))
 
     await gamestate.publish_gamestate()
 
