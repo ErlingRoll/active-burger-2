@@ -48,6 +48,13 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
 
     await gamestate.publish_terrain(account=account)
 
+    realm_update_event = GameEvent(
+        event="realm_update",
+        payload={"realm": character.realm}
+    )
+
+    await ws.send_json(realm_update_event.model_dump())
+
     login_event = GameEvent(
         event="login_success",
         payload={

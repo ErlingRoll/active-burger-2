@@ -11,7 +11,7 @@ import { PlayerContext } from "./contexts/player-context"
 function Game() {
     const { account, admin } = useContext(UserContext)
     const { character } = useContext(CharacterContext)
-    const { gameCon, gamestate } = useContext(GamestateContext)
+    const { gameCon, gamestate, realm } = useContext(GamestateContext)
     const { gameActions } = useContext(PlayerContext)
 
     const urlPaths = window.location.pathname.split("/")
@@ -30,7 +30,9 @@ function Game() {
             <div className="absolute top-0 left-0 w-full h-full center-col text-light font-bold">
                 <p className="mb-2">Loading game...</p>
                 <p>If this takes too long, please try refreshing the page.</p>
-                <p>If that doesn't work contact Erling</p>
+                <p className="mb-2">If that doesn't work contact Erling</p>
+                <p>Character realm: {character.realm}</p>
+                <p>Client realm: {realm}</p>
             </div>
         )
     }

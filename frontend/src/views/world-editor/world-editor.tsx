@@ -32,7 +32,7 @@ const WorldEditor = () => {
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
     const moveRepeatDelay = 100 // milliseconds
 
-    const { gamestate, terrain, realm, setRealm } = useContext(GamestateContext)
+    const { gamestate, terrain, realm } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
     const { gameActions } = useContext(PlayerContext)
 
@@ -43,10 +43,12 @@ const WorldEditor = () => {
             const parsedCamera = JSON.parse(savedCamera)
             setCamera(parsedCamera)
             setTimeout(() => {
-                if (parsedCamera.realm) setRealm(parsedCamera.realm)
-            }, 500)
+                if (parsedCamera.realm) gameActions.setRealm({ realm: parsedCamera.realm })
+            }, 100)
         }
     }, [])
+
+    useEffect(() => {}, [realm])
 
     // Save camera to localStorage
     useEffect(() => {
@@ -288,8 +290,8 @@ const WorldEditor = () => {
                                 value={realm ? { value: realm, label: realm } : null}
                                 onChange={(opt) => {
                                     if (!opt) return
-                                    setRealm(opt.value)
                                     setCamera({ ...camera, realm: opt.value })
+                                    gameActions.setRealm({ realm: opt.value })
                                 }}
                                 options={Object.values(Realm).map((realm) => ({
                                     value: realm,

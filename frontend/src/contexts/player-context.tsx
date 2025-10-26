@@ -40,11 +40,6 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     // Store gameactions in a ref so it doesn't get recreated on every render
     const gameActions = useRef(new GameActions(reconnect))
 
-    useEffect(() => {
-        if (!account || !character || !realm) return
-        gameActions.current.setRealm({ realm, account, character })
-    }, [realm, account, character, gameActions])
-
     function localInteract(object: RenderObject) {
         switch (object.object_id) {
             case "crafting_bench":

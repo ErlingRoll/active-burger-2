@@ -28,5 +28,12 @@ async def set_realm(action: ActionRequest):
 
     ws.realm = payload.realm
 
+    realm_update_event = GameEvent(
+        event="realm_update",
+        payload={"realm": payload.realm}
+    )
+
+    await ws.send_json(realm_update_event.model_dump())
+
     create_task(gamestate.publish_gamestate(account=action.account))
     create_task(gamestate.publish_terrain(account=action.account))

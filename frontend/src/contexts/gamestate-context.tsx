@@ -126,8 +126,10 @@ export const GameProvider = ({ children }: { children: any }) => {
             case "character_update":
                 setCharacter(payload)
                 break
+            case "realm_update":
+                setRealm(payload.realm)
+                break
             case "log":
-                console.log("Log event:", payload)
                 const error = payload.error
                 if (error) {
                     toast.error(`Error: ${error}`)
@@ -151,12 +153,6 @@ export const GameProvider = ({ children }: { children: any }) => {
         setCharacter(character)
         const loginMessage = `Logged in as ${account.name} (${character ? character.name : "no character"})`
         setLog((prevLog) => [loginMessage, ...prevLog])
-
-        const urlPaths = window.location.pathname.split("/")
-        const mainPath = urlPaths[1].toLocaleLowerCase()
-        if (mainPath === "edit") return
-
-        setRealm(character.realm)
     }
 
     useEffect(() => {
