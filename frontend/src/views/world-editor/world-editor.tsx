@@ -488,7 +488,6 @@ const WorldEditor = () => {
                 renderHeight={renderSize.height}
                 hoverHighlight={true}
                 showSelectedCell={false}
-                onCellClick={(pos) => handleCellClick(pos)}
                 onCellDown={(pos) => handleCellClick(pos)}
                 onCellEnter={(pos) => handleCellEnter(pos)}
             />

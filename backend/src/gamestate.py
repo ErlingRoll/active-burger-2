@@ -5,6 +5,7 @@ from typing import Deque, Dict, List
 from pydantic import BaseModel, ConfigDict, Field
 from supabase import AsyncClient
 
+from src.generators.world import Realm
 from src.database.terrain import db_get_terrain
 from src.connection_manager import ConnectionManager, GameEvent
 from src.database.character import get_character_data_by_id, get_characters
@@ -101,45 +102,41 @@ class Gamestate(BaseModel):
         # Send full terrain data. Data is grouped by position key (x_y)
 
         if account:
-            ws = self.connection_manager.connections_account_map.get(account.id)
-            if not ws:
-                print(f"[publish_terrain] No active WebSocket for account {account.id}")
-                return
-            data = self.position_terrain(ws.realm, dict=True)
+            con = self.connection_manager.connections_account_map.get(account.id)
+            if not con:
+                return print(f"Warning: No connection info for account {account.id} when publishing terrain")
+            data = self.position_terrain(con["realm"], dict=True)
             event = GameEvent(
                 event="terrain_update",
                 payload=data
             )
             return await self.connection_manager.send(account.id, event)
 
-        for account_id, ws in self.connection_manager.connections_account_map.items():
-            data = self.position_terrain(ws.realm, )
+        for account_id, con in self.connection_manager.connections_account_map.items():
+            data = self.position_terrain(con["realm"], dict=True)
             event = GameEvent(
                 event="terrain_update",
                 payload=data
             )
-            return await self.connection_manager.send(ws.account_id, event)
+            return await self.connection_manager.send(account_id, event)
 
     async def publish_gamestate(self, account: Account | None = None):
         if account:
-            ws = self.connection_manager.connections_account_map.get(account.id)
-            if not ws:
-                print(f"[publish_gamestate] No active WebSocket for account {account.id}")
-                return
-            gamestate = self.get_gamestate(realm=ws.realm)
+            con = self.connection_manager.connections_account_map.get(account.id)
+            gamestate = self.get_gamestate(realm=con["realm"])
             event = GameEvent(
                 event="gamestate_update",
                 payload=gamestate
             )
             return await self.connection_manager.send(account.id, event)
 
-        for account_id, ws in self.connection_manager.connections_account_map.items():
-            gamestate = self.get_gamestate(realm=ws.realm)
+        for account_id, con in self.connection_manager.connections_account_map.items():
+            gamestate = self.get_gamestate(realm=con["realm"])
             event = GameEvent(
                 event="gamestate_update",
                 payload=gamestate
             )
-            return await self.connection_manager.send(ws.account_id, event)
+            return await self.connection_manager.send(account_id, event)
 
     async def add_terrain(self, terrain: Terrain):
         self.terrain[terrain.id] = terrain
@@ -158,16 +155,12 @@ class Gamestate(BaseModel):
             return obj
         return None
 
-    def set_realm(self, character_id: str, realm: str):
+    async def set_realm(self, character_id: str, realm: Realm):
         character = self.get_character_state(character_id)
         if not character:
             return
         character.realm = realm
-
-        ws = self.connection_manager.connections_account_map.get(character.account_id)
-        # print(f"Setting realm for account {character.account_id} to {realm}, ws: {ws is not None}")
-        if ws:
-            ws.realm = realm
+        return await self.connection_manager.set_account_realm(character.account_id, realm)
 
     async def add_object(self, obj: RenderObject, skip_publish=False):
         if obj.id in self.objects:

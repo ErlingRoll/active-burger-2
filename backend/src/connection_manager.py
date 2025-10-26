@@ -1,7 +1,9 @@
 from asyncio import create_task
-from typing import Dict, List
+from typing import Any, Dict, List
 from pydantic import BaseModel, ConfigDict
 from aiohttp.web import WebSocketResponse
+
+from src.generators.world import Realm
 
 
 class GameEvent(BaseModel):
@@ -10,11 +12,17 @@ class GameEvent(BaseModel):
     log: List[str] = []
 
 
+class ConnectionInfo(BaseModel):
+    ws: WebSocketResponse
+    realm: Realm
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
 class ConnectionManager(BaseModel):
 
     connection_counter: int = 0  # Total connections since server start
     connections: dict = {}
-    connections_account_map: Dict[str, WebSocketResponse] = {}
+    connections_account_map: dict[str, Any] = {}
     model_config = ConfigDict(arbitrary_types_allowed=True, extra="allow")
 
     def add_connection(self, ws):
@@ -23,15 +31,36 @@ class ConnectionManager(BaseModel):
         self.connections[connection_id] = ws
         return connection_id
 
-    def update_account_map(self, account_id, ws):
-        self.connections_account_map[account_id] = ws
+    def update_account_map(self, account_id, ws, realm: Realm):
+        self.connections_account_map[account_id] = {
+            "ws": ws,
+            "realm": realm
+        }
         self.clean_connections_account_map()
         print(f"Account map updated. Total mapped accounts: {len(self.connections_account_map)}")
 
+    async def set_account_realm(self, account_id: str, realm: Realm):
+        con = self.connections_account_map.get(account_id)
+        if not con:
+            return print(f"[set_account_realm] No connection found for account {account_id}")
+
+        con["realm"] = realm
+
+        realm_update_event = GameEvent(
+            event="realm_update",
+            payload={"realm": realm}
+        )
+
+        ws = con.get("ws", None)
+        if not ws or ws.closed:
+            return print(f"[set_account_realm] No active WebSocket for account {account_id}")
+
+        await ws.send_json(realm_update_event.model_dump())
+
     def clean_connections_account_map(self):
         closed_connections = []
-        for account_id, ws in self.connections_account_map.items():
-            if ws.closed:
+        for account_id, con in self.connections_account_map.items():
+            if con.get("ws", None) is None or con["ws"].closed:
                 closed_connections.append(account_id)
         for account_id in closed_connections:
             del self.connections_account_map[account_id]
@@ -40,10 +69,12 @@ class ConnectionManager(BaseModel):
     def remove_connection(self, connection_id):
         if connection_id in self.connections:
             del self.connections[connection_id]
+        self.clean_connections_account_map()
 
     async def send(self, account_id, event: GameEvent):
-        ws = self.connections_account_map.get(account_id)
-        if ws and not ws.closed:
+        con = self.connections_account_map.get(account_id)
+        ws = con.get("ws", None) if con else None
+        if ws is not None and not ws.closed:
             try:
                 await ws.send_json(event.model_dump())
             except Exception as e:

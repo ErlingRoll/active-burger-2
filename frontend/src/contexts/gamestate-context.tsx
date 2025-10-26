@@ -182,6 +182,14 @@ export const GameProvider = ({ children }: { children: any }) => {
             on_event(messageEvent, parsedData.payload, parsedData.log)
         }
 
+        gameCon.onclose = () => {
+            console.info("WebSocket connection closed, retrying in 5 seconds...")
+            setGameCon(null)
+            setTimeout(() => {
+                connect()
+            }, 5000)
+        }
+
         const loginInfo = {
             action: "login",
             payload: {
@@ -192,7 +200,7 @@ export const GameProvider = ({ children }: { children: any }) => {
         }
 
         gameCon.send(JSON.stringify(loginInfo))
-    }, [gameCon])
+    }, [gameCon, connecting])
 
     function connect() {
         console.log("Connecting to WebSocket at", gameWebsocketUrl)
@@ -207,11 +215,6 @@ export const GameProvider = ({ children }: { children: any }) => {
         ws.onopen = () => {
             console.log("WebSocket connection established")
             setGameCon(ws)
-        }
-
-        // On fail to connect, try again in 5 seconds
-        ws.onclose = () => {
-            logout()
         }
     }
 

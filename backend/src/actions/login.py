@@ -38,9 +38,7 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
     character: Character = await get_or_create_character(request, ws, account)
 
     # Save connection info to websocket
-    connection_manager.update_account_map(account.id, ws)
-    ws.account_id = account.id
-    ws.realm = character.realm
+    connection_manager.update_account_map(account.id, ws, character.realm)
 
     character_data: CharacterData = await get_character_data_by_id(database, character.id)
 
@@ -53,6 +51,9 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
         payload={"realm": character.realm}
     )
 
+    if ws.closed:
+        return
+
     await ws.send_json(realm_update_event.model_dump())
 
     login_event = GameEvent(
@@ -63,7 +64,8 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
         }
     )
 
-    create_task(ws.send_json(login_event.model_dump()))
+    await ws.send_json(login_event.model_dump())
+    await gamestate.publish_gamestate(account=account)
 
 
 async def get_or_create_character(request: Request, ws: WebSocketResponse, account: Account) -> Character:
