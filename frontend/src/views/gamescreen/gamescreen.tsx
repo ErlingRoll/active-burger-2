@@ -1,4 +1,4 @@
-import { useContext, useState } from "react"
+import { useContext, useMemo, useState } from "react"
 import { GamestateContext } from "../../contexts/gamestate-context"
 import { FaTimes } from "react-icons/fa"
 import { UIContext } from "../../contexts/ui-context"
@@ -6,6 +6,7 @@ import GameUI from "./components/game-ui/game-ui"
 import { PlayerContext } from "../../contexts/player-context"
 import GameGrid from "./components/game-grid"
 import { Realm } from "../../game/world"
+import { CharacterContext } from "../../contexts/character-context"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -14,7 +15,12 @@ const Gamescreen = () => {
 
     const { adminMode } = useContext(UIContext)
     const { gamestate } = useContext(GamestateContext)
+    const { character } = useContext(CharacterContext)
     const { gameActions, selectedCell } = useContext(PlayerContext)
+
+    const isDead = useMemo(() => {
+        return character?.current_hp <= 0
+    }, [character])
 
     return (
         <div
@@ -24,7 +30,25 @@ const Gamescreen = () => {
                 backgroundRepeat: "repeat",
             }}
         >
-            <div id="fx-layer" className="absolute top-0 left-0 w-full h-full pointer-events-none z-300" />
+            {isDead && (
+                <div
+                    id="dead-screen"
+                    className="absolute top-0 left-0 w-full h-full bg-dark/50 pointer-events-auto z-300 center-col justify-between!"
+                >
+                    <div className="flex-1 center-col justify-end! gap-4">
+                        <p className="text-light text-3xl font-bold">You died</p>
+                        <button
+                            className="mt-4 px-4 pt-3 pb-4 bg-primary text-light text-xl font-bold hover:scale-105"
+                            onClick={() => gameActions.respawn()}
+                        >
+                            Respawn
+                        </button>
+                    </div>
+                    <div className="flex-1" />
+                    <div className="flex-1" />
+                </div>
+            )}
+            <div id="fx-layer" className="absolute top-0 left-0 w-full h-full pointer-events-none z-200" />
             <GameUI selectedCell={selectedCell} />
             <GameGrid hoverHighlight={adminMode} onCellClick={(pos) => adminMode && setAdminCell(pos)} />
 

@@ -146,7 +146,6 @@ export const GameProvider = ({ children }: { children: any }) => {
                 notifyLoot(payload)
                 break
             case "damage_hit":
-                console.log("Damage hit received:", payload)
                 let _damageHits = damageHits.slice(0, 100)
                 setDamageHits([payload, ..._damageHits])
                 break

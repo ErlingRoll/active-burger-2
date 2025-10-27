@@ -48,6 +48,14 @@ class GameActions {
         this.send(action)
     }
 
+    respawn() {
+        const action = {
+            action: "respawn",
+            payload: {},
+        }
+        this.send(action)
+    }
+
     useItem({ id }: { id: string }) {
         const action = {
             action: "use_item",

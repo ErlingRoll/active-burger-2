@@ -124,7 +124,7 @@ const GameGrid = ({
         }
 
         // Add HP bar
-        if (obj.max_hp! != null && obj.current_hp != null && obj.type !== "character" && obj.current_hp < obj.max_hp) {
+        if (obj.max_hp! != null && obj.current_hp != null && obj.current_hp < obj.max_hp) {
             const hpBarContainer = document.createElement("div")
             hpBarContainer.className =
                 "w-10 h-2 bg-red-200 rounded border-2 border-dark overflow-hidden pointer-events-none"
@@ -151,6 +151,7 @@ const GameGrid = ({
         }
 
         if (obj.type === "character") {
+            const isDead = obj.current_hp !== undefined && obj.max_hp !== undefined && obj.current_hp <= 0
             const imgContainer = document.createElement("div")
             imgContainer.className = "w-full flex-1 flex"
             imgContainer.style.backgroundImage = `url('${
@@ -159,7 +160,8 @@ const GameGrid = ({
             imgContainer.style.backgroundSize = "contain"
             imgContainer.style.backgroundRepeat = "no-repeat"
             imgContainer.style.backgroundPosition = "center"
-            if (obj.direction === "left") imgContainer.style.transform = "scaleX(-1)"
+            if (isDead) imgContainer.style.transform = "rotate(270deg)"
+            if (obj.direction === "left" && !isDead) imgContainer.style.transform = "scaleX(-1)"
             div.appendChild(imgContainer)
             return
         }

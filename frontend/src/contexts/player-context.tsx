@@ -91,7 +91,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     }
 
     function move({ direction }: { direction: "up" | "down" | "left" | "right" }) {
-        if (!character) return
+        if (!character || character.current_hp <= 0) return
         character.direction = direction
 
         switch (direction) {
@@ -132,12 +132,13 @@ export const PlayerProvider = ({ children }: { children: any }) => {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            if (!character || character.current_hp <= 0) return
             if (document.activeElement.tagName === "INPUT") return
             if (shopOpen || craftingBenchOpen) {
                 setShopOpen(false)
                 setCraftingBenchOpen(false)
             }
-            if (!gamestate || !character) return
+            if (!gamestate) return
             const urlPaths = window.location.pathname.split("/")
             const mainPath = urlPaths[1].toLocaleLowerCase()
             if (mainPath === "edit") return
