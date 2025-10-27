@@ -1,7 +1,6 @@
 from asyncio import create_task, gather
 from typing import List
 from aiohttp.web import Request, WebSocketResponse
-import connection_manager
 from src.database.character import get_character_data_by_id, update_character_hp
 from src.models.items.mods import WeaponMod
 from src.generators.monster import generate_monster
