@@ -8,6 +8,7 @@ import ItemTooltip from "./item-tooltip"
 import { TOOLS } from "../../../../../game/items/tools"
 import { WEAPONS } from "../../../../../game/items/weapons"
 import { FOOD } from "../../../../../game/items/food"
+import { ARMOR } from "../../../../../game/items/armor"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -19,6 +20,7 @@ const shopItems: Partial<Equipment>[] = [
     WEAPONS["toothpick"],
     WEAPONS["pool_noodle"],
     WEAPONS["frying_pan"],
+    ARMOR["hoodie"],
 ]
 
 const Shop = () => {
@@ -56,7 +58,7 @@ const Shop = () => {
             </div>
             <div className="p-4 max-h-[70vh] overflow-y-auto">
                 {tabName === "Sell" && (
-                    <div className="grid grid-cols-[repeat(6,minmax(0,auto))] gap-4 items-center">
+                    <div className="grid grid-cols-[repeat(7,minmax(0,auto))] gap-4 items-center">
                         {items.map((item) => (
                             <Fragment key={item.id}>
                                 <ItemTooltip item={item} namespace="shop" />
@@ -86,6 +88,12 @@ const Shop = () => {
                                     onClick={() => gameActions.sell({ item_id: item.id, count: 10 })}
                                 >
                                     Sell x10
+                                </button>
+                                <button
+                                    className="bg-primary text-light font-bold rounded px-4 py-2 whitespace-nowrap"
+                                    onClick={() => gameActions.sell({ item_id: item.id, count: item.count || 1 })}
+                                >
+                                    Sell All
                                 </button>
                             </Fragment>
                         ))}

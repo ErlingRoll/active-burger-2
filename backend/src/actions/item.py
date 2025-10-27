@@ -48,6 +48,10 @@ async def use_item(action: ActionRequest):
 
     item: Item = await get_item_by_id(database, item_payload.id)
 
+    if not item:
+        event = GameEvent(event="log", payload={}, log=["Item not found"])
+        return await action.ws.send_json(event.model_dump())
+
     equip_action_request = ActionRequest(**action.model_dump())
     equip_action_request.payload = {"item": item}
 

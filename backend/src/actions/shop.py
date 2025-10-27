@@ -68,7 +68,7 @@ async def sell(action: ActionRequest):
 
     payload: SellPayload = SellPayload(**action.payload)
 
-    character_data = await get_character_data_by_id(database, action.character.id)
+    character_data: CharacterData = await get_character_data_by_id(database, action.character.id)
 
     owned_item: Item = character_data.items.get(payload.item_id)
     if not owned_item:
@@ -86,6 +86,14 @@ async def sell(action: ActionRequest):
             event="log",
             payload={"error": error_message},
             log=[error_message]
+        )
+        return await action.ws.send_json(event.model_dump())
+
+    current_item = character_data.equipment.get(owned_item.equip_slot if owned_item.equip_slot else "", None)
+    if current_item is not None and current_item.id == owned_item.id:
+        event = GameEvent(
+            event="log",
+            payload={"error": f"You must unequip the {owned_item.equip_slot} before selling."},
         )
         return await action.ws.send_json(event.model_dump())
 

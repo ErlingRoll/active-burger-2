@@ -31,7 +31,7 @@ class ChaosOrb(Currency):
         if type_mods is None:
             return equipment
 
-        new_mod_count = roll(max_value=4, min_value=3, luck=-1)
+        new_mod_count = roll(max_value=4, min_value=3)
 
         mod_ids = sample(type_mods["mods"], new_mod_count)
         mod_values = type_mods["values"]

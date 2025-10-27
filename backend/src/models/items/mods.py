@@ -57,7 +57,7 @@ weapon_mod_value = {
 class ArmorMod(Enum):
     MAX_HP = "max_hp"
     INCREASED_HP = "increased_hp"
-    ARMOR = "armor"
+    PHYSICAL_RESISTANCE = "physical_resistance"
     ELEMENTAL_RESISTANCE = "elemental_resistance"
     FIRE_RESISTANCE = "fire_resistance"
     COLD_RESISTANCE = "cold_resistance"
@@ -69,7 +69,7 @@ class ArmorMod(Enum):
 armor_mod_value = {
     ArmorMod.MAX_HP.value: [1000, 700, 500, 400, 300, 200, 150, 130, 100, 80, 60, 40, 20],
     ArmorMod.INCREASED_HP.value: [100, 80, 60, 40, 30, 20, 15, 10, 7, 5],
-    ArmorMod.ARMOR.value: [100, 80, 60, 40, 30, 20, 15, 10, 7, 5],
+    ArmorMod.PHYSICAL_RESISTANCE.value: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
     ArmorMod.ELEMENTAL_RESISTANCE.value: [30, 25, 20, 15, 12, 10, 7, 5],
     ArmorMod.FIRE_RESISTANCE.value: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
     ArmorMod.COLD_RESISTANCE.value: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],

@@ -1,6 +1,10 @@
 from asyncio import create_task, gather
 from pydantic import BaseModel
 
+from src.database.character import get_character_data_by_id
+from src.models.character import CharacterData
+from src.models.equipment import EquipSlot
+from src.database.equipment import get_equipment_item
 from src.gamestate import Gamestate
 from src.generators.item import generate_item
 from src.actions.action import ActionRequest
@@ -42,8 +46,9 @@ async def apply_currency(action: ActionRequest):
 
     currency_req = get_item_by_id(database, payload.currency_id)
     equipment_req = get_item_by_id(database, payload.equipment_id)
+    character_data_req: CharacterData = get_character_data_by_id(database, action.character.id)
 
-    currency_res, equipment_res = await gather(currency_req, equipment_req)
+    currency_res, equipment_res, character_data_res = await gather(currency_req, equipment_req, character_data_req)
 
     if currency_res is None or equipment_res is None:
         event = GameEvent(
@@ -55,12 +60,20 @@ async def apply_currency(action: ActionRequest):
     currency: Currency = generate_item(**currency_res.model_dump())
     equipment: Equipment = generate_item(**equipment_res.model_dump())
 
+    current_item = character_data_res.equipment.get(equipment.equip_slot if equipment.equip_slot else "", None)
+    if current_item is not None and current_item.id == equipment.id:
+        event = GameEvent(
+            event="log",
+            payload={"error": f"You must unequip the {equipment.equip_slot} before applying currency."},
+        )
+        return await action.ws.send_json(event.model_dump())
+
     apply_check = currency.apply_check(equipment)
 
     if not apply_check.success:
         event = GameEvent(
             event="log",
-            log=[f"Failed to apply {currency.name}: {apply_check.message}"],
+            payload={"error": f"Failed to apply {currency.name}: {apply_check.message}"},
         )
         return create_task(action.ws.send_json(event.model_dump()))
 

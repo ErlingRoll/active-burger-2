@@ -2,6 +2,7 @@ from src.models.item import Item
 from src.models.items import Burger, GoldOre, Pickaxe
 from src.models.items.currency import ChaosOrb, AlchemyOrb, ScouringOrb, AlterationOrb, TransmutationOrb
 from src.models.items.weapon import Toothpick, FryingPan, PoolNoodle
+from src.models.items.armor import Hoodie
 
 food_map = {
     "burger": Burger,
@@ -11,6 +12,10 @@ weapon_map = {
     "toothpick": Toothpick,
     "pool_noodle": PoolNoodle,
     "frying_pan": FryingPan,
+}
+
+armor_map = {
+    "hoodie": Hoodie,
 }
 
 resource_map = {
@@ -29,7 +34,7 @@ currency_map = {
     "chaos_orb": ChaosOrb,
 }
 
-item_map = {**food_map, **weapon_map, **resource_map, **tool_map, **currency_map}
+item_map = {**food_map, **weapon_map, **armor_map, **resource_map, **tool_map, **currency_map}
 
 
 def generate_item(item_id: str = "", **kwargs) -> Item:

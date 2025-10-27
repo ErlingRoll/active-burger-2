@@ -1,6 +1,5 @@
 from aiohttp.web import Application, Request, WebSocketResponse
-from pydantic import ConfigDict
-from realtime import BaseModel
+from pydantic import BaseModel, ConfigDict
 from src.models import Account, Character
 
 

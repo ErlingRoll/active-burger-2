@@ -1,4 +1,4 @@
-from realtime import Literal
+from typing import Literal
 from src.generators.world import Realm
 from src.spawners.spawner import SpawnTable, SpawnTableItem, Spawner
 

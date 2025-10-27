@@ -1,13 +1,13 @@
 from asyncio import create_task
-from aiohttp.web import WebSocketResponse
 from pydantic import BaseModel
 
+from src.database.character import get_character_data_by_id, update_character
 from src.actions.action import ActionRequest
 from src.connection_manager import GameEvent
 from src.gamestate import Gamestate
 from src.database import upsert_equipment
 
-from src.models import Account, Character, CharacterData, Item, UseResult, EquipmentSlot
+from src.models import CharacterData, Item, EquipmentSlot
 
 
 class UnequipItemPayload(BaseModel):
@@ -23,6 +23,16 @@ async def unequip_item(action: ActionRequest):
     gamestate: Gamestate = action.request.app["gamestate"]
 
     unequip_payload: UnequipItemPayload = UnequipItemPayload(**action.payload)
+
+    character_data: CharacterData = await get_character_data_by_id(database, action.character.id)
+
+    item = character_data.equipment.get(unequip_payload.slot)
+    if not item:
+        raise ValueError(f"No item equipped in slot {unequip_payload.slot}")
+
+    character_data.unequip_item(item)
+
+    create_task(update_character(database, character_data.to_character()))
 
     equipment = EquipmentSlot(character_id=action.character.id, item_id=None, slot=unequip_payload.slot)
 
@@ -49,7 +59,14 @@ async def equip_item(action: ActionRequest):
 
     await upsert_equipment(database, equipment)
 
-    await gamestate.publish_character(action.account.id, character_id=action.character.id)
+    character_data: CharacterData = await get_character_data_by_id(database, action.character.id)
+
+    character_data.equip_item(item)
+
+    create_task(update_character(database, character_data.to_character()))
+
+    await update_character(database, character_data.to_character())
+    await gamestate.publish_character(action.account.id, character_data=character_data)
 
     event = GameEvent(
         event="log",
