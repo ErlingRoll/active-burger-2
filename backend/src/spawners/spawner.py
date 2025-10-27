@@ -90,9 +90,9 @@ class Spawner(BaseModel, GameTickerInterface):
         new_object = None
 
         if self.object_type == "object":
-            new_object = generate_object(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm, props={})
+            new_object = generate_object(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm)
         elif self.object_type == "monster":
-            new_object = generate_monster(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm, props={})
+            new_object = generate_monster(object_id=object_id, x=random_position[0], y=random_position[1], realm=self.realm)
 
         if not new_object:
             raise ValueError(f"Could not generate object for id: {object_id}")

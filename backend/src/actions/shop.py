@@ -51,7 +51,7 @@ async def buy(action: ActionRequest):
     await add_or_stack_items(database, character_data, [item])
     await update_character(database, character_data.to_character())
 
-    create_task(gamestate.publish_character(action.account, character_id=action.character.id))
+    create_task(gamestate.publish_character(action.account.id, character_id=action.character.id))
 
     event = GameEvent(
         event="log",
@@ -101,7 +101,7 @@ async def sell(action: ActionRequest):
 
     await gather(*tasks)
 
-    create_task(gamestate.publish_character(action.account, character_id=action.character.id))
+    create_task(gamestate.publish_character(action.account.id, character_id=action.character.id))
 
     event = GameEvent(
         event="log",

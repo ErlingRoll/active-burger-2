@@ -1,6 +1,7 @@
 from asyncio import gather
 from typing import List
 from aiohttp.web import Request, WebSocketResponse
+from src.models.damage_hit import DamageHit
 from src.models.items.mods import ToolMod
 from src.models.items.tools import Tool
 from src.database.equipment import get_equipment_item
@@ -40,8 +41,11 @@ async def mine_interact(request: Request, ws: WebSocketResponse, account: Accoun
     del _ore_defaults['object_id']
     ore: Ore = generate_object(object_id=object.object_id, **_ore_defaults)  # type: ignore
 
-    damage = pickaxe.get_mod_value(ToolMod.EFFICIENCY.value)
-    ore.damage(damage)
+    flat_efficiency = pickaxe.get_mod_value(ToolMod.EFFICIENCY.value)
+    percent_efficiency = pickaxe.get_mod_value(ToolMod.INCREASED_EFFICIENCY.value) / 100
+    total_efficiency = int(flat_efficiency * (1 + percent_efficiency))
+    hit = DamageHit(physical=total_efficiency)
+    ore.damage(hit)
 
     await gamestate.update_object(ore)
 

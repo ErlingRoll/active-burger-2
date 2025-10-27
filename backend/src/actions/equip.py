@@ -28,7 +28,7 @@ async def unequip_item(action: ActionRequest):
 
     await upsert_equipment(database, equipment)
 
-    await gamestate.publish_character(action.account, character_id=action.character.id)
+    await gamestate.publish_character(action.account.id, character_id=action.character.id)
 
     event = GameEvent(
         event="log",
@@ -49,7 +49,7 @@ async def equip_item(action: ActionRequest):
 
     await upsert_equipment(database, equipment)
 
-    await gamestate.publish_character(action.account, character_id=action.character.id)
+    await gamestate.publish_character(action.account.id, character_id=action.character.id)
 
     event = GameEvent(
         event="log",

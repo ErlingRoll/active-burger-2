@@ -1,9 +1,10 @@
-from asyncio import gather
+from asyncio import create_task, gather
 from typing import List
 from aiohttp.web import Request, WebSocketResponse
+from src.database.character import get_character_data_by_id, update_character_hp
 from src.models.items.mods import WeaponMod
 from src.generators.monster import generate_monster
-from src.models.damage_hit import DamageHit
+from src.models.damage_hit import DamageHit, DamageHitEvent, DamageHitEventPayload, HitResult
 from src.models.items.weapon import Weapon
 from src.models.objects.monster.monster import Monster
 from src.database.equipment import get_equipment_item
@@ -41,12 +42,39 @@ async def monster_interact(request: Request, ws: WebSocketResponse, account: Acc
     del monster_defaults['object_id']
     monster: Monster = generate_monster(object_id=object.object_id, **monster_defaults)  # type: ignore
 
-    damage: DamageHit = weapon.roll_hit()
-    monster.damage(damage)
+    hit: DamageHit = weapon.roll_hit()
+    hit_result: HitResult = monster.damage(hit)
+
+    monster_hit_event = DamageHitEvent(
+        payload=DamageHitEventPayload(
+            source_id=character.id or "unknown",
+            target_id=monster.id or "unknown",
+            hit=hit_result
+        )
+    )
+    create_task(ws.send_json(monster_hit_event.model_dump()))
 
     await gamestate.update_object(monster)
 
     if monster.is_alive():
+        character_data = await get_character_data_by_id(database, character.id)
+        if character_data is None:
+            raise ValueError("[monster_interact] Character not found in database")
+
+        monster_hit = monster.roll_hit()
+        hit_result = character_data.damage(monster_hit)
+        character_hit_event = DamageHitEvent(
+            payload=DamageHitEventPayload(
+                source_id=monster.id or "unknown",
+                target_id=character.id or "unknown",
+                hit=hit_result
+            )
+        )
+        await ws.send_json(character_hit_event.model_dump())
+        create_task(gamestate.publish_character(account.id, character_data=character_data))
+        create_task(update_character_hp(database, character.id, character_data.current_hp))
+
+        # Todo if character dies, handle respawn
         return
 
     if monster.id is None:

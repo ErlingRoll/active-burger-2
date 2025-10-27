@@ -28,4 +28,4 @@ async def give_item(action: ActionRequest):
 
     await add_or_stack_items(database, character_data, [new_item])
 
-    create_task(gamestate.publish_character(action.account, character_id=action.character.id))
+    create_task(gamestate.publish_character(action.account.id, character_id=action.character.id))

@@ -31,7 +31,7 @@ class TransmutationOrb(Currency):
         if type_mods is None:
             return equipment
 
-        new_mod_count = roll(max_value=2, min_value=1, luck=-1)
+        new_mod_count = roll(max_value=2, min_value=1)
 
         mod_ids = sample(type_mods["mods"], new_mod_count)
         mod_values = type_mods["values"]
@@ -40,7 +40,7 @@ class TransmutationOrb(Currency):
 
         for mod_id in mod_ids:
             values = mod_values.get(mod_id, None)
-            tier = roll(max_value=len(values), min_value=1, luck=-2, reverse=True) - 1
+            tier = roll(max_value=len(values), min_value=1, luck=-1, reverse=True) - 1
             equipment.add_mod(mod_id, values[tier])
 
         equipment.rarity = Rarity.UNCOMMON

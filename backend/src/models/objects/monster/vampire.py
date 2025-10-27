@@ -1,3 +1,5 @@
+from supabase_auth import Any
+from src.models.items.mods import WeaponMod
 from src.models.objects.loot_table import LootTable, LootTableItem
 from .monster import Monster
 
@@ -10,6 +12,14 @@ class Vampire(Monster):
     current_hp: int = 120
     power: int = 14
     expDrop: int = 29
+    props: dict[str, Any] = {
+        "weapon_mods": {
+            WeaponMod.PHYSICAL_DAMAGE.value: 20,
+            WeaponMod.CHAOS_DAMAGE.value: 20,
+            WeaponMod.ADDED_CRIT_CHANCE.value: 5,
+        }
+    }
+
     loot_table: LootTable = LootTable(
         items=[
             LootTableItem(

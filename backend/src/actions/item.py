@@ -56,7 +56,7 @@ async def use_item(action: ActionRequest):
 
     character_state = gamestate.get_character_state(action.character.id)
 
-    result: UseResult = await item.use(character=character_state, gamestate=gamestate, database=database, ws=ws)
+    result: UseResult = await item.use(database=database, gamestate=gamestate, character=character_state, ws=action.ws)
 
     event = GameEvent(event="log", payload={}, log=result.log)
 
@@ -65,6 +65,6 @@ async def use_item(action: ActionRequest):
 
     await handle_item_consumption(database, item)
 
-    await gamestate.publish_character(action.account, character_id=action.character.id)
+    await gamestate.publish_character(action.account.id, character_id=action.character.id)
 
     return create_task(action.ws.send_str(event.model_dump_json()))

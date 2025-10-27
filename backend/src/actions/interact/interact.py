@@ -12,6 +12,30 @@ class InteractPayload(BaseModel):
 
 
 async def type_interact(request: Request, ws: WebSocketResponse, account: Account, character: Character, object: RenderObject):
+    gamestate: Gamestate = request.app['gamestate']
+
+    if character.id is None:
+        event = GameEvent(
+            event="log",
+            payload={"error": "Missing character ID"},
+        )
+        return await ws.send_json(event.model_dump())
+
+    character_state = gamestate.get_character_state(character.id)
+    if character_state is None:
+        event = GameEvent(
+            event="log",
+            payload={"error": "Character not found in gamestate"},
+        )
+        return await ws.send_json(event.model_dump())
+
+    if character_state.is_dead():
+        event = GameEvent(
+            event="log",
+            payload={"error": "You are dead"},
+            log=["You cannot attack monsters while dead"],
+        )
+        return await ws.send_json(event.model_dump())
 
     object_type = object.type
 

@@ -1,5 +1,5 @@
 from asyncio import create_task
-from typing import Any, Dict, List
+from typing import Any, List
 from pydantic import BaseModel, ConfigDict
 from aiohttp.web import WebSocketResponse
 
@@ -8,7 +8,7 @@ from src.generators.world import Realm
 
 class GameEvent(BaseModel):
     event: str
-    payload: dict = {}
+    payload: dict[str, Any] = {}
     log: List[str] = []
 
 
@@ -47,6 +47,8 @@ class ConnectionManager(BaseModel):
             print(f"[set_account_realm] No connection found for account {account_id}")
             self.connections_account_map[account_id] = {"ws": None, "connection_id": None, "realm": None}
             con = self.connections_account_map.get(account_id)
+            if not con:
+                return print(f"[set_account_realm] Failed to create connection entry for account {account_id}")
 
         con["realm"] = realm
 

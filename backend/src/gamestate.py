@@ -53,7 +53,7 @@ class Gamestate(BaseModel):
         )
         await self.connection_manager.broadcast(event)
 
-    async def publish_character(self, account: Account, character_id: str | None = None, character_data: CharacterData | None = None):
+    async def publish_character(self, account_id: str, character_id: str | None = None, character_data: CharacterData | None = None):
         if not character_id and not character_data:
             raise ValueError("Either character_id or character_data must be provided")
 
@@ -69,7 +69,10 @@ class Gamestate(BaseModel):
             payload=_character_data.model_dump(),
         )
 
-        await self.connection_manager.send(account.id, event)
+        return await gather(
+            self.add_character(_character_data.to_character()),
+            self.connection_manager.send(account_id, event)
+        )
 
     def is_pos_blocked(self, x, y, realm) -> bool:
         pos_key = f"{x}_{y}"
@@ -144,9 +147,6 @@ class Gamestate(BaseModel):
         return await self.publish_terrain()
 
     async def add_character(self, character: Character):
-        if character.id in self.characters:
-            return await self.publish_gamestate()
-
         self.characters[character.id] = character
         return await self.publish_gamestate()
 

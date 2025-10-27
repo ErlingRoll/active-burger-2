@@ -37,7 +37,7 @@ class Teleporter(Steppable):
         return await gather(
             gamestate.publish_gamestate(),
             gamestate.publish_terrain(),
-            gamestate.publish_character(account, character_id=character.id)
+            gamestate.publish_character(account.id, character_id=character.id)
         )
 
     def to_db_model(self) -> RenderObject:

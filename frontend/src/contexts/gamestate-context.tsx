@@ -34,6 +34,7 @@ type GamestateContextType = {
     setGamestate: Dispatch<SetStateAction<Gamestate | null>>
     logout: () => void
     log: string[]
+    damageHits: any[]
     chatMessages: ChatMessage[]
     terrain: { [pos: string]: Terrain[] }
     reconnect: () => void
@@ -48,6 +49,7 @@ export const GamestateContext = createContext<GamestateContextType>({
     setGamestate: (game: any) => {},
     logout: () => {},
     log: [],
+    damageHits: [],
     chatMessages: [],
     terrain: {},
     reconnect: () => {},
@@ -61,13 +63,14 @@ export const GameProvider = ({ children }: { children: any }) => {
     const [terrain, setTerrain] = useState<{ [pos: string]: Terrain[] }>({})
     const [realm, setRealm] = useState<Realm | null>(null)
     const [log, setLog] = useState<string[]>([])
+    const [damageHits, setDamageHits] = useState<any[]>([])
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
 
     const [connecting, setConnecting] = useState<boolean>(false)
     const [connectTimeout, setConnectTimeout] = useState(null)
 
     const { user, setUser, setAccount } = useContext(UserContext)
-    const { setCharacter } = useContext(CharacterContext)
+    const { character, setCharacter } = useContext(CharacterContext)
 
     function logout() {
         // Remove user data from localStorage
@@ -124,6 +127,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 setTerrain(payload)
                 break
             case "character_update":
+                if (character) return setCharacter({ ...payload, direction: character.direction })
                 setCharacter(payload)
                 break
             case "realm_update":
@@ -132,7 +136,7 @@ export const GameProvider = ({ children }: { children: any }) => {
             case "log":
                 const error = payload.error
                 if (error) {
-                    toast.error(`Error: ${error}`)
+                    toast.error(error)
                 }
                 break
             case "chat_update":
@@ -140,6 +144,11 @@ export const GameProvider = ({ children }: { children: any }) => {
                 break
             case "loot_drop":
                 notifyLoot(payload)
+                break
+            case "damage_hit":
+                console.log("Damage hit received:", payload)
+                let _damageHits = damageHits.slice(0, 100)
+                setDamageHits([payload, ..._damageHits])
                 break
             default:
                 console.error("Unhandled WebSocket event:", event, payload, log)
@@ -154,6 +163,28 @@ export const GameProvider = ({ children }: { children: any }) => {
         const loginMessage = `Logged in as ${account.name} (${character ? character.name : "no character"})`
         setLog((prevLog) => [loginMessage, ...prevLog])
     }
+
+    useEffect(() => {
+        if (!character || !gameCon) return
+        gameCon.onmessage = (event: any) => {
+            const data = event.data
+            let parsedData = null
+            try {
+                parsedData = JSON.parse(data)
+            } catch (e) {
+                console.error("Error parsing WebSocket message:", data)
+                return
+            }
+            const messageEvent = parsedData.event
+            if (!messageEvent) {
+                console.error("Received WebSocket message without event:", parsedData)
+                return
+            }
+
+            // Handle events
+            on_event(messageEvent, parsedData.payload, parsedData.log)
+        }
+    }, [character, gameCon])
 
     useEffect(() => {
         if (!gameCon) return
@@ -225,6 +256,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 reconnect: connect,
                 logout,
                 log,
+                damageHits,
                 chatMessages,
                 terrain,
                 realm,

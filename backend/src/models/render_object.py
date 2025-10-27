@@ -22,7 +22,7 @@ class RenderObject(BaseModel):
     width: Optional[int] = None  # in pixels
     solid: bool = False
     object_id: Optional[str] = None
-    props: dict[str, Any]
+    props: dict[str, Any] = {}
     model_config = ConfigDict(extra="allow", use_enum_values=True, arbitrary_types_allowed=True)
 
     # Non-DB fields

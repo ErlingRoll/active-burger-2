@@ -1,3 +1,4 @@
+from src.models.items.mods import WeaponMod
 from src.models.objects.loot_table import LootTable, LootTableItem
 from .monster import Monster
 
@@ -10,6 +11,13 @@ class KaratePanda(Monster):
     current_hp: int = 35
     power: int = 7
     expDrop: int = 29
+    props: dict = {
+        "weapon_mods": {
+            WeaponMod.PHYSICAL_DAMAGE.value: 10,
+            WeaponMod.ADDED_CRIT_CHANCE.value: 5,
+        }
+    }
+
     loot_table: LootTable = LootTable(
         items=[
             LootTableItem(

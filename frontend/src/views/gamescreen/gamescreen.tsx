@@ -24,6 +24,7 @@ const Gamescreen = () => {
                 backgroundRepeat: "repeat",
             }}
         >
+            <div id="fx-layer" className="absolute top-0 left-0 w-full h-full pointer-events-none z-300" />
             <GameUI selectedCell={selectedCell} />
             <GameGrid hoverHighlight={adminMode} onCellClick={(pos) => adminMode && setAdminCell(pos)} />
 
