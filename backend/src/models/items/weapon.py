@@ -10,12 +10,21 @@ class Weapon(Equipment):
     equip_slot: str = EquipSlot.WEAPON.value
 
     def roll_hit(self) -> DamageHit:
-        total_physical = self.get_mod_value(WeaponMod.PHYSICAL_DAMAGE.value)
-        total_fire = self.get_mod_value(WeaponMod.FIRE_DAMAGE.value)
-        total_cold = self.get_mod_value(WeaponMod.COLD_DAMAGE.value)
-        total_lightning = self.get_mod_value(WeaponMod.LIGHTNING_DAMAGE.value)
-        total_chaos = self.get_mod_value(WeaponMod.CHAOS_DAMAGE.value)
-        added_crit_chance = self.get_mod_value(WeaponMod.ADDED_CRIT_CHANCE.value) / 100
+        total_physical = self.get_mod_value(WeaponMod.PHYSICAL_DAMAGE.value) \
+            * ((100 + self.get_mod_value(WeaponMod.INCREASED_DAMAGE.value)) // 100)
+        total_fire = self.get_mod_value(WeaponMod.FIRE_DAMAGE.value) \
+            * ((100 + self.get_mod_value(WeaponMod.INCREASED_DAMAGE.value)) // 100) \
+            * ((100 + self.get_mod_value(WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value)) // 100)
+        total_cold = self.get_mod_value(WeaponMod.COLD_DAMAGE.value) \
+            * ((100 + self.get_mod_value(WeaponMod.INCREASED_DAMAGE.value)) // 100) \
+            * ((100 + self.get_mod_value(WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value)) // 100)
+        total_lightning = self.get_mod_value(WeaponMod.LIGHTNING_DAMAGE.value) \
+            * ((100 + self.get_mod_value(WeaponMod.INCREASED_DAMAGE.value)) // 100) \
+            * ((100 + self.get_mod_value(WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value)) // 100)
+        total_chaos = self.get_mod_value(WeaponMod.CHAOS_DAMAGE.value) \
+            * ((100 + self.get_mod_value(WeaponMod.INCREASED_DAMAGE.value)) // 100)
+        added_crit_chance = (self.get_mod_value(WeaponMod.ADDED_CRIT_CHANCE.value) * ((100 + self.get_mod_value(WeaponMod.INCREASED_CRIT_CHANCE.value)) // 100)) \
+            // 100
 
         luck = self.get_mod_value(WeaponMod.LUCK.value)
 
@@ -26,7 +35,7 @@ class Weapon(Equipment):
             lightning=roll(total_lightning, 0, luck=luck),
             chaos=roll(total_chaos, 0, luck=luck),
             critical=roll_chance() < (0.05 + added_crit_chance),
-            critical_multiplier=150 + self.get_mod_value(WeaponMod.CRIT_MULTIPLIER.value, 0)
+            critical_multiplier=100 + self.get_mod_value(WeaponMod.CRIT_MULTIPLIER.value, 0)
         )
 
         return hit

@@ -26,12 +26,21 @@ class Monster(Entity, Lootable):
             print(f"Monster {self.name} has no weapon mods defined")
             return DamageHit()
 
-        total_physical = weapon_mods.get(WeaponMod.PHYSICAL_DAMAGE.value, 0)
-        total_fire = weapon_mods.get(WeaponMod.FIRE_DAMAGE.value, 0)
-        total_cold = weapon_mods.get(WeaponMod.COLD_DAMAGE.value, 0)
-        total_lightning = weapon_mods.get(WeaponMod.LIGHTNING_DAMAGE.value, 0)
-        total_chaos = weapon_mods.get(WeaponMod.CHAOS_DAMAGE.value, 0)
-        added_crit_chance = weapon_mods.get(WeaponMod.ADDED_CRIT_CHANCE.value, 0) / 100
+        total_physical = weapon_mods.get(WeaponMod.PHYSICAL_DAMAGE.value, 0) \
+            * ((100 + weapon_mods.get(WeaponMod.INCREASED_DAMAGE.value, 0)) // 100)
+        total_fire = weapon_mods.get(WeaponMod.FIRE_DAMAGE.value, 0) \
+            * ((100 + weapon_mods.get(WeaponMod.INCREASED_DAMAGE.value, 0)) // 100) \
+            * ((100 + weapon_mods.get(WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value, 0)) // 100)
+        total_cold = weapon_mods.get(WeaponMod.COLD_DAMAGE.value, 0) \
+            * ((100 + weapon_mods.get(WeaponMod.INCREASED_DAMAGE.value, 0)) // 100) \
+            * ((100 + weapon_mods.get(WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value, 0)) // 100)
+        total_lightning = weapon_mods.get(WeaponMod.LIGHTNING_DAMAGE.value, 0) \
+            * ((100 + weapon_mods.get(WeaponMod.INCREASED_DAMAGE.value, 0)) // 100) \
+            * ((100 + weapon_mods.get(WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value, 0)) // 100)
+        total_chaos = weapon_mods.get(WeaponMod.CHAOS_DAMAGE.value, 0) \
+            * ((100 + weapon_mods.get(WeaponMod.INCREASED_DAMAGE.value, 0)) // 100)
+        added_crit_chance = (weapon_mods.get(WeaponMod.ADDED_CRIT_CHANCE.value, 0) * ((100 + weapon_mods.get(WeaponMod.INCREASED_CRIT_CHANCE.value, 0)) // 100)) \
+            // 100
 
         hit = DamageHit(
             physical=roll(total_physical, 0),
@@ -40,7 +49,7 @@ class Monster(Entity, Lootable):
             lightning=roll(total_lightning, 0),
             chaos=roll(total_chaos, 0),
             critical=roll_chance() < (0.05 + added_crit_chance),
-            critical_multiplier=150 + weapon_mods.get(WeaponMod.CRIT_MULTIPLIER.value, 0)
+            critical_multiplier=50 + weapon_mods.get(WeaponMod.CRIT_MULTIPLIER.value, 0)
         )
 
         return hit

@@ -28,7 +28,7 @@ class DamageHit(BaseModel):
     lightning: int = 0
     chaos: int = 0
     critical: bool = False
-    critical_multiplier: float = 200
+    critical_multiplier: int = 0
 
     def total_damage(self) -> int:
         elemental = self.elemental_damage()
@@ -51,6 +51,6 @@ class DamageHit(BaseModel):
 
     def _crit_damage(self, damage) -> float:
         if not self.critical:
-            return damage
+            return 0
 
         return damage * (self.critical_multiplier / 100)

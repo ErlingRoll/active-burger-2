@@ -47,7 +47,7 @@ weapon_mod_value = {
     WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value: [100, 80, 60, 40, 30, 20, 15, 10, 7, 5],
     WeaponMod.ADDED_CRIT_CHANCE.value: [20, 15, 12, 10, 8, 6, 5, 4, 3, 2],
     WeaponMod.INCREASED_CRIT_CHANCE.value: [70, 50, 40, 30, 20, 15, 10, 7, 5, 3],
-    WeaponMod.CRIT_MULTIPLIER.value: [200, 170, 150, 130, 120, 110, 105, 102, 101, 100],
+    WeaponMod.CRIT_MULTIPLIER.value: [200, 170, 150, 130, 120, 100, 80, 60, 40, 20],
     WeaponMod.LUCK.value: [7, 6, 5, 4, 3, 2, 2, 1, 1, 1],
     WeaponMod.FORTUNE.value: [10, 7, 5, 4, 3, 3, 2, 2, 1, 1],
 }
