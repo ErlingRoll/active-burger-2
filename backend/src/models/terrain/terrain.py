@@ -105,3 +105,15 @@ class Dirt(Terrain):
     game_id: str = "dirt"
     texture: str = "terrain/dirt/dirt"
     solid: bool = False
+
+class Sand(Terrain):
+    name: str = "Sand"
+    game_id: str = "sand"
+    texture: str = "terrain/sand/sand"
+    solid: bool = False
+
+class Beachwater(Terrain):
+    name: str = "Beachwater"
+    game_id: str = "beachwater"
+    texture: str = "terrain/beachwater/beachwater"
+    solid: bool = False
