@@ -94,7 +94,11 @@ export const itemMods = {
     },
 } as const
 
-export function getModTier(modType: ItemModType, mod: ToolMod | WeaponMod | ArmorMod | string, value: number): number {
+export function getModTier(
+    modType: ItemModType | string,
+    mod: ToolMod | WeaponMod | ArmorMod | string,
+    value: number
+): number {
     const modValues = itemMods[modType].values[mod as any]
     if (!modValues) {
         console.log("Mod values not found for", modType, mod)

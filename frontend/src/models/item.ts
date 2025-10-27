@@ -8,7 +8,7 @@ export interface Item {
     description: string
     texture: string
     value: number
-    type: ItemModType
+    type: string
     stackable: boolean
     consumable: boolean
     count: number
