@@ -8,6 +8,7 @@ export interface Item {
     value: number
     type: string
     stackable: boolean
+    consumable: boolean
     count: number
     character_id: string
     rarity: string

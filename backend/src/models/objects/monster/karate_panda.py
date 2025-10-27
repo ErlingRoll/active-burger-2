@@ -21,6 +21,12 @@ class KaratePanda(Monster):
     loot_table: LootTable = LootTable(
         items=[
             LootTableItem(
+                item_id="burger",
+                chance=0.2,
+                amount=1,
+                random_amount=2
+            ),
+            LootTableItem(
                 item_id="scouring_orb",
                 chance=0.2,
                 amount=1,

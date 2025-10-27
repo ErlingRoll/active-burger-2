@@ -12,7 +12,7 @@ class Burger(Item):
     name: str = "Burger"
     description: str = "Pretty decent BK burger. Greasy AF."
     texture: str = "item/food/burger"
-    value: int = 5
+    value: int = 20
     type: str = "food"
     stackable: bool = True
     count: int = 1
