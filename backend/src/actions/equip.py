@@ -55,11 +55,21 @@ async def equip_item(action: ActionRequest):
 
     item = EquipItemPayload(**action.payload).item
 
-    equipment = EquipmentSlot(character_id=action.character.id, item_id=item.id, slot=item.equip_slot)
-
-    await upsert_equipment(database, equipment)
+    if not item or not item.equip_slot:
+        raise ValueError(f"[equip_item] Invalid item or equip slot: {item}")
 
     character_data: CharacterData = await get_character_data_by_id(database, action.character.id)
+
+    currently_equipped_item = character_data.equipment.get(item.equip_slot, None)
+    if currently_equipped_item is not None and currently_equipped_item.id == item.id:
+        return  # Item is already equipped
+
+    if currently_equipped_item is not None:
+        # Unequip the currently equipped item in that slot
+        character_data.unequip_item(currently_equipped_item)
+
+    equipment = EquipmentSlot(character_id=action.character.id, item_id=item.id, slot=item.equip_slot)
+    await upsert_equipment(database, equipment)
 
     character_data.equip_item(item)
 
