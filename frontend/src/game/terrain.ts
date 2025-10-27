@@ -41,7 +41,7 @@ export const TERRAIN: { [game_id: string]: Partial<Terrain> } = {
     sandstone: {
         name: "Sandstone",
         game_id: "sandstone",
-        texture: "terrain/sandstone",
+        texture: "terrain/sandstone/sandstone",
         solid: false,
         variants: [
             "top_left",
