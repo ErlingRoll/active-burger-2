@@ -1,6 +1,7 @@
 from asyncio import create_task, gather
 from typing import List
 from aiohttp.web import Request, WebSocketResponse
+import connection_manager
 from src.database.character import get_character_data_by_id, update_character_hp
 from src.models.items.mods import WeaponMod
 from src.generators.monster import generate_monster
@@ -10,13 +11,14 @@ from src.models.objects.monster.monster import Monster
 from src.database.equipment import get_equipment_item
 from src.database.object import db_delete_object
 from src.actions.give_loot import GiveLootPayload, give_loot
-from src.connection_manager import GameEvent
+from src.connection_manager import ConnectionManager, GameEvent
 from src.gamestate import Gamestate
 from src.models import Account, Character, RenderObject, Item, EquipSlot
 
 
 async def monster_interact(request: Request, ws: WebSocketResponse, account: Account, character: Character, object: RenderObject):
     database = request.app['database']
+    connection_manager: ConnectionManager = request.app['connection_manager']
     gamestate: Gamestate = request.app['gamestate']
 
     if character.id is None:
@@ -52,7 +54,7 @@ async def monster_interact(request: Request, ws: WebSocketResponse, account: Acc
             hit=hit_result
         )
     )
-    create_task(ws.send_json(monster_hit_event.model_dump()))
+    create_task(connection_manager.broadcast(monster_hit_event))
 
     await gamestate.update_object(monster)
 
@@ -70,7 +72,7 @@ async def monster_interact(request: Request, ws: WebSocketResponse, account: Acc
                 hit=hit_result
             )
         )
-        await ws.send_json(character_hit_event.model_dump())
+        create_task(connection_manager.broadcast(character_hit_event))
         create_task(gamestate.publish_character(account.id, character_data=character_data))
         create_task(update_character_hp(database, character.id, character_data.current_hp))
 

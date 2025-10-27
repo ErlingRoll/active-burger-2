@@ -58,6 +58,7 @@ const GameGrid = ({
         const y = r.top
 
         const damageContainer = document.createElement("div")
+        damageContainer.className = "flex items-end"
         Object.assign(damageContainer.style, {
             position: "absolute",
             left: `${x}px`,
@@ -66,6 +67,7 @@ const GameGrid = ({
             transform: "translate(-50%, -50%)",
             willChange: "transform, opacity",
         })
+
         const damageText = document.createElement("p")
         damageText.className = `text-danger dark-shadow`
         Object.assign(damageText.style, {
@@ -74,6 +76,14 @@ const GameGrid = ({
         })
         damageText.innerText = hitEvent.hit.damage
         damageContainer.appendChild(damageText)
+
+        if (hitEvent.hit.critical) {
+            const critImg = document.createElement("img")
+            critImg.src = textures["/src/assets/textures/symbol/crit.png"] as string
+            critImg.className = "w-4 h-4 mb-1"
+            damageContainer.appendChild(critImg)
+        }
+
         fxLayer.appendChild(damageContainer)
 
         // small horizontal jitter so multiple hits don't overlap perfectly

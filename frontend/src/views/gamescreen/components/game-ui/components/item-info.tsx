@@ -107,7 +107,7 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
                                         <p className="capitalize">{mod.replaceAll("_", " ")}:</p>
                                         <p className={value >= 0 ? "text-green-500" : "text-red-500"}>
                                             {value >= 0 ? `${value}` : value}
-                                            {includesAny(mod, ["increased"]) && "%"}
+                                            {includesAny(mod, ["increased", "chance", "multiplier"]) && "%"}
                                         </p>
                                         <p className="ml-1 text-gray-500 text-[0.7rem]">
                                             (Tier {getModTier(_item.type, mod, value)})
