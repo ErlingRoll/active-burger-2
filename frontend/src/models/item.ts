@@ -1,3 +1,5 @@
+import { ItemModType } from "../game/items/mods"
+
 export interface Item {
     id: string
     created_at: string
@@ -6,7 +8,7 @@ export interface Item {
     description: string
     texture: string
     value: number
-    type: string
+    type: ItemModType
     stackable: boolean
     consumable: boolean
     count: number

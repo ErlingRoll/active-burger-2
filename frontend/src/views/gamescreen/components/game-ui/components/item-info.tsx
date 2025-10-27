@@ -2,6 +2,7 @@ import { useContext, useEffect, useState } from "react"
 import { Equipment, Item } from "../../../../../models/item"
 import { CharacterContext } from "../../../../../contexts/character-context"
 import { RiCopperCoinFill } from "react-icons/ri"
+import { getModTier } from "../../../../../game/items/mods"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -14,15 +15,30 @@ type ItemInfoProps = {
 
 const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
     const [_item, setItem] = useState<Item>(null)
-    const [baseMods, setBaseMods] = useState<{ [key: string]: number }[]>()
-    const [mods, setMods] = useState<{ [key: string]: number }[]>()
+    const [baseMods, setBaseMods] = useState<{ [key: string]: number }>()
+    const [mods, setMods] = useState<{ [key: string]: number }>()
 
     const { items, itemMap } = useContext(CharacterContext)
 
+    function includesAny(text, substrings) {
+        for (let i = 0; i < substrings.length; i++) {
+            if (text.includes(substrings[i])) {
+                return true // Found a match
+            }
+        }
+        return false // No match found
+    }
+
     useEffect(() => {
         if (!_item) return
-        const baseMods = Object.entries(_item.base_mods || {}).map(([key, value]) => ({ [key]: value }))
-        const mods = Object.entries(_item.mods || {}).map(([key, value]) => ({ [key]: value }))
+        const baseMods = {}
+        Object.entries(_item.base_mods || {}).forEach(([key, value]) => {
+            baseMods[key] = (baseMods[key] || 0) + value
+        })
+        const mods = {}
+        Object.entries(_item.mods || {}).forEach(([key, value]) => {
+            mods[key] = (mods[key] || 0) + value
+        })
         setBaseMods(baseMods)
         setMods(mods)
     }, [_item])
@@ -68,20 +84,13 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
             </div>
             {_item.equipable && (
                 <div className="w-fit center-col items-start! mt-1">
-                    {baseMods && baseMods.length ? (
+                    {baseMods && Object.keys(baseMods).length ? (
                         <div className="text-gray-300">
-                            {baseMods.map((mod, index) => (
+                            {Object.entries(baseMods).map(([mod, value], index) => (
                                 <div key={index} className="text-sm flex items-center gap-1">
-                                    <p className="capitalize">{Object.keys(mod)[0].replaceAll("_", " ")}:</p>
-                                    <p
-                                        className={
-                                            "font-bold " +
-                                            (Object.values(mod)[0] >= 0 ? "text-green-500" : "text-red-500")
-                                        }
-                                    >
-                                        {Object.values(mod)[0] >= 0
-                                            ? `${Object.values(mod)[0]}`
-                                            : Object.values(mod)[0]}
+                                    <p className="capitalize">{mod.replaceAll("_", " ")}:</p>
+                                    <p className={"font-bold " + (value >= 0 ? "text-green-500" : "text-red-500")}>
+                                        {value >= 0 ? `${value}` : value}
                                     </p>
                                 </div>
                             ))}
@@ -90,18 +99,22 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
                         <div>Empty implicit mods</div>
                     )}
                     <div className="w-full mt-2 mb-1 border-b border-dashed border-light" />
-                    {mods && mods.length ? (
+                    {mods && Object.keys(mods).length ? (
                         <div className="font-bold">
-                            {mods.map((mod, index) => (
-                                <div key={index} className="text-sm flex items-center gap-1">
-                                    <p className="capitalize">{Object.keys(mod)[0].replaceAll("_", " ")}:</p>
-                                    <p className={Object.values(mod)[0] >= 0 ? "text-green-500" : "text-red-500"}>
-                                        {Object.values(mod)[0] >= 0
-                                            ? `${Object.values(mod)[0]}`
-                                            : Object.values(mod)[0]}
-                                    </p>
-                                </div>
-                            ))}
+                            {Object.entries(mods).map(([mod, value], index) => {
+                                return (
+                                    <div key={index} className="text-sm flex items-center gap-1">
+                                        <p className="capitalize">{mod.replaceAll("_", " ")}:</p>
+                                        <p className={value >= 0 ? "text-green-500" : "text-red-500"}>
+                                            {value >= 0 ? `${value}` : value}
+                                            {includesAny(mod, ["increased"]) && "%"}
+                                        </p>
+                                        <p className="ml-1 text-gray-500 text-[0.7rem]">
+                                            (Tier {getModTier(_item.type, mod, value)})
+                                        </p>
+                                    </div>
+                                )
+                            })}
                         </div>
                     ) : (
                         <div>

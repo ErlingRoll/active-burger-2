@@ -11,7 +11,7 @@ class Vampire(Monster):
     max_hp: int = 120
     current_hp: int = 120
     power: int = 14
-    expDrop: int = 29
+    expDrop: int = 50
     props: dict[str, Any] = {
         "weapon_mods": {
             WeaponMod.PHYSICAL_DAMAGE.value: 20,

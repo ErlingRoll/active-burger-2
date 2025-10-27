@@ -5,6 +5,7 @@ from enum import Enum
 class ItemModType(Enum):
     TOOL = "tool"
     WEAPON = "weapon"
+    ARMOR = "armor"
 
 
 class ToolMod(Enum):
@@ -45,22 +46,11 @@ weapon_mod_value = {
     WeaponMod.CHAOS_DAMAGE.value: [100, 80, 60, 40, 30, 20, 15, 10, 7, 5],
     WeaponMod.INCREASED_DAMAGE.value: [100, 80, 60, 40, 30, 20, 15, 10, 7, 5],
     WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value: [100, 80, 60, 40, 30, 20, 15, 10, 7, 5],
-    WeaponMod.ADDED_CRIT_CHANCE.value: [20, 15, 12, 10, 8, 6, 5, 4, 3, 2],
-    WeaponMod.INCREASED_CRIT_CHANCE.value: [70, 50, 40, 30, 20, 15, 10, 7, 5, 3],
+    WeaponMod.ADDED_CRIT_CHANCE.value: [30, 20, 15, 12, 10, 8, 6, 5],
+    WeaponMod.INCREASED_CRIT_CHANCE.value: [100, 80, 70, 50, 40, 30, 20, 10],
     WeaponMod.CRIT_MULTIPLIER.value: [200, 170, 150, 130, 120, 100, 80, 60, 40, 20],
     WeaponMod.LUCK.value: [7, 6, 5, 4, 3, 2, 2, 1, 1, 1],
     WeaponMod.FORTUNE.value: [10, 7, 5, 4, 3, 3, 2, 2, 1, 1],
-}
-
-item_mods = {
-    ItemModType.TOOL.value: {
-        "mods": [enum.value for enum in ToolMod],
-        "values": tool_mod_value,
-    },
-    ItemModType.WEAPON.value: {
-        "mods": [enum.value for enum in WeaponMod],
-        "values": weapon_mod_value,
-    },
 }
 
 
@@ -86,4 +76,20 @@ armor_mod_value = {
     ArmorMod.LIGHTNING_RESISTANCE.value: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
     ArmorMod.CHAOS_RESISTANCE.value: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
     ArmorMod.REFLECT.value: [160, 140, 120, 100, 80, 60, 50, 40, 30, 20],
+}
+
+
+item_mods = {
+    ItemModType.TOOL.value: {
+        "mods": [enum.value for enum in ToolMod],
+        "values": tool_mod_value,
+    },
+    ItemModType.WEAPON.value: {
+        "mods": [enum.value for enum in WeaponMod],
+        "values": weapon_mod_value,
+    },
+    ItemModType.ARMOR.value: {
+        "mods": [enum.value for enum in ArmorMod],
+        "values": armor_mod_value,
+    }
 }
