@@ -26,6 +26,11 @@ export const noobShop: ShopItem[] = [
         multiple: false,
     },
     {
+        item: WEAPONS["frying_pan"],
+        price: 500,
+        multiple: false,
+    },
+    {
         item: ARMOR["hoodie"],
         price: 1000,
         multiple: false,

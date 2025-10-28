@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from random import sample
+from random import choice, sample
 
 from src.generators.affixes.item_affixes import replace_item_affixes
 from src.generators.dice import roll
@@ -28,11 +28,11 @@ class ExaltedOrb(Currency):
                 message="Item is not uncommon or rare"
             )
 
-        mod_check = len(equipment.mods) >= 4
-        if mod_check:
+        mod_check = len(equipment.mods) < 4
+        if not mod_check:
             return ApplyCheckResult(
                 success=False,
-                message="Item already has 4 mods"
+                message="Item already has more than 3 mods"
             )
 
         return ApplyCheckResult(success=True)
@@ -48,18 +48,12 @@ class ExaltedOrb(Currency):
         current_mod_ids = list(equipment.mods.keys())
         available_mod_ids = [mod_id for mod_id in mod_ids if mod_id not in current_mod_ids]
 
-        new_mod_id = sample(available_mod_ids, 1)[0]
+        new_mod_id = choice(available_mod_ids)
         values = mod_values.get(new_mod_id, None)
         tier = roll(max_value=len(values), min_value=1, luck=-1, reverse=True) - 1
         equipment.add_mod(new_mod_id, values[tier])
 
-        mod_count = len(equipment.mods)
-        if mod_count <= 2:
-            equipment.rarity = Rarity.UNCOMMON
-        elif mod_count <= 4:
-            equipment.rarity = Rarity.RARE
-        else:
-            raise ValueError("Exalted Orb should add up to 4 mods")
+        equipment.update_rarity()
 
         replace_item_affixes(equipment)
 

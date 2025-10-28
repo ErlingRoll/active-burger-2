@@ -81,10 +81,10 @@ class GameActions {
         this.send(action)
     }
 
-    buy({ item_id, count }: { item_id: string; count: number }) {
+    buy({ item_id, price, count }: { item_id: string; price: number; count: number }) {
         const action = {
             action: "buy",
-            payload: { item_id, count },
+            payload: { item_id, price, count },
         }
         this.send(action)
     }

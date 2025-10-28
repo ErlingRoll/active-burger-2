@@ -12,6 +12,7 @@ from src.models import CharacterData, Item
 
 class BuyPayload(BaseModel):
     item_id: str
+    price: int
     count: int = 1
 
 
@@ -24,11 +25,12 @@ async def buy(action: ActionRequest):
     database = action.request.app['database']
     gamestate: Gamestate = action.request.app['gamestate']
 
-    payload: SellPayload = SellPayload(**action.payload)
+    payload = BuyPayload(**action.payload)
 
     character_data: CharacterData = await get_character_data_by_id(database, action.character.id)
 
     item: Item = generate_item(payload.item_id)
+    item.count = payload.count
 
     if not item.value:
         return await action.ws.send_json({
@@ -36,7 +38,7 @@ async def buy(action: ActionRequest):
             'message': f'Item {item.name} has no value.'
         })
 
-    total_price = item.value * payload.count * 2  # Buying is more expensive than selling
+    total_price = payload.price * payload.count
 
     if character_data.gold < total_price:
         event = GameEvent(

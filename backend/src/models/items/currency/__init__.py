@@ -6,3 +6,4 @@ from .alteration_orb import AlterationOrb
 from .transmutation_orb import TransmutationOrb
 from .exalted_orb import ExaltedOrb
 from .celestial_orb import CelestialOrb
+from .annulment_orb import AnnulmentOrb

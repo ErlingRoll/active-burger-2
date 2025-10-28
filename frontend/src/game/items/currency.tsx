@@ -73,6 +73,16 @@ export const CRAFTING_CURRENCY: Partial<Currency>[] = [
         texture: "item/currency/exalted_orb",
     },
     {
+        item_id: "annulment_orb",
+        name: "Annulment Orb",
+        description: (
+            <Fragment>
+                Remove a random <b>explicit</b> mod from an item
+            </Fragment>
+        ),
+        texture: "item/currency/annulment_orb",
+    },
+    {
         item_id: "celestial_orb",
         name: "Celestial Orb",
         description: (

@@ -37,5 +37,5 @@ class NoobmineCenterMonsters(Spawner):
     object_type: Literal["object", "monster"] = "monster"
     safe_radius: int = 2
     spawn_table: SpawnTable = SpawnTable(items=[
-        SpawnTableItem(object_id="vampire", chance=0.6),
+        SpawnTableItem(object_id="vampire", chance=0.8),
     ])

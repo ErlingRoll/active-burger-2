@@ -2,6 +2,7 @@ from enum import Enum
 from typing import Optional
 from pydantic import BaseModel
 
+from src.models.item import Rarity
 from src.models import Item
 
 
@@ -29,3 +30,15 @@ class Equipment(Item):
     base_mods: dict[str, int] = {}
     mods: dict[str, int] = {}
     durability: int = 100
+
+    def update_rarity(self) -> Rarity:
+        mod_count = len(self.mods)
+        if mod_count == 0:
+            self.rarity = Rarity.COMMON
+        elif mod_count <= 2:
+            self.rarity = Rarity.UNCOMMON
+        elif mod_count <= 4:
+            self.rarity = Rarity.RARE
+        elif mod_count <= 6:
+            self.rarity = Rarity.EPIC
+        return self.rarity
