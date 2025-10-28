@@ -5,6 +5,7 @@ from typing import Deque, Dict, List
 from pydantic import BaseModel, ConfigDict, Field
 from supabase import AsyncClient
 
+from src.database.item import get_items_by_character_id
 from src.generators.world import Realm
 from src.database.terrain import db_get_terrain
 from src.connection_manager import ConnectionManager, GameEvent
@@ -52,6 +53,16 @@ class Gamestate(BaseModel):
             }
         )
         await self.connection_manager.broadcast(event)
+
+    async def publish_items(self, account_id: str, character_id: str):
+        items = await get_items_by_character_id(self.database, character_id)
+        event = GameEvent(
+            event="item_update",
+            payload={
+                "items": {item.id: item for item in items}
+            }
+        )
+        return await self.connection_manager.send(account_id, event)
 
     async def publish_character(self, account_id: str, character_id: str | None = None, character_data: CharacterData | None = None):
         if not character_id and not character_data:

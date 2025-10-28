@@ -96,11 +96,11 @@ async def monster_interact(request: Request, ws: WebSocketResponse, account: Acc
 
     loot_payload = GiveLootPayload(items=loot, log=[log_message])
 
-    await give_loot(request, ws, account, character, loot_payload.model_dump())
+    create_task(give_loot(request, ws, account, character, loot_payload.model_dump()))
 
     event = GameEvent(
         event="log",
         payload={},
         log=[log_message]
     )
-    await ws.send_str(event.model_dump_json())
+    return create_task(ws.send_json(event.model_dump()))

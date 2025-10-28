@@ -130,6 +130,9 @@ export const GameProvider = ({ children }: { children: any }) => {
                 if (character) return setCharacter({ ...payload, direction: character.direction })
                 setCharacter(payload)
                 break
+            case "item_update":
+                if (!character) return
+                setCharacter({ ...character, items: payload.items })
             case "realm_update":
                 setRealm(payload.realm)
                 break

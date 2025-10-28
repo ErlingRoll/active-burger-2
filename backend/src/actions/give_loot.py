@@ -27,7 +27,7 @@ async def give_loot(request: Request, ws: WebSocketResponse, account: Account, c
     character_data: CharacterData = await get_character_data_by_id(database, character.id)
 
     await add_or_stack_items(database, character_data, items)
-    create_task(gamestate.publish_character(account.id, character_id=character.id))
+    create_task(gamestate.publish_items(account.id, character_id=character.id))
 
     if len(payload.items) == 0:
         return
