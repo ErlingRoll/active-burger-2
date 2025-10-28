@@ -16,7 +16,7 @@ export const FOOD: { [id: string]: Partial<Item> } = {
         item_id: "kebab",
         name: "Kebab",
         description: "The best kebab in Oslo. Restores 100 HP.",
-        texture: "item/food/burger",
+        texture: "item/food/kebab",
         value: 40,
         type: "food",
         stackable: true,
