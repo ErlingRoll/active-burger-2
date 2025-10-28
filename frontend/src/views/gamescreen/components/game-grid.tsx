@@ -210,34 +210,70 @@ const GameGrid = ({
         }
     }
 
-    function drawTerrain(terrainData: { [pos: string]: Terrain[] }) {
-        const _center = camera()
-        const pos_list: { x: number; y: number }[] = Array.from({ length: renderWidth * renderWidth }).map(
-            (_, index) => {
-                const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2) + 1
-                const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y
-                return { x: wx, y: wy }
-            }
-        )
+    const cellSignatures = new Map<string, string>() // id -> sig
 
-        for (const pos of pos_list) {
-            const worldX = pos.x
-            const worldY = pos.y
-            const tCell = document.getElementById(terrainCellName(worldX, worldY))
-            if (!tCell) continue
-            tCell.innerHTML = ""
-            const terrains = terrainData[`${pos.x}_${pos.y}`]
-            if (!terrains) continue
-            const tImgContainer = document.createElement("div")
-            tImgContainer.className = "absolute top-0 left-0 h-full w-full flex flex-col items-center"
-            terrains.forEach((terrain) => {
-                const img = document.createElement("img")
-                img.src = textures[`/src/assets/textures/${terrain.texture}.${terrain.ext || "png"}`] as string
-                img.className = `absolute top-0 h-full z-[${terrain.z}]`
-                img.style.zIndex = terrain.z.toString()
-                tImgContainer.appendChild(img)
-            })
-            tCell.appendChild(tImgContainer)
+    function terrainKey(x: number, y: number) {
+        return x + "_" + y
+    }
+
+    function makeSignature(list: Terrain[] | undefined): string {
+        // Cheap, order-sensitive signature. Adjust if you reorder arrays elsewhere.
+        if (!list || list.length === 0) return ""
+        // join a few cheap stable props
+        return list.map((t) => `${t.texture}.${t.ext ?? "png"}#${t.z}`).join("|")
+    }
+
+    function drawTerrain(terrainData: { [pos: string]: Terrain[] }) {
+        const { x: cx, y: cy } = camera()
+
+        // Precompute viewport extents
+        const startX = Math.floor(cx - renderWidth / 2) + 1
+        const endX = startX + renderWidth - 1
+
+        const startY = Math.floor(cy + renderHeight / 2)
+        const endY = startY - (renderHeight - 1)
+
+        // Iterate rows top -> bottom, then columns left -> right
+        for (let wy = startY; wy >= endY; wy--) {
+            for (let wx = startX; wx <= endX; wx++) {
+                const id = terrainCellName(wx, wy)
+                const tCell = document.getElementById(id)
+                if (!tCell) continue
+
+                const terrains = terrainData[terrainKey(wx, wy)]
+                const sig = makeSignature(terrains)
+                if (cellSignatures.get(id) === sig) {
+                    // Unchanged: skip all DOM work
+                    continue
+                }
+                cellSignatures.set(id, sig)
+
+                if (!terrains || terrains.length === 0) {
+                    // Fast clear
+                    tCell.replaceChildren()
+                    continue
+                }
+
+                // Build off-DOM, then swap in once
+                const frag = document.createDocumentFragment()
+
+                const container = document.createElement("div")
+                container.className = "absolute top-0 left-0 h-full w-full flex flex-col items-center"
+
+                for (let i = 0; i < terrains.length; i++) {
+                    const terrain = terrains[i]
+                    const img = document.createElement("img")
+                    // If textures is a plain object, property access is cheaper than template + bracket; keep the template only for the path:
+                    const srcKey = `/src/assets/textures/${terrain.texture}.${terrain.ext || "png"}`
+                    img.src = (textures as Record<string, string>)[srcKey]
+                    img.className = "absolute top-0 h-full" // keep classes static
+                    img.style.zIndex = String(terrain.z) // set z via style only
+                    container.appendChild(img)
+                }
+
+                frag.appendChild(container)
+                tCell.replaceChildren(frag)
+            }
         }
     }
 
