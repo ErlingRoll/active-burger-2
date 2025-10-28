@@ -312,10 +312,10 @@ const GameGrid = ({
                         />
                         <div className="absolute top-0 left-0 w-full h-full border-[1px] border-light opacity-10" />
                         {showSelectedCell && selectedCell && selectedCell.x === wx && selectedCell.y === wy && (
-                            <div className="absolute top-0 left-0 w-full h-full border-2 border-dashed border-primary" />
+                            <div className="absolute top-0 left-0 w-full h-full border-2 border-dashed border-primary z-50" />
                         )}
                         <div
-                            className={`absolute top-0 left-0 w-full h-full z-110 border-orange-300 border-dashed ${
+                            className={`absolute top-0 left-0 w-full h-full z-60 border-orange-300 border-dashed ${
                                 hoverHighlight && "cursor-pointer hover:border-2"
                             }`}
                             onClick={(event) => onCellClick && onCellClick({ x: wx, y: wy, event: event })}

@@ -8,7 +8,7 @@ import { TERRAIN, TERRAIN_COLORS } from "../../game/terrain"
 import { Terrain } from "../../models/terrain"
 import { Realm } from "../../game/world"
 
-import Settings from "../gamescreen/components/game-ui/components/settings"
+import SettingsMenu from "../gamescreen/components/game-ui/components/settings-menu"
 import GameGrid from "../gamescreen/components/game-grid"
 import Select from "react-select"
 import HoverInfo from "./components/hover-info"
@@ -302,7 +302,7 @@ const WorldEditor = () => {
                             />
                         </div>
                     </div>
-                    <Settings />
+                    <SettingsMenu />
                 </div>
             </div>
             <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-200">

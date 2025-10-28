@@ -3,7 +3,7 @@ import { UIContext } from "../../../../contexts/ui-context"
 import Inventory from "./components/inventory"
 import CharacterInfo from "./components/character-info"
 import CellInfo from "./components/cell-info"
-import Settings from "./components/settings"
+import SettingsMenu from "./components/settings-menu"
 import Log from "./components/log"
 import Shop from "./components/shop"
 import Equipment from "./components/equipment"
@@ -37,7 +37,7 @@ const GameUI = ({ selectedCell }: { selectedCell: { x: number; y: number } | nul
                 <CellInfo pos={selectedCell} />
             </div>
             <div className="absolute flex flex-col items-end p-4 bottom-0 right-0 gap-4 pointer-events-none">
-                <Settings />
+                <SettingsMenu />
                 <Log />
             </div>
             {shopOpen && <Shop />}

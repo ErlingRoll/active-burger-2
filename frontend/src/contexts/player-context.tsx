@@ -6,6 +6,7 @@ import { UserContext } from "./user-context"
 import { GamestateContext } from "./gamestate-context"
 import { CharacterContext } from "./character-context"
 import { Realm } from "../game/world"
+import { SettingsContext } from "./settings-context"
 
 type PlayerContextType = {
     gameActions?: GameActions
@@ -26,6 +27,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
     const { character, setCharacter } = useContext(CharacterContext)
     const { gameCon, gamestate, terrain, reconnect, realm } = useContext(GamestateContext)
     const { shopOpen, setShopOpen, craftingBenchOpen, setCraftingBenchOpen } = useContext(UIContext)
+    const { settings } = useContext(SettingsContext)
 
     const [selectedCell, setSelectedCell] = useState<{ x: number; y: number } | null>(null)
 
@@ -88,6 +90,14 @@ export const PlayerProvider = ({ children }: { children: any }) => {
         }
 
         return solid
+    }
+
+    function interact() {
+        if (!selectedCell) return
+        let object = gamestate.position_objects[selectedCell.x + "_" + selectedCell.y]?.[0]
+        if (!object) return
+        localInteract(object)
+        gameActions.current.interact({ object_id: object.id })
     }
 
     function move({ direction }: { direction: "up" | "down" | "left" | "right" }) {
@@ -167,11 +177,10 @@ export const PlayerProvider = ({ children }: { children: any }) => {
                     move({ direction: "right" })
                     break
                 case "e":
-                    if (!selectedCell) break
-                    const object = gamestate.position_objects[selectedCell.x + "_" + selectedCell.y]?.[0]
-                    if (!object) break
-                    localInteract(object)
-                    gameActions.current.interact({ object_id: object.id })
+                    interact()
+                    break
+                case settings.actionButton:
+                    interact()
                     break
                 default:
                     gameInput = false
@@ -183,7 +192,7 @@ export const PlayerProvider = ({ children }: { children: any }) => {
         }
         window.addEventListener("keydown", handleKeyDown)
         return () => window.removeEventListener("keydown", handleKeyDown)
-    }, [gamestate, character, gameActions, selectedCell, lastMoveRepeat, shopOpen, craftingBenchOpen])
+    }, [gamestate, character, gameActions, selectedCell, lastMoveRepeat, shopOpen, craftingBenchOpen, settings])
 
     return (
         <PlayerContext.Provider

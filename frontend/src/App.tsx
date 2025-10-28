@@ -1,13 +1,16 @@
 import { Fragment } from "react"
 import "./App.css"
-import Game from "./Game"
 import CompoundProvider from "./contexts/compound-provider"
+
+import Game from "./Game"
+import Settings from "./views/components/settings"
 
 function App() {
     return (
         <CompoundProvider>
             <Fragment>
                 <Game />
+                <Settings />
                 <div className="absolute top-0 left-0 hidden">
                     <p className="bg-common border-common text-common">Common</p>
                     <p className="bg-uncommon border-uncommon text-uncommon">Uncommon</p>
