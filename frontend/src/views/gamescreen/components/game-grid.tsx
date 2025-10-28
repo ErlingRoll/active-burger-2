@@ -149,9 +149,8 @@ const GameGrid = ({
         if (obj.type !== "character" && obj.texture) {
             const imgContainer = document.createElement("div")
             imgContainer.className = "w-full flex-1 flex"
-            imgContainer.style.backgroundImage = `url('${
-                textures[`/src/assets/textures/${obj.texture}.png`] as string
-            }')`
+            const texture = textures[`/src/assets/textures/${obj.texture}.png`]
+            imgContainer.style.backgroundImage = `url('${texture}')`
             imgContainer.style.backgroundSize = "contain"
             imgContainer.style.backgroundRepeat = "no-repeat"
             imgContainer.style.backgroundPosition = "center"
@@ -164,9 +163,10 @@ const GameGrid = ({
             const isDead = obj.current_hp !== undefined && obj.max_hp !== undefined && obj.current_hp <= 0
             const imgContainer = document.createElement("div")
             imgContainer.className = "w-full flex-1 flex"
-            imgContainer.style.backgroundImage = `url('${
-                textures["/src/assets/textures/character/among_us.png"] as string
-            }')`
+            let texture =
+                textures[`/src/assets/textures/character/${obj.name}.png`] ||
+                textures[`/src/assets/textures/character/among_us.png`]
+            imgContainer.style.backgroundImage = `url('${texture}')`
             imgContainer.style.backgroundSize = "contain"
             imgContainer.style.backgroundRepeat = "no-repeat"
             imgContainer.style.backgroundPosition = "center"
