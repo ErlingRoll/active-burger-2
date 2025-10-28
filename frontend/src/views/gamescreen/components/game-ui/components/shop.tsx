@@ -122,7 +122,7 @@ const Shop = () => {
                                     </p>
                                     <div className="flex flex-row items-center gap-1">
                                         <RiCopperCoinFill color="gold" className="" />
-                                        <p className="font-bold text-lg">{item.value * 2}</p>
+                                        <p className="font-bold text-lg">{shopItem.price}</p>
                                     </div>
                                     <button
                                         className="bg-primary text-light font-bold rounded px-4 py-1"
