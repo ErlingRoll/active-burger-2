@@ -41,7 +41,7 @@ class ChaosOrb(Currency):
 
         for mod_id in mod_ids:
             values = mod_values.get(mod_id, None)
-            tier = roll(max_value=len(values), min_value=1, luck=-2, reverse=True) - 1
+            tier = roll(max_value=len(values), min_value=1, luck=-1, reverse=True) - 1
             equipment.add_mod(mod_id, values[tier])
 
         equipment.rarity = Rarity.RARE
