@@ -3,7 +3,7 @@ from pydantic import BaseModel
 from random import randint
 from src.generators.dice import roll, roll_chance
 from src.generators.item import generate_item
-from src.models.item import Item
+from src.models.item import Item, Rarity
 
 
 class LootTableItem(BaseModel):
@@ -25,6 +25,8 @@ class LootTable(BaseModel):
                 total_amount = item.amount + roll(random_amount, min_value=0, luck=-1)
                 total_amount = total_amount * (1 + fortune)
                 item = generate_item(item_id=item.item_id, count=total_amount)
+                if item.rarity in [Rarity.EPIC, Rarity.LEGENDARY, Rarity.ARTIFACT]:
+                    item.count = 1  # Fortune does not apply to powerful items
                 dropped_items.append(item)
 
         return dropped_items

@@ -29,7 +29,7 @@ class Vampire(Monster):
             LootTableItem(item_id="alchemy_orb", chance=0.2, amount=1, random_amount=3),
             LootTableItem(item_id="chaos_orb", chance=0.5, amount=2, random_amount=4),
             LootTableItem(item_id="chaos_orb", chance=0.5, amount=2, random_amount=4),
-            LootTableItem(item_id="exalted_orb", chance=0.5, amount=2, random_amount=4),
-            LootTableItem(item_id="celestial_orb", chance=0.5, amount=2, random_amount=4),
+            LootTableItem(item_id="exalted_orb", chance=0.1, amount=1, random_amount=0),
+            LootTableItem(item_id="celestial_orb", chance=0.01, amount=1, random_amount=0),
         ]
     )
