@@ -126,14 +126,22 @@ const Shop = () => {
                                     </div>
                                     <button
                                         className="bg-primary text-light font-bold rounded px-4 py-1"
-                                        onClick={() => gameActions.buy({ item_id: item.item_id!, count: 1 })}
+                                        onClick={() =>
+                                            gameActions.buy({ item_id: item.item_id!, price: shopItem.price, count: 1 })
+                                        }
                                     >
                                         Buy
                                     </button>
                                     {shopItem.multiple ? (
                                         <button
                                             className="bg-primary text-light font-bold rounded px-4 py-1"
-                                            onClick={() => gameActions.buy({ item_id: item.item_id!, count: 5 })}
+                                            onClick={() =>
+                                                gameActions.buy({
+                                                    item_id: item.item_id!,
+                                                    price: shopItem.price,
+                                                    count: 5,
+                                                })
+                                            }
                                         >
                                             Buy 5
                                         </button>
