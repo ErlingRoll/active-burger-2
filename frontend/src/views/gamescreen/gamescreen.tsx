@@ -7,6 +7,7 @@ import { PlayerContext } from "../../contexts/player-context"
 import GameGrid from "./components/game-grid"
 import { Realm } from "../../game/world"
 import { CharacterContext } from "../../contexts/character-context"
+import { RiCopperCoinFill } from "react-icons/ri"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -35,8 +36,13 @@ const Gamescreen = () => {
                     id="dead-screen"
                     className="absolute top-0 left-0 w-full h-full bg-dark/50 pointer-events-auto z-300 center-col justify-between!"
                 >
-                    <div className="flex-1 center-col justify-end! gap-4">
+                    <div className="flex-1 center-col justify-end! gap-2">
                         <p className="text-light text-3xl font-bold">You died</p>
+                        <div className="text-light text-3xl font-bold flex items-center">
+                            <p className="mr-4">You lost 10% of your gold:</p>
+                            <RiCopperCoinFill color="gold" className="mr-0.5 mt-0.5" />
+                            <p>{Math.floor(character.gold * 0.1)}</p>
+                        </div>
                         <button
                             className="mt-4 px-4 pt-3 pb-4 bg-primary text-light text-xl font-bold hover:scale-105"
                             onClick={() => gameActions.respawn()}

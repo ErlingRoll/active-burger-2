@@ -1,4 +1,5 @@
 from asyncio import create_task
+from math import floor
 from pydantic import BaseModel
 
 from src.database.character import update_character, update_character_pos
@@ -40,6 +41,7 @@ async def respawn(action: ActionRequest):
     character_state.x = 0
     character_state.y = 0
     character_state.current_hp = character_state.max_hp
+    character_state.gold = floor(character_state.gold * 0.9)
 
     await update_character(database, character_state.to_character())
 

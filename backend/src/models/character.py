@@ -1,6 +1,7 @@
 from math import floor
 from pydantic import ConfigDict
 from typing import Any, Dict, Optional
+from src.models.damage_hit import DamageHit, HitResult
 from src.generators.world import Realm
 from src.models import Entity, Item
 

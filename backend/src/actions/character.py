@@ -1,5 +1,6 @@
 from asyncio import create_task
 from pydantic import BaseModel
+from supabase import AsyncClient
 
 from src.gamestate import Gamestate
 from src.actions.action import ActionRequest
@@ -33,3 +34,12 @@ async def get_character(action: ActionRequest):
     )
 
     create_task(connection_manager.send(action.account.id, event))
+
+
+async def on_character_death(database: AsyncClient, character_id: str | None = None, character_data: CharacterData | None = None):
+    character_data = character_data
+    if character_data is None and character_id is not None:
+        character_data = await get_character_by_id(database, character_id=character_id)
+
+    if character_data is None:
+        raise ValueError("[on_character_death] Missing character data")
