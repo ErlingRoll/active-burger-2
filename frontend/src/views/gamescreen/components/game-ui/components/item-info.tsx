@@ -43,6 +43,7 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
         })
         setBaseMods(baseMods)
         setMods(mods)
+        if (_item.props == null) return
         setPrefix(_item.props["prefix"] || null)
         setSuffix(_item.props["suffix"] || null)
     }, [_item])

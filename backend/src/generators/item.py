@@ -1,6 +1,6 @@
 from src.models.item import Item
 from src.models.items import Burger, GoldOre, Pickaxe
-from src.models.items.currency import ChaosOrb, AlchemyOrb, ScouringOrb, AlterationOrb, TransmutationOrb
+from src.models.items.currency import ChaosOrb, AlchemyOrb, ScouringOrb, AlterationOrb, TransmutationOrb, ExaltedOrb, CelestialOrb
 from src.models.items.weapon import Toothpick, FryingPan, PoolNoodle
 from src.models.items.armor import Hoodie
 
@@ -32,6 +32,8 @@ currency_map = {
     "alteration_orb": AlterationOrb,
     "alchemy_orb": AlchemyOrb,
     "chaos_orb": ChaosOrb,
+    "exalted_orb": ExaltedOrb,
+    "celestial_orb": CelestialOrb,
 }
 
 item_map = {**food_map, **weapon_map, **armor_map, **resource_map, **tool_map, **currency_map}

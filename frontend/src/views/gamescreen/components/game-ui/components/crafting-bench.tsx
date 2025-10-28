@@ -91,17 +91,17 @@ const CraftingBench = () => {
             <div className="min-w-[30rem]">
                 <ItemInfo itemId={item.id} showImg={true} onImgClick={() => selectEquipment(null)} />
             </div>
-            <div className="flex flex-col items-end shrink gap-4 max-h-[70vh] overflow-y-auto">
+            <div className="flex flex-col items-end shrink gap-4 max-h-[80vh] overflow-y-auto">
                 {CRAFTING_CURRENCY.map((currency) => {
                     const itemCount = getTotalItemCount(currency.item_id)
                     return (
                         <div
                             key={currency.item_id}
-                            className="relative flex items-center gap-4 bg-primary/40 rounded p-2"
+                            className="w-full relative flex items-center gap-4 bg-primary/40 rounded p-1"
                         >
                             <div className="flex-1">
                                 <div className="flex items-center">
-                                    <div className="h-6 w-6 mr-1">
+                                    <div className="h-6 w-6 mr-0.5">
                                         <img
                                             src={textures[`/src/assets/textures/${currency.texture}.png`]}
                                             alt="Chaos Orb"
@@ -114,7 +114,7 @@ const CraftingBench = () => {
                                         <b>{itemCount.count}</b>
                                     </p>
                                 </div>
-                                <p className="text-sm max-w-[16rem]">{currency.description}</p>
+                                <p className="text-sm max-w-[18rem]">{currency.description}</p>
                             </div>
                             <button
                                 className={

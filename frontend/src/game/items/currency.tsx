@@ -44,7 +44,7 @@ export const CRAFTING_CURRENCY: Partial<Currency>[] = [
         description: (
             <Fragment>
                 Upgrade a <b>common</b> item to a <span className="dark-shadow text-rare font-bold">rare</span> item
-                with 3-4 random explicit mods
+                with 3-4 random <b>explicit</b> mods
             </Fragment>
         ),
         texture: "item/currency/alchemy_orb",
@@ -59,5 +59,28 @@ export const CRAFTING_CURRENCY: Partial<Currency>[] = [
             </Fragment>
         ),
         texture: "item/currency/chaos_orb",
+    },
+    {
+        item_id: "exalted_orb",
+        name: "Exalted Orb",
+        description: (
+            <Fragment>
+                Add an additional <b>explicit</b> mod to an{" "}
+                <span className="dark-shadow text-uncommon font-bold">uncommon</span> or{" "}
+                <span className="dark-shadow text-rare font-bold">rare</span> item
+            </Fragment>
+        ),
+        texture: "item/currency/exalted_orb",
+    },
+    {
+        item_id: "celestial_orb",
+        name: "Celestial Orb",
+        description: (
+            <Fragment>
+                Add 2 additional <b>explicit</b> mods to a <span className="dark-shadow text-rare font-bold">rare</span>{" "}
+                item
+            </Fragment>
+        ),
+        texture: "item/currency/celestial_orb",
     },
 ]
