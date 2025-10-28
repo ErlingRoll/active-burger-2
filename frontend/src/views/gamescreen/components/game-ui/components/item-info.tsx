@@ -8,13 +8,13 @@ const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eage
 
 type ItemInfoProps = {
     itemId: string
-    item?: Item | Equipment
+    item?: Partial<Item>
     showImg?: boolean
     onImgClick?: () => void
 }
 
 const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
-    const [_item, setItem] = useState<Item>(null)
+    const [_item, setItem] = useState<Partial<Item>>(null)
     const [baseMods, setBaseMods] = useState<{ [key: string]: number }>()
     const [mods, setMods] = useState<{ [key: string]: number }>()
     const [prefix, setPrefix] = useState<string | null>(null)

@@ -1,4 +1,6 @@
 import React, { Dispatch, SetStateAction, createContext, use, useEffect } from "react"
+import { ShopItem } from "../game/shop/shop"
+import { noobShop } from "../game/shop/noob_shop"
 
 type UIContextType = {
     adminMode?: boolean
@@ -7,6 +9,8 @@ type UIContextType = {
     setShowGrid?: Dispatch<SetStateAction<boolean>>
     shopOpen?: boolean
     setShopOpen?: Dispatch<SetStateAction<boolean>>
+    shopItems?: ShopItem[]
+    setShopItems?: Dispatch<SetStateAction<ShopItem[]>>
     craftingBenchOpen?: boolean
     setCraftingBenchOpen?: Dispatch<SetStateAction<boolean>>
 }
@@ -14,6 +18,8 @@ type UIContextType = {
 export const UIContext = createContext<UIContextType>({
     shopOpen: false,
     setShopOpen: (shopOpen: any) => {},
+    shopItems: [],
+    setShopItems: (shopItems: any) => {},
     adminMode: false,
     setAdminMode: (adminMode: any) => {},
     showGrid: false,
@@ -25,6 +31,7 @@ export const UIContext = createContext<UIContextType>({
 export const UIProvider = ({ children }: { children: any }) => {
     const [adminMode, setAdminMode] = React.useState<boolean>(false)
     const [shopOpen, setShopOpen] = React.useState<boolean>(false)
+    const [shopItems, setShopItems] = React.useState<ShopItem[]>(noobShop)
     const [showGrid, setShowGrid] = React.useState<boolean>(false)
     const [craftingBenchOpen, setCraftingBenchOpen] = React.useState<boolean>(false)
 
@@ -45,6 +52,8 @@ export const UIProvider = ({ children }: { children: any }) => {
             value={{
                 setShopOpen,
                 shopOpen,
+                shopItems,
+                setShopItems,
                 setAdminMode,
                 adminMode,
                 setShowGrid,

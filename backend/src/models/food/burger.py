@@ -1,28 +1,28 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from asyncio import create_task
-from src.models import Character, Item, UseResult
+from src.models import Character, UseResult
+from .food import Food
 
 if TYPE_CHECKING:
     from src.gamestate import Gamestate
 
 
-class Burger(Item):
+class Burger(Food):
     item_id: str = "burger"
     name: str = "Burger"
-    description: str = "Pretty decent BK burger. Greasy AF."
+    description: str = "Pretty decent BK burger. Greasy AF. Restores 20 HP."
     texture: str = "item/food/burger"
     value: int = 20
-    type: str = "food"
-    stackable: bool = True
-    count: int = 1
-    consumable: bool = True
 
     async def use(self, character: Character | None = None, database=None, gamestate: Gamestate | None = None, *args, **kwargs) -> UseResult:
         from src.database.character import update_character
 
         if not character or not database or not gamestate:
             return UseResult(success=False, log=["Failed to eat burger: Server error"])
+
+        if character.current_hp >= character.max_hp:
+            return UseResult(success=False, log=["You are already at full health."])
 
         character.current_hp = min(character.max_hp, character.current_hp + 20)
 

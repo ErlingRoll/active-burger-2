@@ -9,26 +9,27 @@ import { TOOLS } from "../../../../../game/items/tools"
 import { WEAPONS } from "../../../../../game/items/weapons"
 import { FOOD } from "../../../../../game/items/food"
 import { ARMOR } from "../../../../../game/items/armor"
+import { ShopItem } from "../../../../../game/shop/shop"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const shopTabs = ["Sell", "Buy"]
 
-const shopItems: Partial<Equipment>[] = [
-    FOOD["burger"],
-    TOOLS["pickaxe"],
-    WEAPONS["toothpick"],
-    WEAPONS["pool_noodle"],
-    WEAPONS["frying_pan"],
-    ARMOR["hoodie"],
-]
+// const shopItems: Partial<Equipment>[] = [
+//     FOOD["burger"],
+//     TOOLS["pickaxe"],
+//     WEAPONS["toothpick"],
+//     WEAPONS["pool_noodle"],
+//     WEAPONS["frying_pan"],
+//     ARMOR["hoodie"],
+// ]
 
 const Shop = () => {
     const [tab, setTab] = useState<number>(0)
 
     const { gameActions } = useContext(PlayerContext)
     const { items } = useContext(CharacterContext)
-    const { setShopOpen } = useContext(UIContext)
+    const { setShopOpen, shopItems } = useContext(UIContext)
 
     const tabName = useMemo(() => {
         return shopTabs[tab]
@@ -100,35 +101,48 @@ const Shop = () => {
                     </div>
                 )}
                 {tabName === "Buy" && (
-                    <div className="grid grid-cols-[repeat(5,minmax(0,auto))] gap-4 items-center">
-                        {shopItems.map((item: Item, index) => (
-                            <Fragment key={index}>
-                                <ItemTooltip item={{ id: item.item_id + "-" + index, ...item }} namespace="shop" />
-                                <div className="center-col w-12 h-12">
-                                    <img
-                                        id={`shop-item-${item.item_id}-${index}`}
-                                        src={textures[`/src/assets/textures/${item.texture}.png`]}
-                                        className="h-full"
-                                    />
-                                </div>
-                                <p id={`shop-item-${item.item_id}-${index}`} className="font-bold text-lg">
-                                    {item.name}
-                                </p>
-                                <p className="font-bold text-lg">
-                                    {item.count && item.count > 1 ? `x ${item.count}` : null}
-                                </p>
-                                <div className="flex flex-row items-center gap-1">
-                                    <RiCopperCoinFill color="gold" className="" />
-                                    <p className="font-bold text-lg">{item.value * 2}</p>
-                                </div>
-                                <button
-                                    className="bg-primary text-light font-bold rounded px-4 py-1"
-                                    onClick={() => gameActions.buy({ item_id: item.item_id!, count: 1 })}
-                                >
-                                    Buy
-                                </button>
-                            </Fragment>
-                        ))}
+                    <div className="grid grid-cols-[repeat(6,minmax(0,auto))] gap-4 items-center">
+                        {shopItems.map((shopItem: ShopItem, index) => {
+                            const item = shopItem.item
+                            return (
+                                <Fragment key={index}>
+                                    <ItemTooltip item={{ id: item.item_id + "-" + index, ...item }} namespace="shop" />
+                                    <div className="center-col w-12 h-12">
+                                        <img
+                                            id={`shop-item-${item.item_id}-${index}`}
+                                            src={textures[`/src/assets/textures/${item.texture}.png`]}
+                                            className="h-full"
+                                        />
+                                    </div>
+                                    <p id={`shop-item-${item.item_id}-${index}`} className="font-bold text-lg">
+                                        {item.name}
+                                    </p>
+                                    <p className="font-bold text-lg">
+                                        {item.count && item.count > 1 ? `x ${item.count}` : null}
+                                    </p>
+                                    <div className="flex flex-row items-center gap-1">
+                                        <RiCopperCoinFill color="gold" className="" />
+                                        <p className="font-bold text-lg">{item.value * 2}</p>
+                                    </div>
+                                    <button
+                                        className="bg-primary text-light font-bold rounded px-4 py-1"
+                                        onClick={() => gameActions.buy({ item_id: item.item_id!, count: 1 })}
+                                    >
+                                        Buy
+                                    </button>
+                                    {shopItem.multiple ? (
+                                        <button
+                                            className="bg-primary text-light font-bold rounded px-4 py-1"
+                                            onClick={() => gameActions.buy({ item_id: item.item_id!, count: 5 })}
+                                        >
+                                            Buy 5
+                                        </button>
+                                    ) : (
+                                        <div className="w-0 h-0" />
+                                    )}
+                                </Fragment>
+                            )
+                        })}
                     </div>
                 )}
             </div>
