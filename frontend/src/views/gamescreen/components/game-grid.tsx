@@ -1,4 +1,4 @@
-import { useContext, useEffect, useMemo, PointerEvent, MouseEvent } from "react"
+import { useContext, useEffect, useMemo, PointerEvent, MouseEvent, useState } from "react"
 import { GamestateContext } from "../../../contexts/gamestate-context"
 import { CharacterContext } from "../../../contexts/character-context"
 import { UIContext } from "../../../contexts/ui-context"
@@ -266,7 +266,7 @@ const GameGrid = ({
 
     useEffect(() => {
         drawTerrain(terrain)
-    }, [character, terrain, gamestate, center])
+    }, [character, terrain, center])
 
     useEffect(() => {
         if (!gamestate.position_objects) return
