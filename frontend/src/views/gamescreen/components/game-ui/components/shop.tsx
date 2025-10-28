@@ -3,26 +3,12 @@ import { CharacterContext } from "../../../../../contexts/character-context"
 import { RiCopperCoinFill } from "react-icons/ri"
 import { UIContext } from "../../../../../contexts/ui-context"
 import { PlayerContext } from "../../../../../contexts/player-context"
-import { Equipment, Item } from "../../../../../models/item"
 import ItemTooltip from "./item-tooltip"
-import { TOOLS } from "../../../../../game/items/tools"
-import { WEAPONS } from "../../../../../game/items/weapons"
-import { FOOD } from "../../../../../game/items/food"
-import { ARMOR } from "../../../../../game/items/armor"
 import { ShopItem } from "../../../../../game/shop/shop"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
 const shopTabs = ["Sell", "Buy"]
-
-// const shopItems: Partial<Equipment>[] = [
-//     FOOD["burger"],
-//     TOOLS["pickaxe"],
-//     WEAPONS["toothpick"],
-//     WEAPONS["pool_noodle"],
-//     WEAPONS["frying_pan"],
-//     ARMOR["hoodie"],
-// ]
 
 const Shop = () => {
     const [tab, setTab] = useState<number>(0)

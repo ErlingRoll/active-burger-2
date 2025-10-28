@@ -39,7 +39,7 @@ class Monster(Entity, Lootable):
             * ((100 + weapon_mods.get(WeaponMod.INCREASED_ELEMENTAL_DAMAGE.value, 0)) // 100)
         total_chaos = weapon_mods.get(WeaponMod.CHAOS_DAMAGE.value, 0) \
             * ((100 + weapon_mods.get(WeaponMod.INCREASED_DAMAGE.value, 0)) // 100)
-        added_crit_chance = (weapon_mods.get(WeaponMod.ADDED_CRIT_CHANCE.value, 0) * ((100 + weapon_mods.get(WeaponMod.INCREASED_CRIT_CHANCE.value, 0)) // 100)) \
+        added_crit_chance = (weapon_mods.get(WeaponMod.ADDED_CRIT_CHANCE.value, 0) * ((100 + weapon_mods.get(WeaponMod.INCREASED_CRIT_CHANCE.value, 0)) / 100)) \
             // 100
 
         hit = DamageHit(
