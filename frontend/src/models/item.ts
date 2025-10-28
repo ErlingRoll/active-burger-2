@@ -17,6 +17,7 @@ export interface Item {
     equipable?: boolean
     base_mods: { [key: string]: number }
     mods: { [key: string]: number }
+    props: {}
 }
 
 export interface Equipment extends Item {}

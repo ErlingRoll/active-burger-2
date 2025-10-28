@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import List, Optional
+from typing import Any, List, Optional
 from pydantic import BaseModel
 
 
@@ -35,6 +35,7 @@ class Item(BaseModel):
     equipable: Optional[bool] = False
     equip_slot: Optional[str] = None
     rarity: Rarity = Rarity.COMMON
+    props: dict[str, Any] = {}
 
     async def use(self, *args, **kwargs) -> UseResult:
         return UseResult(success=False, log=[f"Item [{self.name}] cannot be used."])
@@ -74,6 +75,7 @@ class Item(BaseModel):
             equipable=self.equipable,
             equip_slot=self.equip_slot,
             rarity=self.rarity,
+            props=self.props,
         )
 
     def prep_db(self) -> dict:

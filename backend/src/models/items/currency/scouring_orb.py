@@ -1,6 +1,7 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 
+from src.generators.affixes.item_affixes import remove_item_affixes
 from src.models.equipment import Equipment
 from src.models.item import Rarity
 from .currency import Currency, ApplyCheckResult
@@ -27,4 +28,5 @@ class ScouringOrb(Currency):
     def apply_to(self, equipment: Equipment) -> Equipment:
         equipment.mods = {}
         equipment.rarity = Rarity.COMMON
+        remove_item_affixes(equipment)
         return equipment

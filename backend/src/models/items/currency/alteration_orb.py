@@ -2,6 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from random import sample
 
+from src.generators.affixes.item_affixes import replace_item_affixes
 from src.generators.dice import roll
 from src.models.item import Rarity
 from src.models.items.mods import item_mods
@@ -44,5 +45,6 @@ class AlterationOrb(Currency):
             equipment.add_mod(mod_id, values[tier])
 
         equipment.rarity = Rarity.UNCOMMON
+        replace_item_affixes(equipment)
 
         return equipment

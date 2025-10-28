@@ -17,6 +17,8 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
     const [_item, setItem] = useState<Item>(null)
     const [baseMods, setBaseMods] = useState<{ [key: string]: number }>()
     const [mods, setMods] = useState<{ [key: string]: number }>()
+    const [prefix, setPrefix] = useState<string | null>(null)
+    const [suffix, setSuffix] = useState<string | null>(null)
 
     const { items, itemMap } = useContext(CharacterContext)
 
@@ -41,6 +43,8 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
         })
         setBaseMods(baseMods)
         setMods(mods)
+        setPrefix(_item.props["prefix"] || null)
+        setSuffix(_item.props["suffix"] || null)
     }, [_item])
 
     useEffect(() => {
@@ -72,7 +76,11 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
                     </div>
                 )}
                 <div>
-                    <p className="font-bold text-2xl">{_item.name}</p>
+                    <p className="font-bold text-xl text-light">
+                        {prefix && <span className="text-orange-200 text-lg">{prefix} </span>}
+                        {_item.name}
+                        {suffix && <span className="text-orange-200 text-lg"> of {suffix}</span>}
+                    </p>
                     <p className={`capitalize text-sm text-${_item.rarity} dark-shadow font-bold -mt-1`}>
                         {_item.rarity}
                     </p>

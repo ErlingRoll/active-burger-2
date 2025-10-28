@@ -79,7 +79,7 @@ const CraftingBench = () => {
     }
 
     return (
-        <div className="relative bg-dark/95 text-light rounded pointer-events-auto p-4 grid grid-cols-2 gap-4">
+        <div className="relative bg-dark/95 text-light rounded pointer-events-auto p-4 grid grid-cols-[repeat(2,minmax(0,auto))] gap-4">
             <div className="absolute top-0 right-0">
                 <div
                     className="absolute bottom-2 right-0 bg-danger rounded p-1 cursor-pointer hover:scale-105"
@@ -88,14 +88,16 @@ const CraftingBench = () => {
                     <FaTimes className="text-light text-3xl" />
                 </div>
             </div>
-            <ItemInfo itemId={item.id} showImg={true} onImgClick={() => selectEquipment(null)} />
-            <div className="center-col gap-4 max-h-[70vh] overflow-y-auto">
+            <div className="min-w-[30rem]">
+                <ItemInfo itemId={item.id} showImg={true} onImgClick={() => selectEquipment(null)} />
+            </div>
+            <div className="flex flex-col items-end shrink gap-4 max-h-[70vh] overflow-y-auto">
                 {CRAFTING_CURRENCY.map((currency) => {
                     const itemCount = getTotalItemCount(currency.item_id)
                     return (
                         <div
                             key={currency.item_id}
-                            className="relative w-full flex items-center gap-4 bg-primary/40 rounded p-2"
+                            className="relative flex items-center gap-4 bg-primary/40 rounded p-2"
                         >
                             <div className="flex-1">
                                 <div className="flex items-center">
@@ -112,7 +114,7 @@ const CraftingBench = () => {
                                         <b>{itemCount.count}</b>
                                     </p>
                                 </div>
-                                <p className="text-sm max-w-[20rem]">{currency.description}</p>
+                                <p className="text-sm max-w-[16rem]">{currency.description}</p>
                             </div>
                             <button
                                 className={
