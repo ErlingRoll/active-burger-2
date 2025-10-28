@@ -41,10 +41,22 @@ class Gamestate(BaseModel):
         terrain_res = db_get_terrain(self.database)
         self.objects, self.characters, self.terrain = await gather(object_res, character_res, terrain_res)
 
-    def send_chat_message(self, message: ChatMessage):
+    async def send_chat_message(self, message: ChatMessage):
         self.chat.appendleft(message)
+        return await self.publish_chat_message()
 
-    async def publish_chat(self):
+    async def send_system_message(self, message: str):
+        system_message = ChatMessage(
+            account_id="system",
+            account_name="System",
+            character_id="system",
+            character_name="System",
+            message=message,
+        )
+        self.chat.appendleft(system_message)
+        return await self.publish_chat_message()
+
+    async def publish_chat_message(self):
         event = GameEvent(
             event="chat_update",
             payload={

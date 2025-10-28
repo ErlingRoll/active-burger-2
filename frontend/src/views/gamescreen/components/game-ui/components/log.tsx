@@ -1,4 +1,5 @@
 import { useContext, useMemo, useState } from "react"
+import DOMpurify from "dompurify"
 import { GamestateContext } from "../../../../../contexts/gamestate-context"
 import { PlayerContext } from "../../../../../contexts/player-context"
 
@@ -43,7 +44,15 @@ const Log = () => {
                     <div className="flex flex-col-reverse gap-1 min-h-38 max-h-64 min-w-64 w-[30vw] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 p-2 pb-0">
                         {chatMessages.map((msg, index) => (
                             <div key={index} className="bg-light/20 rounded-xs py-[1px] px-[0.3rem]">
-                                [{new Date(msg.timestamp).toLocaleTimeString("no")}] {msg.character_name}: {msg.message}
+                                <p
+                                    dangerouslySetInnerHTML={{
+                                        __html: DOMpurify.sanitize(
+                                            `[${new Date(msg.timestamp).toLocaleTimeString("no")}] ${
+                                                msg.character_name
+                                            }: ${msg.message}`
+                                        ),
+                                    }}
+                                />
                             </div>
                         ))}
                     </div>

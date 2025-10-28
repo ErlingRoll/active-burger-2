@@ -1,4 +1,5 @@
 from asyncio import create_task
+from random import choice
 from aiohttp.web import Request, WebSocketResponse
 from pydantic import BaseModel
 
@@ -7,6 +8,20 @@ from src.gamestate import Gamestate
 from src.database.account import get_account_by_discord_id, create_account
 from src.database.character import get_character_by_account_id, create_character, get_character_data_by_id
 from src.models import Account, Character, CharacterData
+
+
+def create_login_message(character_name: str) -> str:
+    messages = [
+        f"A wild <b>{character_name}</b> appears",
+        f"Where did <b>{character_name}</b> come from?",
+        f"Trumpets sound as <b>{character_name}</b> joins the fray!",
+        f"The forgotten hero <b>{character_name}</b> returns!",
+        f"Whoa! It's <b>{character_name}</b>!",
+        f"Jesus Christ, it's <b>{character_name}</b>!",
+        f"Everyone RUN! <b>{character_name}</b> is here!",
+        f"<b>{character_name}</b> rises from the ashes!",
+    ]
+    return choice(messages)
 
 
 class LoginPayload(BaseModel):
@@ -66,6 +81,10 @@ async def login(request: Request, ws: WebSocketResponse, account: Account | None
 
     await ws.send_json(login_event.model_dump())
     await gamestate.publish_gamestate(account=account)
+
+    login_message = create_login_message(character.name)
+
+    create_task(gamestate.send_system_message(login_message))
 
 
 async def get_or_create_character(request: Request, ws: WebSocketResponse, account: Account) -> Character:

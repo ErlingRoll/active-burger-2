@@ -33,5 +33,4 @@ async def send_chat_message(action: ActionRequest):
         message=payload.message[:MAX_CHAT_MESSAGE_LENGTH],
     )
 
-    gamestate.send_chat_message(message)
-    create_task(gamestate.publish_chat())
+    create_task(gamestate.send_chat_message(message))
