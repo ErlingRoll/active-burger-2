@@ -164,7 +164,8 @@ const GameGrid = ({
             const imgContainer = document.createElement("div")
             imgContainer.className = "w-full flex-1 flex"
             let texture =
-                textures[`/src/assets/textures/character/${obj.name}.png`] ||
+                textures[`/src/assets/textures/character/custom/${obj.id}.gif`] ||
+                textures[`/src/assets/textures/character/custom/${obj.id}.png`] ||
                 textures[`/src/assets/textures/character/among_us.png`]
             imgContainer.style.backgroundImage = `url('${texture}')`
             imgContainer.style.backgroundSize = "contain"
