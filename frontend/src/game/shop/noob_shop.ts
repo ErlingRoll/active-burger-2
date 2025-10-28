@@ -11,7 +11,7 @@ export const noobShop: ShopItem[] = [
         multiple: true,
     },
     {
-        item: FOOD["kebab"],
+        item: FOOD["balkan_kebab"],
         price: 240,
         multiple: true,
     },

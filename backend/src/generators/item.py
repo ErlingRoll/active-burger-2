@@ -1,11 +1,13 @@
 from src.models.item import Item
-from src.models.items import Burger, GoldOre, Pickaxe
+from src.models.food import BalkanKebab, Burger
+from src.models.items import GoldOre, Pickaxe
 from src.models.items.currency import ChaosOrb, AlchemyOrb, ScouringOrb, AlterationOrb, TransmutationOrb, ExaltedOrb, CelestialOrb
 from src.models.items.weapon import Toothpick, FryingPan, PoolNoodle
 from src.models.items.armor import Hoodie
 
 food_map = {
     "burger": Burger,
+    "balkan_kebab": BalkanKebab,
 }
 
 weapon_map = {

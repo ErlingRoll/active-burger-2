@@ -12,11 +12,11 @@ export const FOOD: { [id: string]: Partial<Item> } = {
         equipable: false,
         consumable: true,
     },
-    kebab: {
-        item_id: "kebab",
-        name: "Kebab",
+    balkan_kebab: {
+        item_id: "balkan_kebab",
+        name: "Balkan Kebab",
         description: "The best kebab in Oslo. Restores 100 HP.",
-        texture: "item/food/kebab",
+        texture: "item/food/balkan_kebab",
         value: 40,
         type: "food",
         stackable: true,
