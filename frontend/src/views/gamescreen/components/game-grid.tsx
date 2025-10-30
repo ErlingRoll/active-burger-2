@@ -320,7 +320,6 @@ const GameGrid = ({
         >
             {Array.from({ length: renderWidth * renderHeight }).map((_, index) => {
                 const _center = camera()
-                console.log(realmSettings.background)
                 const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2) + 1
                 const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y
                 return (
