@@ -27,6 +27,7 @@ const WorldEditor = () => {
     )
     const [brushZ, setBrushZ] = useState<number>(0)
     const [selectedVariant, setSelectedVariant] = useState<string | null>(null)
+    const [solid, setSolid] = useState<boolean | null>(null)
     const [objectProps, setObjectProps] = useState<{ [key: string]: any }>({})
 
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
@@ -112,11 +113,15 @@ const WorldEditor = () => {
         type: "terrain" | "object"
         object?: RenderObject | any
     }) {
-        if (brush?.id === id && brush?.type === type) return setBrush(null)
+        if (brush?.id === id && brush?.type === type) {
+            setBrush(null)
+            return
+        }
         setSelectedVariant(null)
         setBrush({ id, type, object })
         setObjectProps({})
         setBrushZ(0)
+        setSolid(object?.solid)
     }
 
     function handleCellClick(pos: { x: number; y: number }) {
@@ -140,7 +145,7 @@ const WorldEditor = () => {
         if (brush.type === "object") {
             gameActions.placeObject({
                 object_id: brush.id,
-                properties: { ...brush.object, ...objectProps, props: objectProps },
+                properties: { ...brush.object, ...objectProps, props: objectProps, solid: solid },
                 x: pos.x,
                 y: pos.y,
                 realm: realm,
@@ -158,6 +163,7 @@ const WorldEditor = () => {
                     ...objectProps,
                     props: objectProps,
                     texture: terrain.texture + (selectedVariant ? `_${selectedVariant}` : ""),
+                    solid: solid,
                 },
                 x: pos.x,
                 y: pos.y,
@@ -405,21 +411,38 @@ const WorldEditor = () => {
                                     </button>
                                 ))}
                             </div>
-                            <div className="center-col gap-2 bg-dark/90 rounded p-2 pointer-events-auto">
-                                {[13, 12, 11].map((value) => {
-                                    return (
+                            <div className="center-col">
+                                <div className="center-col gap-2 bg-dark/90 rounded p-2 pointer-events-auto">
+                                    {[13, 12, 11].map((value) => {
+                                        return (
+                                            <button
+                                                key={value}
+                                                className={
+                                                    "border-2 border-primary px-4 py-1 font-bold" +
+                                                    (brushZ === value ? " bg-primary" : "")
+                                                }
+                                                onClick={() => setBrushZ(value)}
+                                            >
+                                                z: {value}
+                                            </button>
+                                        )
+                                    })}
+                                </div>
+                                {solid != null ? (
+                                    <div className="center-col gap-2 bg-dark/90 rounded p-2 pointer-events-auto mt-2">
                                         <button
-                                            key={value}
                                             className={
                                                 "border-2 border-primary px-4 py-1 font-bold" +
-                                                (brushZ === value ? " bg-primary" : "")
+                                                (solid ? " bg-primary" : "")
                                             }
-                                            onClick={() => setBrushZ(value)}
+                                            onClick={() => setSolid(!solid)}
                                         >
-                                            z: {value}
+                                            Solid
                                         </button>
-                                    )
-                                })}
+                                    </div>
+                                ) : (
+                                    <div />
+                                )}
                             </div>
                             <div className="flex flex-col items-start justify-end gap-2 text-sm bg-dark/90 rounded p-2 pointer-events-auto">
                                 {brush.object.variants && (
