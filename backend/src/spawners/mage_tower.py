@@ -22,7 +22,7 @@ class Guardian1(Spawner):
     realm: Realm = Realm.MAGE_TOWER
     safe_radius: int = 0
     spawn_table: SpawnTable = SpawnTable(items=[
-        SpawnTableItem(object_id="guardian", chance=0.5),
+        SpawnTableItem(object_id="guardian", chance=0.1),
     ])
 
 
@@ -46,7 +46,7 @@ class Guardian2(Spawner):
     realm: Realm = Realm.MAGE_TOWER
     safe_radius: int = 0
     spawn_table: SpawnTable = SpawnTable(items=[
-        SpawnTableItem(object_id="guardian", chance=0.5),
+        SpawnTableItem(object_id="guardian", chance=0.1),
     ])
 
 
@@ -70,7 +70,7 @@ class Guardian3(Spawner):
     realm: Realm = Realm.MAGE_TOWER
     safe_radius: int = 0
     spawn_table: SpawnTable = SpawnTable(items=[
-        SpawnTableItem(object_id="guardian", chance=0.5),
+        SpawnTableItem(object_id="guardian", chance=0.1),
     ])
 
 
