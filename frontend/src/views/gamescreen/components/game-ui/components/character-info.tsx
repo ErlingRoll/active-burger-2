@@ -14,8 +14,13 @@ const CharacterInfo = () => {
 
     return (
         <div className="m-4 p-2 pt-0 bg-dark/90 text-light rounded flex flex-col items-center">
-            <div className="center-col items-start!">
+            <div className="center-col items-start! font-bold">
                 <p className="font-bold text-lg">{character.name}</p>
+                <div className="flex items-center mb-1">
+                    <p className="font-bold">
+                        Level <span className="text-primary">{character.level}</span>
+                    </p>
+                </div>
                 <div className="flex items-center">
                     <FaHeart color="red" className="mr-2 mt-1" />
                     <p>

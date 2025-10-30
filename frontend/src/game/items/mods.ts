@@ -94,6 +94,14 @@ export const itemMods = {
     },
 } as const
 
+export const modSymbol: { [modId: string]: string } = {
+    [WeaponMod.PHYSICAL_DAMAGE]: "⚔️",
+    [WeaponMod.FIRE_DAMAGE]: "🔥",
+    [WeaponMod.COLD_DAMAGE]: "❄️",
+    [WeaponMod.LIGHTNING_DAMAGE]: "⚡",
+    [WeaponMod.CHAOS_DAMAGE]: "🌀",
+}
+
 export function getModTier(
     modType: ItemModType | string,
     mod: ToolMod | WeaponMod | ArmorMod | string,

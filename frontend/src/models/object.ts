@@ -19,11 +19,14 @@ export interface RenderObject {
     solid: boolean
     gold: number
     realm: Realm
+    props: { [key: string]: any }
 }
 
 export interface Entity extends RenderObject {
+    level: number
     max_hp: number
     current_hp: number
+    regen: number
 }
 
 export interface Character extends Entity {
