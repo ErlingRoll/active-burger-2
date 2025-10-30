@@ -22,8 +22,8 @@ class LootTable(BaseModel):
             loot_chance_roll = roll_chance(luck=luck)
             random_amount = randint(0, item.random_amount if item.random_amount else 0)
             if loot_chance_roll <= item.chance:
-                total_amount = item.amount + roll(random_amount, min_value=0, luck=-1)
-                total_amount = total_amount * (1 + fortune)
+                base_amount = item.amount * (1 + fortune)
+                total_amount = base_amount + roll(random_amount, min_value=0, luck=-1)
                 item = generate_item(item_id=item.item_id, count=total_amount)
                 if item.rarity in [Rarity.EPIC, Rarity.LEGENDARY, Rarity.ARTIFACT]:
                     item.count = 1  # Fortune does not apply to powerful items
