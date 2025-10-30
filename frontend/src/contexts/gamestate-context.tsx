@@ -5,7 +5,7 @@ import { CharacterContext } from "./character-context"
 import { Terrain } from "../models/terrain"
 import { toast } from "react-toastify"
 import { Item } from "../models/item"
-import { Realm } from "../game/world"
+import { Realm, realmBackground, RealmSettings } from "../game/world"
 
 const textures = import.meta.glob("/src/assets/textures/**/*", { as: "url", eager: true })
 
@@ -40,6 +40,7 @@ type GamestateContextType = {
     reconnect: () => void
     realm?: Realm
     setRealm?: Dispatch<SetStateAction<Realm | null>>
+    realmSettings?: RealmSettings
 }
 
 export const GamestateContext = createContext<GamestateContextType>({
@@ -55,6 +56,9 @@ export const GamestateContext = createContext<GamestateContextType>({
     reconnect: () => {},
     realm: null,
     setRealm: (realm: Realm) => {},
+    realmSettings: {
+        background: "terrain/grass/grass",
+    },
 })
 
 export const GameProvider = ({ children }: { children: any }) => {
@@ -62,6 +66,9 @@ export const GameProvider = ({ children }: { children: any }) => {
     const [gamestate, setGamestate] = useState<Gamestate | null>(null)
     const [terrain, setTerrain] = useState<{ [pos: string]: Terrain[] }>({})
     const [realm, setRealm] = useState<Realm | null>(null)
+    const [realmSettings, setRealmSettings] = useState<RealmSettings>({
+        background: "terrain/grass/grass",
+    })
     const [log, setLog] = useState<string[]>([])
     const [damageHits, setDamageHits] = useState<any[]>([])
     const [chatMessages, setChatMessages] = useState<ChatMessage[]>([])
@@ -71,6 +78,14 @@ export const GameProvider = ({ children }: { children: any }) => {
 
     const { user, setUser, setAccount } = useContext(UserContext)
     const { character, setCharacter } = useContext(CharacterContext)
+
+    useEffect(() => {
+        if (!realm) return
+        const newSettings: RealmSettings = {
+            background: realmBackground[realm] || "terrain/grass/grass",
+        }
+        setRealmSettings(newSettings)
+    }, [realm])
 
     function logout() {
         // Remove user data from localStorage
@@ -264,6 +279,7 @@ export const GameProvider = ({ children }: { children: any }) => {
                 terrain,
                 realm,
                 setRealm,
+                realmSettings,
             }}
         >
             {children}

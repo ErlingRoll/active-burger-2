@@ -15,7 +15,7 @@ const Gamescreen = () => {
     const [adminCell, setAdminCell] = useState<{ x: number; y: number } | null>(null)
 
     const { adminMode } = useContext(UIContext)
-    const { gamestate } = useContext(GamestateContext)
+    const { gamestate, realmSettings } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
     const { gameActions, selectedCell } = useContext(PlayerContext)
 
@@ -27,7 +27,7 @@ const Gamescreen = () => {
         <div
             className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none"
             style={{
-                backgroundImage: `url(${textures[`/src/assets/textures/terrain/grass.png`]})`,
+                backgroundImage: `url(${textures[`/src/assets/textures/${realmSettings.background}.png`]})`,
                 backgroundRepeat: "repeat",
             }}
         >

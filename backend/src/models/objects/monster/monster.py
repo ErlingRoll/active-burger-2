@@ -42,12 +42,14 @@ class Monster(Entity, Lootable):
         added_crit_chance = (weapon_mods.get(WeaponMod.ADDED_CRIT_CHANCE.value, 0) * ((100 + weapon_mods.get(WeaponMod.INCREASED_CRIT_CHANCE.value, 0)) / 100)) \
             // 100
 
+        luck = weapon_mods.get(WeaponMod.LUCK.value, 0)
+
         hit = DamageHit(
-            physical=roll(total_physical, 0),
-            fire=roll(total_fire, 0),
-            cold=roll(total_cold, 0),
-            lightning=roll(total_lightning, 0),
-            chaos=roll(total_chaos, 0),
+            physical=roll(total_physical, 0, luck=luck),
+            fire=roll(total_fire, 0, luck=luck),
+            cold=roll(total_cold, 0, luck=luck),
+            lightning=roll(total_lightning, 0, luck=luck),
+            chaos=roll(total_chaos, 0, luck=luck),
             critical=roll_chance() < (0.05 + added_crit_chance),
             critical_multiplier=50 + weapon_mods.get(WeaponMod.CRIT_MULTIPLIER.value, 0)
         )

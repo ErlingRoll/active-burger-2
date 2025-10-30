@@ -33,7 +33,7 @@ const WorldEditor = () => {
     const [lastMoveRepeat, setLastMoveRepeat] = useState<number>(Date.now())
     const moveRepeatDelay = 100 // milliseconds
 
-    const { gamestate, terrain, realm } = useContext(GamestateContext)
+    const { gamestate, terrain, realm, realmSettings } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
     const { gameActions } = useContext(PlayerContext)
 
@@ -185,7 +185,7 @@ const WorldEditor = () => {
         <div
             className="absolute left-0 top-0 w-screen h-screen flex justify-center items-center overflow-hidden select-none"
             style={{
-                backgroundImage: `url(${textures[`/src/assets/textures/terrain/grass.png`]})`,
+                backgroundImage: `url(${textures[`/src/assets/textures/${realmSettings.background}.png`]})`,
                 backgroundRepeat: "repeat",
             }}
         >

@@ -16,6 +16,15 @@ export enum Realm {
     BOB_VALLEY_RIGHT = "bob_valley_right",
 }
 
+export const realmBackground: { [key in Realm | string]: string } = {
+    [Realm.PORTAL_HUB]: "terrain/sky/sky",
+    [Realm.MAGE_TOWER]: "terrain/sky/sky",
+}
+
+export type RealmSettings = {
+    background: string
+}
+
 export const realmValue = (key: string): Realm | null => {
     return Realm[key as keyof typeof Realm] || null
 }

@@ -87,12 +87,13 @@ class Bush(Terrain):
     solid: bool = True
 
 
-class Sandstone(Terrain): 
+class Sandstone(Terrain):
     name: str = "Sandstone"
     game_id: str = "sandstone"
     texture: str = "terrain/sandstone"
     solid: bool = False
 # texture ref old
+
 
 class Woodplank(Terrain):
     name: str = "Woodplank"
@@ -100,11 +101,13 @@ class Woodplank(Terrain):
     texture: str = "terrain/woodplank/woodplank"
     solid: bool = False
 
+
 class Dirt(Terrain):
     name: str = "Dirt"
     game_id: str = "dirt"
     texture: str = "terrain/dirt/dirt"
     solid: bool = False
+
 
 class Sand(Terrain):
     name: str = "Sand"
@@ -112,8 +115,16 @@ class Sand(Terrain):
     texture: str = "terrain/sand/sand"
     solid: bool = False
 
+
 class Beachwater(Terrain):
     name: str = "Beachwater"
     game_id: str = "beachwater"
     texture: str = "terrain/beachwater/beachwater"
     solid: bool = False
+
+
+class StoneWall(Terrain):
+    name: str = "Stone Wall"
+    game_id: str = "stone_wall"
+    texture: str = "terrain/stone_wall/stone_wall"
+    solid: bool = True

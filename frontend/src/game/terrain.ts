@@ -164,6 +164,12 @@ export const TERRAIN: { [game_id: string]: Partial<Terrain> } = {
             "inner_bottom_right",
         ],
     },
+    stone_wall: {
+        name: "Stone Wall",
+        game_id: "stone_wall",
+        texture: "terrain/stone_wall/stone_wall",
+        solid: true,
+    },
 }
 
 export const TERRAIN_COLORS: { [game_id: string]: Partial<Terrain> } = {

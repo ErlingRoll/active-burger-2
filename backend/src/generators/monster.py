@@ -1,10 +1,14 @@
 
-from src.models.objects.monster import Monster, KaratePanda, Vampire
+from src.models.objects.monster import Monster, KaratePanda, Vampire, Guardian, Demon, Gargoyle, Archmage, Guardian
 
 
 object_map = {
     "karate_panda": KaratePanda,
     "vampire": Vampire,
+    "guardian": Guardian,
+    "demon": Demon,
+    "gargoyle": Gargoyle,
+    "archmage": Archmage,
 }
 
 

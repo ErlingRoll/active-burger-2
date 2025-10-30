@@ -27,6 +27,6 @@ class KaratePanda(Monster):
             LootTableItem(item_id="alchemy_orb", chance=0.1, amount=1, random_amount=2),
             LootTableItem(item_id="chaos_orb", chance=0.1, amount=1, random_amount=2),
             LootTableItem(item_id="exalted_orb", chance=0.05, amount=1, random_amount=0),
-            LootTableItem(item_id="celestial_orb", chance=0.01, amount=1, random_amount=0),
+            LootTableItem(item_id="celestial_orb", chance=0.001, amount=1, random_amount=0),
         ]
     )

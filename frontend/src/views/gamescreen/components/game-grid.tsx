@@ -32,7 +32,7 @@ const GameGrid = ({
     onCellLeave,
     editMode = false,
 }: GameGridProps) => {
-    const { gamestate, terrain, damageHits } = useContext(GamestateContext)
+    const { realmSettings, gamestate, terrain, damageHits } = useContext(GamestateContext)
     const { character } = useContext(CharacterContext)
     const { showGrid } = useContext(UIContext)
 
@@ -320,6 +320,7 @@ const GameGrid = ({
         >
             {Array.from({ length: renderWidth * renderHeight }).map((_, index) => {
                 const _center = camera()
+                console.log(realmSettings.background)
                 const wx = (index % renderWidth) + Math.floor(_center.x - renderWidth / 2) + 1
                 const wy = Math.floor(renderHeight / 2) - Math.floor(index / renderWidth) + _center.y
                 return (
@@ -334,7 +335,7 @@ const GameGrid = ({
                             <p className="absolute bottom-0 left-0 ml-[1px] text-[0.8rem] text-light drop-shadow-[0.1px_0.3px_1px_rgb(0,0,0)] z-1000 pointer-events-none">{`${wx}, ${wy}`}</p>
                         )}
                         <img
-                            src={textures[`/src/assets/textures/terrain/grass.png`]}
+                            src={textures[`/src/assets/textures/${realmSettings.background}.png`]}
                             className="absolute top-0 left-0 w-full h-full"
                         />
                         <div className="absolute top-0 left-0 w-full h-full" id={terrainCellName(wx, wy)} />
