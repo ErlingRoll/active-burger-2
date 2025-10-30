@@ -75,7 +75,7 @@ armor_mod_value = {
     ArmorMod.COLD_RESISTANCE.value: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
     ArmorMod.LIGHTNING_RESISTANCE.value: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
     ArmorMod.CHAOS_RESISTANCE.value: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
-    ArmorMod.REFLECT.value: [160, 140, 120, 100, 80, 60, 50, 40, 30, 20],
+    ArmorMod.REFLECT.value: [70, 60, 50, 40, 30, 20, 15, 10, 7, 5],
 }
 
 

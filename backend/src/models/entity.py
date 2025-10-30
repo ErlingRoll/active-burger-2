@@ -7,6 +7,8 @@ class Entity(RenderObject):
     max_hp: int
     current_hp: int
     db_type: str = "entity"
+    level: int = 1
+    regen: int = 1
 
     def damage(self, hit: DamageHit) -> HitResult:
         damage = hit.total_damage()

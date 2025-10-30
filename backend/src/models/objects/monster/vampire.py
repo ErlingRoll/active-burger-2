@@ -8,8 +8,10 @@ class Vampire(Monster):
     name: str = "Vampire"
     object_id: str = "vampire"
     texture: str = "monster/vampire"
+    level: int = 5
     max_hp: int = 120
     current_hp: int = 120
+    regen: int = 3
     power: int = 14
     expDrop: int = 50
     props: dict[str, Any] = {

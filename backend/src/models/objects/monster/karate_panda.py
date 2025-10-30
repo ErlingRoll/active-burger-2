@@ -7,6 +7,7 @@ class KaratePanda(Monster):
     name: str = "Karate Panda"
     object_id: str = "karate_panda"
     texture: str = "monster/karate_panda"
+    level: int = 1
     max_hp: int = 35
     current_hp: int = 35
     power: int = 7

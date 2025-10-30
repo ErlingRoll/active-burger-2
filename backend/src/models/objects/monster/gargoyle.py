@@ -8,8 +8,10 @@ class Gargoyle(Monster):
     name: str = "Gargoyle"
     object_id: str = "gargoyle"
     texture: str = "monster/gargoyle"
+    level: int = 15
     max_hp: int = 500
     current_hp: int = 500
+    regen: int = 5
     power: int = 14
     expDrop: int = 50
     props: dict[str, Any] = {

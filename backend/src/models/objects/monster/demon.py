@@ -8,8 +8,10 @@ class Demon(Monster):
     name: str = "Demon"
     object_id: str = "demon"
     texture: str = "monster/demon"
+    level: int = 10
     max_hp: int = 300
     current_hp: int = 300
+    regen: int = 5
     power: int = 14
     expDrop: int = 50
     props: dict[str, Any] = {

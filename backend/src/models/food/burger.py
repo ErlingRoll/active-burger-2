@@ -13,7 +13,7 @@ class Burger(Food):
     name: str = "Burger"
     description: str = "Pretty decent BK burger. Greasy AF. Restores 20 HP."
     texture: str = "item/food/burger"
-    value: int = 20
+    value: int = 10
 
     async def use(self, character: Character | None = None, database=None, gamestate: Gamestate | None = None, *args, **kwargs) -> UseResult:
         from src.database.character import update_character

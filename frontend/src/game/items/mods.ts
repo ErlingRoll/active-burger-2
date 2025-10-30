@@ -75,7 +75,7 @@ export const armorModValue: ModValues<ArmorMod> = {
     [ArmorMod.COLD_RESISTANCE]: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
     [ArmorMod.LIGHTNING_RESISTANCE]: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
     [ArmorMod.CHAOS_RESISTANCE]: [50, 45, 40, 30, 35, 20, 15, 10, 7, 5],
-    [ArmorMod.REFLECT]: [160, 140, 120, 100, 80, 60, 50, 40, 30, 20],
+    [ArmorMod.REFLECT]: [70, 60, 50, 40, 30, 20, 15, 10, 7, 5],
 }
 
 // Aggregated structure analogous to Python `item_mods`
