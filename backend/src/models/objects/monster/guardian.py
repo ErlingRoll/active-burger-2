@@ -25,6 +25,6 @@ class Guardian(Monster):
 
     loot_table: LootTable = LootTable(
         items=[
-            LootTableItem(item_id="kebab", chance=1, amount=1),
+            LootTableItem(item_id="balkan_kebab", chance=1, amount=1),
         ]
     )

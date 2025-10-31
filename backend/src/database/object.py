@@ -29,7 +29,11 @@ async def create_object(database: AsyncClient, object: RenderObject) -> RenderOb
     data = object.prep_db()
 
     response = await database.table(db_type).insert(data).execute()
-    return RenderObject(**response.data[0]) if response.data else None
+
+    if not response.data or len(response.data) == 0:
+        return None
+
+    return generate_object(**response.data[0])
 
 
 async def db_delete_object(database: AsyncClient, object_id: str):
