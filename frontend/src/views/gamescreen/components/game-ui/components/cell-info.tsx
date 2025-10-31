@@ -2,7 +2,7 @@ import { Fragment, useContext, useEffect, useState } from "react"
 import { CharacterContext } from "../../../../../contexts/character-context"
 import { UserContext } from "../../../../../contexts/user-context"
 import { GamestateContext } from "../../../../../contexts/gamestate-context"
-import { Entity, RenderObject } from "../../../../../models/object"
+import { Character, Entity, RenderObject } from "../../../../../models/object"
 import { FaHeart } from "react-icons/fa"
 import { modSymbol } from "../../../../../game/items/mods"
 
@@ -12,7 +12,7 @@ const CellInfo = ({ pos }: { pos: { x: number; y: number } | null }) => {
     const { character } = useContext(CharacterContext)
 
     const [debug, setDebug] = useState<boolean>(false)
-    const [objects, setObjects] = useState<RenderObject[]>([])
+    const [objects, setObjects] = useState<Partial<RenderObject & Character & Entity>[]>([])
     const [monsters, setMonsters] = useState<Entity[]>([])
 
     useEffect(() => {
