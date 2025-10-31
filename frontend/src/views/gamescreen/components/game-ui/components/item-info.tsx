@@ -34,13 +34,17 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
     useEffect(() => {
         if (!_item) return
         const baseMods = {}
-        Object.entries(_item.base_mods || {}).forEach(([key, value]) => {
-            baseMods[key] = (baseMods[key] || 0) + value
-        })
+        Object.entries(_item.base_mods || {})
+            .sort(([a], [b]) => a.localeCompare(b))
+            .forEach(([key, value]) => {
+                baseMods[key] = (baseMods[key] || 0) + value
+            })
         const mods = {}
-        Object.entries(_item.mods || {}).forEach(([key, value]) => {
-            mods[key] = (mods[key] || 0) + value
-        })
+        Object.entries(_item.mods || {})
+            .sort(([a], [b]) => a.localeCompare(b))
+            .forEach(([key, value]) => {
+                mods[key] = (mods[key] || 0) + value
+            })
         setBaseMods(baseMods)
         setMods(mods)
         if (_item.props == null) return
@@ -118,6 +122,9 @@ const ItemInfo = ({ itemId, item, showImg, onImgClick }: ItemInfoProps) => {
                                             {value >= 0 ? `${value}` : value}
                                             {includesAny(mod, ["increased", "chance", "multiplier", "reflect"]) && "%"}
                                         </p>
+                                        {mod === _item.props?.locked_mod && (
+                                            <p className="ml-1 text-primary">(Locked)</p>
+                                        )}
                                         <p className="ml-1 text-gray-500 text-[0.7rem]">
                                             (Tier {getModTier(_item.type, mod, value)})
                                         </p>

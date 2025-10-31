@@ -1,4 +1,5 @@
 from __future__ import annotations
+from copy import deepcopy
 from typing import TYPE_CHECKING
 from random import sample
 
@@ -28,16 +29,25 @@ class AlterationOrb(Currency):
         )
 
     def apply_to(self, equipment: Equipment) -> Equipment:
-        type_mods = item_mods.get(equipment.type, None)
+        type_mods = deepcopy(item_mods.get(equipment.type, None))
         if type_mods is None:
             return equipment
 
         new_mod_count = roll(max_value=2, min_value=1)
+        available_mods = type_mods["mods"]
 
-        mod_ids = sample(type_mods["mods"], new_mod_count)
+        locked_mod = equipment.get_locked_mod()
+        if locked_mod is not None:
+            new_mod_count = 1
+            available_mods.remove(locked_mod)
+            del equipment.props['locked_mod']
+
+        mod_ids = sample(available_mods, new_mod_count)
         mod_values = type_mods["values"]
 
-        equipment.mods = {}
+        equipment.mods = {
+            mod_id: equipment.mods[mod_id] for mod_id in equipment.mods if mod_id == locked_mod
+        }
 
         for mod_id in mod_ids:
             values = mod_values.get(mod_id, None)

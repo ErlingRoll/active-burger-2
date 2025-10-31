@@ -56,6 +56,9 @@ class Item(BaseModel):
         all_mods = self.get_all_mods()
         return all_mods.get(mod_id, default)
 
+    def get_locked_mod(self) -> str | None:
+        return self.props.get("locked_mod", None)
+
     def to_item(self):
         # Only DB model fields
         return Item(

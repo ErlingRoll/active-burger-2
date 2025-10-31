@@ -34,5 +34,6 @@ class Archmage(Monster):
             LootTableItem(item_id="exalted_orb", chance=1, amount=1, random_amount=2),
             LootTableItem(item_id="annulment_orb", chance=1, amount=1, random_amount=2),
             LootTableItem(item_id="celestial_orb", chance=1, amount=1, random_amount=1),
+            LootTableItem(item_id="locking_orb", chance=1, amount=1, random_amount=1),
         ]
     )

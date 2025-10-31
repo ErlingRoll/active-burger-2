@@ -93,4 +93,14 @@ export const CRAFTING_CURRENCY: Partial<Currency>[] = [
         ),
         texture: "item/currency/celestial_orb",
     },
+    {
+        item_id: "locking_orb",
+        name: "Locking Orb",
+        description: (
+            <Fragment>
+                Lock a random <b>explicit</b> mod, preventing it from being changed by the next crafting orb
+            </Fragment>
+        ),
+        texture: "item/currency/locking_orb",
+    },
 ]

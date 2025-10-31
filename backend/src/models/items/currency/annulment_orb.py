@@ -1,4 +1,5 @@
 from __future__ import annotations
+from copy import deepcopy
 from typing import TYPE_CHECKING
 from random import choice, sample
 
@@ -31,11 +32,16 @@ class AnnulmentOrb(Currency):
         return ApplyCheckResult(success=True)
 
     def apply_to(self, equipment: Equipment) -> Equipment:
-        type_mods = item_mods.get(equipment.type, None)
+        type_mods = deepcopy(item_mods.get(equipment.type, None))
         if type_mods is None:
             return equipment
 
         current_mod_ids = list(equipment.mods.keys())
+
+        locked_mod = equipment.get_locked_mod()
+        if locked_mod is not None:
+            current_mod_ids.remove(locked_mod)
+            del equipment.props['locked_mod']
 
         removed_mod_id = choice(current_mod_ids)
 

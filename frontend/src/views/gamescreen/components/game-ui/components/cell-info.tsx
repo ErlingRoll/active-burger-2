@@ -19,7 +19,6 @@ const CellInfo = ({ pos }: { pos: { x: number; y: number } | null }) => {
         if (!pos) return
         const posObjects = gamestate.position_objects[`${pos.x}_${pos.y}`] || []
         setMonsters(posObjects.filter((obj) => obj.type === "monster") as Entity[])
-        console.log(posObjects.filter((obj) => obj.type === "monster"))
         setObjects(posObjects.filter((obj) => obj.type !== "monster"))
     }, [pos])
 

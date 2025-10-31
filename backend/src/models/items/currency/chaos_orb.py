@@ -1,4 +1,5 @@
 from __future__ import annotations
+from copy import deepcopy
 from typing import TYPE_CHECKING
 from random import sample
 
@@ -28,18 +29,27 @@ class ChaosOrb(Currency):
         )
 
     def apply_to(self, equipment: Equipment) -> Equipment:
-        type_mods = item_mods.get(equipment.type, None)
+        type_mods = deepcopy(item_mods.get(equipment.type, None))
         if type_mods is None:
             return equipment
 
         new_mod_count = roll(max_value=4, min_value=3)
+        available_mods = type_mods["mods"]
 
-        mod_ids = sample(type_mods["mods"], new_mod_count)
+        locked_mod = equipment.get_locked_mod()
+        if locked_mod is not None:
+            new_mod_count -= 1
+            available_mods.remove(locked_mod)
+            del equipment.props['locked_mod']
+
+        new_mods = sample(available_mods, new_mod_count)
         mod_values = type_mods["values"]
 
-        equipment.mods = {}
+        equipment.mods = {
+            mod_id: equipment.mods[mod_id] for mod_id in equipment.mods if mod_id == locked_mod
+        }
 
-        for mod_id in mod_ids:
+        for mod_id in new_mods:
             values = mod_values.get(mod_id, None)
             tier = roll(max_value=len(values), min_value=1, luck=-1, reverse=True) - 1
             equipment.add_mod(mod_id, values[tier])

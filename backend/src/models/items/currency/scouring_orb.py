@@ -26,7 +26,14 @@ class ScouringOrb(Currency):
         )
 
     def apply_to(self, equipment: Equipment) -> Equipment:
-        equipment.mods = {}
-        equipment.rarity = Rarity.COMMON
+        locked_mod = equipment.get_locked_mod()
+        if locked_mod is not None:
+            del equipment.props['locked_mod']
+
+        equipment.mods = {
+            mod_id: equipment.mods[mod_id] for mod_id in equipment.mods if mod_id == locked_mod
+        }
+
+        equipment.update_rarity()
         remove_item_affixes(equipment)
         return equipment

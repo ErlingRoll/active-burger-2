@@ -20,14 +20,19 @@ class LootTable(BaseModel):
         dropped_items = []
         for item in self.items:
             loot_chance_roll = roll_chance(luck=luck)
-            random_amount = randint(0, item.random_amount if item.random_amount else 0)
             if loot_chance_roll <= item.chance:
-                base_amount = item.amount * (1 + fortune)
-                total_amount = base_amount + roll(random_amount, min_value=0, luck=-1)
-                item = generate_item(item_id=item.item_id, count=total_amount)
-                if item.rarity in [Rarity.EPIC, Rarity.LEGENDARY, Rarity.ARTIFACT]:
-                    item.count = 1  # Fortune does not apply to powerful items
-                dropped_items.append(item)
+                new_item = generate_item(item_id=item.item_id, count=item.amount)
+
+                if new_item.count is None:
+                    new_item.count = 1
+
+                if not new_item.rarity in [Rarity.EPIC, Rarity.LEGENDARY, Rarity.ARTIFACT]:
+                    new_item.count = new_item.count * (1 + fortune)
+
+                random_amount = randint(0, item.random_amount if item.random_amount else 0)
+                new_item.count += random_amount
+
+                dropped_items.append(new_item)
 
         return dropped_items
 
