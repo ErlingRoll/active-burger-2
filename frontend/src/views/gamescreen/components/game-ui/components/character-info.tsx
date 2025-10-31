@@ -16,9 +16,15 @@ const CharacterInfo = () => {
         <div className="m-4 p-2 pt-0 bg-dark/90 text-light rounded flex flex-col items-center">
             <div className="center-col items-start! font-bold">
                 <p className="font-bold text-lg">{character.name}</p>
-                <div className="flex items-center mb-1">
+                <div className="flex items-center">
                     <p className="font-bold">
                         Level <span className="text-primary">{character.level}</span>
+                    </p>
+                </div>
+                <div className="flex items-center mb-2">
+                    <p className="font-bold">
+                        Exp <span className="text-primary">{character.current_exp}</span> /{" "}
+                        <span className="text-primary">{character.max_exp}</span>
                     </p>
                 </div>
                 <div className="flex items-center">

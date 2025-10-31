@@ -11,7 +11,7 @@ class KaratePanda(Monster):
     max_hp: int = 35
     current_hp: int = 35
     power: int = 7
-    expDrop: int = 29
+    expDrop: int = 10
     props: dict = {
         "weapon_mods": {
             WeaponMod.PHYSICAL_DAMAGE.value: 10,

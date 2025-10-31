@@ -13,7 +13,7 @@ class Guardian(Monster):
     current_hp: int = 300
     regen: int = 5
     power: int = 14
-    expDrop: int = 50
+    expDrop: int = 100
     props: dict[str, Any] = {
         "weapon_mods": {
             WeaponMod.PHYSICAL_DAMAGE.value: 50,

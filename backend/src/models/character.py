@@ -15,6 +15,8 @@ class Character(Entity):
     solid: bool = False
     max_hp: int = 100
     current_hp: int = 100
+    max_exp: int = 100
+    current_exp: int = 0
     realm: Realm = Realm.BOB_VALLEY
     props: Dict = {}
 
@@ -32,6 +34,8 @@ class Character(Entity):
             level=self.level,
             max_hp=self.max_hp,
             current_hp=self.current_hp,
+            max_exp=self.max_exp,
+            current_exp=self.current_exp,
             regen=self.regen,
             direction=self.direction,
             name_visible=self.name_visible,

@@ -5,7 +5,7 @@ from src.generators.object import generate_object
 from src.models.render_object import RenderObject
 
 
-async def get_objects(database: AsyncClient):
+async def get_objects(database: AsyncClient) -> dict[str, RenderObject]:
     """ Fetch all objects and inherited objects from the database """
 
     objects = []

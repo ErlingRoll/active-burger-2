@@ -13,7 +13,7 @@ class Archmage(Monster):
     current_hp: int = 1000
     regen: int = 10
     power: int = 14
-    expDrop: int = 50
+    expDrop: int = 500
     props: dict[str, Any] = {
         "weapon_mods": {
             WeaponMod.FIRE_DAMAGE.value: 200,

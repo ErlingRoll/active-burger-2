@@ -13,7 +13,7 @@ class Gargoyle(Monster):
     current_hp: int = 500
     regen: int = 5
     power: int = 14
-    expDrop: int = 50
+    expDrop: int = 150
     props: dict[str, Any] = {
         "weapon_mods": {
             WeaponMod.PHYSICAL_DAMAGE.value: 200,
